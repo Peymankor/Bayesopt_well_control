@@ -1,0 +1,241 @@
+
+\newpage
+
+# BayesOpt performnace versus other alternatives
+
+In this section the aim is to compare the performance of the Bayeopt workflow with other availbale optimization alghorithm commonly used for reservoir optimization under uncertainity. The literature of field development optimzation enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in [@forouzanfar2014; @li2012; @volkov2018] can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.[@debrito2021] - Thefefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used rservoir optimization, named Genetic Algorithem (GA) [@chai2021; @holland1992b] and Particle Swarm Optimization (PSO) [@eberhart1995; @jesmani2016] have been considered. In this section we provide a brief overview of each methods, but interested readers are reffered to the original papers.[@eberhart1995a; @holland1992c]
+
+PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by Eberhart and Kennedy, Considering a swarm with $P$ particles, there is a position vector $X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T$ and a velocity vector $V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T$ at a $t$ iteration for each one of the $i$ particle that composes it. These vectors are updated through the dimension $j$ according to the following equations:
+
+```{=tex}
+\begin{equation}
+V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^t(gbest_j-X_{ij}^{t})
+\label{eq:pso}
+\end{equation}
+```
+
+where $i=1,2,..., P$ and $j =1,2,...,n$. Equation \@ref(eq:pso) explains that there are three different contributions to a particle's movement in an iteration. In the first term, the parameter $\omega$ is the inertia weight constant. In the second term, The parameter $c1$ is a positive constant and it is an individual-cognition parameter, and it weighs the importance of particle's own previous experiences. The other parameter second term is $r_1^t$, and this is a random value parameter with [0,1] range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, $gbestj$. Its format is just like the second term, the one regarding the individual learning. Thus, the difference $(gbest_j - X^t_{ij})$ acts as an attraction for the particles to the best point until found at some t iteration. Similarly, $c_2$ is a social learning parameter, and it weighs the importance of the global learning of the swarm. And $r_2$ plays exactly the same role as $r_1$. Where Equation \@ref(eq:psoup) updates the particle's positions. [@almeida2019]
+
+\begin{equation}
+X_{ij}^{t+1} = X_{ij}^{t} + V_{ij}^{t+1}
+\label{eq:psoup}
+\end{equation}
+
+
+```{r, echo=FALSE, results='hide'}
+bo_12345_npv_result <- bo_12345$scoreSummary$Score
+bo_12345_npv_result[1:40] <- max(bo_12345_npv_result[1:40])
+bo_12345_npv_ite <- bo_12345$scoreSummary$Iteration
+
+for (i in seq(41,50)) {
+  
+  if (bo_12345_npv_result[i] < bo_12345_npv_result[i-1]){
+    
+    bo_12345_npv_result[i] <- bo_12345_npv_result[i-1] 
+    
+  }
+  
+}
+
+bo_1234_npv_result <- bo_1234$scoreSummary$Score
+bo_1234_npv_result[1:40] <- max(bo_1234_npv_result[1:40])
+bo_1234_npv_ite <- bo_1234$scoreSummary$Iteration
+
+for (i in seq(41,50)) {
+  
+  if (bo_1234_npv_result[i] < bo_1234_npv_result[i-1]){
+    
+    bo_1234_npv_result[i] <- bo_1234_npv_result[i-1] 
+    
+  }
+  
+}
+
+bo_123_npv_result <- bo_123$scoreSummary$Score
+bo_123_npv_result[1:40] <- max(bo_123_npv_result[1:40])
+bo_123_npv_ite <- bo_123$scoreSummary$Iteration
+
+for (i in seq(41,50)) {
+  
+  if (bo_123_npv_result[i] < bo_123_npv_result[i-1]){
+    
+    bo_123_npv_result[i] <- bo_123_npv_result[i-1] 
+    
+  }
+  
+}
+
+#######################BO_50 ############################
+ss_50 <- bo_123_50$scoreSummary
+#ss <- bo_123$scoreSummary
+
+#plot(bo_123_50)
+#getBestPars(bo_123_50)
+
+########### GA ######################################
+
+ga_12345_npv_result <- rep(ga_12345@summary[,"max"],each=25)
+ga_12345_npv_ite <- seq(1,250)
+
+ga_1234_npv_result <- rep(ga_1234@summary[,"max"],each=25)
+ga_1234_npv_ite <- seq(1,250)
+
+ga_123_npv_result <- rep(ga_123@summary[,"max"],each=25)
+ga_123_npv_ite <- seq(1,250)
+
+########### PSO #######################################
+#
+pso_12345_npv_result_i <- rep(0,10)
+for (i in 1:10) {
+  pso_12345_npv_result_i[i] <- max(-pso_12345$stats$f[[i]])
+}
+
+pso_12345_npv_result_i
+pso_12345_npv_result <- rep(pso_12345_npv_result_i,each=25)
+pso_12345_npv_ite <- seq(1,250)
+
+#
+pso_1234_npv_result_i <- rep(0,10)
+for (i in 1:10) {
+  pso_1234_npv_result_i[i] <- max(-pso_1234$stats$f[[i]])
+}
+pso_1234_npv_result <- rep(pso_1234_npv_result_i,each=25)
+pso_1234_npv_ite <- seq(1,250)
+
+#
+pso_123_npv_result_i <- rep(0,10)
+for (i in 1:10) {
+  pso_123_npv_result_i[i] <- max(-pso_123$stats$f[[i]])
+}
+pso_123_npv_result <- rep(pso_123_npv_result_i,each=25)
+pso_123_npv_ite <- seq(1,250)
+
+#pso_123$par
+#####################################################################
+
+NPV_max_data <- c(bo_12345_npv_result, bo_1234_npv_result, bo_123_npv_result, 
+                  ga_12345_npv_result, ga_1234_npv_result, ga_123_npv_result,
+                  pso_12345_npv_result, pso_1234_npv_result, pso_123_npv_result)
+
+
+Reservoir_Simulation_number = c(bo_12345_npv_ite, bo_1234_npv_ite,bo_123_npv_ite, 
+                                ga_12345_npv_ite, ga_1234_npv_ite, ga_123_npv_ite,
+                                pso_12345_npv_ite, pso_1234_npv_ite,pso_123_npv_ite)
+
+
+methods_alg <- c(rep("BO",50), rep("BO",50),rep("BO",50),
+                 rep("GA",250), rep("GA",250),rep("GA",250),
+                 rep("PSO",250), rep("PSO",250),rep("PSO",250))
+
+seed_alg <- c(rep("Repeat1",50), rep("Repeat2",50),rep("Repeat3",50),
+                 rep("Repeat1",250), rep("Repeat2",250),rep("Repeat3",250),
+                 rep("Repeat1",250), rep("Repeat2",250),rep("Repeat3",250))
+
+comp_data_frame <- tibble(NPV_max= NPV_max_data, 
+                          Reservoir_Simulation = Reservoir_Simulation_number,
+                          method=methods_alg,
+                          see_number=seed_alg) 
+
+#ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, colour=method)) +
+#  geom_point() +
+#  facet_grid(cols = vars(see_number)) +
+#  xlab("Required Number of Reservoir Simulation (forward modeling)") +
+#  ylab("-Max NPV Reached")
+
+```
+
+BayesOpt VS. with other Global Optimization Algorithms
+
+Fixed Reservoir Simulation Budget (N=50)
+
+```{r,echo=FALSE, fig.retina=2, fig.align='center'}
+comp_data_frame_50sample <- comp_data_frame %>% 
+  group_by(method) %>% 
+  filter(Reservoir_Simulation<51 & Reservoir_Simulation>0)
+
+ggplot(comp_data_frame_50sample, aes(Reservoir_Simulation, NPV_max, group=method)) +
+  geom_point(aes(shape=method, color=method), size=2)+
+  scale_shape_manual(values=c(16, 5, 0))+
+  scale_color_manual(values=c('red','#E69F00', '#56B4E9'))+
+  theme(legend.position="top") +
+  facet_grid(cols = vars(see_number)) +
+  labs(x = TeX("Number of Required, $ \\bar{J}(u)$ Evaluation")) +
+  #xlab("Required #of Reservoir Simulation (forward modeling)") +
+  ylab("Max NPV Reached") +
+  theme(panel.spacing = unit(3, "lines"))
+```
+
+BO: Reservoir Simulation Budget (N=50), GA, PSO: Reservoir Simulation Budget (N=250)
+
+```{r, echo=FALSE, fig.retina=2, fig.align='center'}
+ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, group=method)) +
+  geom_point(aes(shape=method, color=method), size=2)+
+  scale_shape_manual(values=c(16, 5, 0))+
+  scale_color_manual(values=c('red','#E69F00', '#56B4E9'))+
+  theme(legend.position="top") +
+  facet_grid(cols = vars(see_number)) +
+  labs(x = TeX("Number of Required, $ \\bar{J}(u)$ Evaluation")) +
+  ylab("Max NPV Reached") +
+  theme(panel.spacing = unit(3, "lines"))
+```
+
+BayesOpt VS. with other Global Optimization Algorithms
+
+Table Summarizing Comparison of BayesOpt, PSO, GA
+
+```{r, echo=FALSE, eval=FALSE}
+bo_max <- c(max(bo_12345_npv_result), 
+             max(bo_1234_npv_result), max(bo_123_npv_result))
+
+
+pso_max <- c(max(pso_12345_npv_result), max(pso_1234_npv_result), max(pso_123_npv_result))
+
+ga_max <- c(max(ga_12345_npv_result), max(ga_1234_npv_result), mean(ga_123_npv_result))
+
+tibbel_analyze <- tibble(methods= c("Bayesian Optimization", "Particle Swarm Optimization", 
+                                    "Genetic Alghorithm Optimization"),
+                         Median_max_NPV=c(median(bo_max),median(pso_max),median(ga_max)),
+                         required_simulation= c(50, 250,250))
+
+colnames(tibbel_analyze) <- c("Optimization Method","Maximum Achieved NPV (median)", "#$\\bar{m}_1$")
+
+tibbel_analyze %>%  kableExtra::kable(format = "html", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"  # of $\\overline{J}(u)$ Evaluations")) %>% 
+    kable_styling() %>% 
+  column_spec(3, background = "blue")
+
+
+```
+
+Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication was used)
+
+```{r, echo=FALSE, fig.retina=2, fig.height=5, fig.align='center'}
+#match(max(bo_max),bo_max)
+bo_median <- bo_1234
+
+#match(max(pso_max),pso_max)
+pso_median <- pso_123
+
+#match(max(ga_max),ga_max)
+ga_median <- ga_1234
+
+
+vector_u_bo <-unlist(getBestPars(bo_median))
+vector_u_pso <- pso_median$par
+vector_u_ga <- ga_median@solution
+
+
+df_median_algo <- tibble(Inj=c("Inj1","Inj2","Inj3","Inj4","Inj5","Inj6","Inj7","Inj8"),
+                         BayesOpt=vector_u_bo, PSO=vector_u_pso, GA=as.numeric(vector_u_ga))
+
+
+df_median_algo_longer <- df_median_algo %>% 
+  pivot_longer(-Inj,names_to = "Algorithm", values_to = "Injection_Rate")
+
+ggplot(data=df_median_algo_longer, aes(x=Inj, y=Injection_Rate, fill=Algorithm)) +
+geom_bar(width = 0.4, stat="identity", position=position_dodge()) +
+  coord_cartesian(ylim = c(5, 100)) +
+  scale_color_manual(labels = c("BayesOpt", "GA", "PSO"),
+                     values = c("red", "blue", "green"),
+                     aesthetics = "fill") 
+
+```

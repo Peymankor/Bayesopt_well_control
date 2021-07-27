@@ -1,0 +1,55 @@
+
+# Introduction:
+
+\doublespacing
+
+While developing a field, prediction of reservoir response to change in
+the variable is an am important factor to have an efficient reservoir
+management. The field of reservoir engineering is rich in the
+development and application of full-physics numerical simulations for
+forward modeling. However, the computational power needed to run such
+numerical simulators most of the time is huge. Especially, the framework
+of the Robust Optimization where uncertainty are considered through
+multiple of geological realization (thousand or multi-thousand), the
+practical applicability of such forward modeling is considerably
+limited. To address this challenge, the proxy-modeling for reservoir
+managemnet has emerged to reduce the cost of forward simulation. The
+root of this field goes back to the work of the [@bruce1943] where the
+analogy between flow of electricty in tthorugh te electrical device and
+the response of the reservoir was constructed. [@albertoni2003] Proposed
+the a Multivariate Linear Regression (MLR) to estimate the production
+from the well, where it claimed that total production at each is linear
+combination of injection rates with diffusitivity filter. Building on
+the work of [@albertoni2003], [@yousef2006] proposed a new procedure to
+quantify communication between wells, where for each injector/producer
+pair, two coefficients, capacitance to quantify connectivity and time
+constant to quantify the degree of fluid storage were considered.
+[@sayarpour2008] used superposition in time to analytically solve the
+numerical integration in CRM. [@zhao2015](Zhao et al. 2015) articulated
+that CRM models are not applicable when production rates change
+significantly, mainly due to those models neglect to include intearction
+of production-production and injector-injector pair well. Formulating
+the model in the framework titled INSIM (interwell numerical simulation
+model), it was used as efficient replacement to reservoir simulator when
+history-matching phase rate data or water-cut data obtained during water
+flooding operations.
+
+Seperatley, in sake of utilization of recent advancemnet in the world of
+Information technology, couple of reaserach has been don eon the
+development of "Surrogate Reservoir Models" - [@mohaghegh2006] proposed
+the workflow for SRM model where Fuzzy Paatern Recognition (FPR)
+technology was dimensionality reduction, in both static and dynamic
+parameters of the reservir . Key Performance Indicator (KPI) was used to
+select the most important variable.- [@sampaio2009] tried on use of
+feed-forward neural networks as nonlinear proxies of reservoir response.
+A few set of rock and fluid properties were considere a input (porosity,
+permeability in "x" direction, permeability in "y" direction, and rock
+compressibility) where in developing the neural network model, only one
+hidden layer was used. flow proxy modeling to replace full simulation in
+history matching, and built the proxy with a single hidden layer
+artificial neural network (ANN). To predict the oil production from the
+SAGD rocess, (Fedutenko et al. 2014) [@fedutenko2014]employed the RBF
+Neural Network to predict the cumulative oil production over the time
+horizon of production (10 years) .
+
+## Survey of suurgate -based papers in onepetro database

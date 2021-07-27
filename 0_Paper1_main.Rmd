@@ -1,0 +1,95 @@
+---
+title: "Bayesian Optimization : A New Sample Efficient Workflow for Reservoir Optimization under Uncertainty"
+author:
+  - name: "Peyman Kor"
+#    email: "peyman.kor@uis.no"
+    affiliation: a
+    footnote: 1
+  - name: Aojie Hong
+#    email: "aojie.hong@uis.no"
+    affiliation: a
+  - name: Reidar Brumer Bratvold
+#    email: "reidar.bratvold.uis.no"
+    affiliation: a
+address:
+  - code: a
+    address: Energy Resources Department, University of Stavanger, Stavanger, Norway
+footnote:
+  - code: 1
+    text: "Corresponding Author, peyman.kor@uis.no"
+#  - code: 2
+#    text: "Equal contribution"
+abstract: |
+ \doublespacing The underlying challenge in well-control optimization during field development is that flow simulation of a 3D, rich grid-based model is computationally prohibitive. In a robust optimization setting, where flow simulation has to be repeated over a hundred(s) of geological realizations, performing a proper optimization workflow becomes impractical in many real-world cases. In this work, to alleviate this computational burden, a new sample efficient optimization method is presented. In this context, sample efficiency means that workflow needs a minimum number of forward model evaluations (flow-simulation in the case of reservoir optimization) while still being able to capture the global optimum of the objective function. In addition, the workflow is appropriate for cases in which precise analytical expression of the objective functio is nonexistent. Such situations typically arise when the objective function is computed as the result of solving a large number of PDE(s), such as in reservoir-flow simulation. In this workflow, "Bayesian Optimization", the objective function for samples of decision variables is first computed using aproper design experiment. Then, a Gaussian Process (GP) is trained to mimic the surface of objective function as surrogate model. While balancing exploration-exploitation dilemma, a new decision variable is queried from surrogate model and flow simulation is run for this query point. Later, the output of the flow-simulation is assimilated back to the surrogate model, to update the model given the new data point. This process continues  sequentially until termination criteria are reached. To validate the workflow, we first optimize a 1D problem to gain better insight about the details of optimization steps. Then, the workflow has been applied to a 3D, synthetic reservoir model, to perform robust optimization in a realistic field scenario. Finally, the comparison of the workflow with two other commonly used algorithms in the literature, namely Particle Swarm Intelligence (PSO) and Genetic Algorithm (GA) has been performed. The results of the comparison show that the workflow presented here could reach same near-optimal solution achieved with GA and PSO, yet reduce computational complexity of the optimization 5X (times). We conclude that the method presented here significantly speeds up the optimization process leavrgeing a faster workflow for real-world 3D optimization task, potentially taking days (months) of CPU running, yet gives robust results that leads to a near-optimal solution.     
+journal: "Journal of Petroleum Science And Enginering"
+geometry: margin=1in
+header-includes:
+  - \usepackage{setspace}
+date: "`r Sys.Date()`"
+bibliography: [mybibfile.bib,paper1.bib, references.bib]
+linenumbers: true
+numbersections: true
+keywords: "Optimization, Gaussian Process, Probalistic Modeling, Bayesian"
+csl: elsevier-harvard.csl
+#output: rticles::elsevier_article
+#output: officedown::rdocx_document
+output:
+  bookdown::pdf_book:
+    base_format: rticles::elsevier_article
+number_sections: true
+fig_caption: yes
+
+# output: 
+#   rticles::elsevier_article: default
+#   word_document: default
+# output:
+#   bookdown::word_document2:
+#     base_format: rticles::elsevier_article
+  
+#output:
+#  bookdown::pdf_document2:
+#    fig_caption: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F, echo = FALSE)
+```
+
+\newpage
+
+```{r child = '1_introduction.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '2_problem_statement.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '3_Bayesian_Optimization_Workflow.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '4_Example Cases.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '5_comparison_with_other.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '6_Conclusing_Remarks.Rmd'}
+
+```

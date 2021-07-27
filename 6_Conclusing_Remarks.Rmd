@@ -1,0 +1,13 @@
+
+# Conclusing Remarks
+
+\newpage
+
+# Acknowledgements
+
+This work received support from the Research Council of Norway and the companies AkerBP, Wintershall–DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks–2 DIGIRES project (280473) (http://digires.no). We acknowledge the access to Eclipse licenses granted by Schlumberger.
+
+\newpage
+
+
+# References {#references .unnumbered}
