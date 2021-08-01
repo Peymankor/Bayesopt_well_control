@@ -1,11 +1,12 @@
-
 \newpage
 
-# BayesOpt performnace versus other alternatives
+# BayesOpt performance versus other alternatives
 
-In this section the aim is to compare the performance of the Bayeopt workflow with other availbale optimization alghorithm commonly used for reservoir optimization under uncertainity. The literature of field development optimzation enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in [@forouzanfar2014; @li2012; @volkov2018] can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.[@debrito2021] - Thefefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used rservoir optimization, named Genetic Algorithem (GA) [@chai2021; @holland1992b] and Particle Swarm Optimization (PSO) [@eberhart1995; @jesmani2016] have been considered. In this section we provide a brief overview of each methods, but interested readers are reffered to the original papers.[@eberhart1995a; @holland1992c]
+In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in [@forouzanfar2014; @li2012; @volkov2018] can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.[@debrito2021] - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) [@chai2021; @holland1992b] and Particle Swarm Optimization (PSO) [@eberhart1995; @jesmani2016] have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.[@eberhart1995a; @holland1992c]
 
-PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by Eberhart and Kennedy, Considering a swarm with $P$ particles, there is a position vector $X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T$ and a velocity vector $V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T$ at a $t$ iteration for each one of the $i$ particle that composes it. These vectors are updated through the dimension $j$ according to the following equations:
+## Particle Swarm Optimization (PSO)
+
+PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by [@eberhart1995] , Considering a swarm with $P$ particles, there is a position vector $X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T$ and a velocity vector $V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T$ at a $t$ iteration for each one of the $i$ particle that composes it. These vectors are updated through the dimension $j$ according to the following equations:
 
 ```{=tex}
 \begin{equation}
@@ -13,14 +14,17 @@ V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^
 \label{eq:pso}
 \end{equation}
 ```
+where $i=1,2,..., P$ and $j =1,2,...,n$. Equation \@ref(eq:pso) explains that there are three different contributions to a particle's movement in an iteration. In the first term, the parameter $\omega$ is the inertia weight constant. In the second term, The parameter $c_1$ is a positive constant and it is an individual-cognition parameter, and it weighs the importance of particle's own previous experiences. The other parameter second term is $r_1^t$, and this is a random value parameter with [0,1] range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, $gbestj$. Its format is just like the second term, the one regarding the individual learning. Thus, the difference $(gbest_j - X^t_{ij})$ acts as an attraction for the particles to the best point until found at some t iteration. Similarly, $c_2$ is a social learning parameter, and it weighs the importance of the global learning of the swarm. And $r_2$ plays exactly the same role as $r_1$. Where Equation \@ref(eq:psoup) updates the particle's positions. [@almeida2019]
 
-where $i=1,2,..., P$ and $j =1,2,...,n$. Equation \@ref(eq:pso) explains that there are three different contributions to a particle's movement in an iteration. In the first term, the parameter $\omega$ is the inertia weight constant. In the second term, The parameter $c1$ is a positive constant and it is an individual-cognition parameter, and it weighs the importance of particle's own previous experiences. The other parameter second term is $r_1^t$, and this is a random value parameter with [0,1] range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, $gbestj$. Its format is just like the second term, the one regarding the individual learning. Thus, the difference $(gbest_j - X^t_{ij})$ acts as an attraction for the particles to the best point until found at some t iteration. Similarly, $c_2$ is a social learning parameter, and it weighs the importance of the global learning of the swarm. And $r_2$ plays exactly the same role as $r_1$. Where Equation \@ref(eq:psoup) updates the particle's positions. [@almeida2019]
-
+```{=tex}
 \begin{equation}
 X_{ij}^{t+1} = X_{ij}^{t} + V_{ij}^{t+1}
 \label{eq:psoup}
 \end{equation}
+```
+## Genetic Algorithm (GA)
 
+Genetic algorithm is a stochastic search algorithms that use evolutionary strategies inspired by the basic principles of biological evolution. First developed by John Holland [@holland1975] and his collaborators in the 1960s and 1970s, later has been applied for optimization and search problems @goldberg1988; @mitchell1998. The evolution process is as follow: GA starts with the generation of an initial random population of size $P$, so for step $k = 0$ we may write ${\theta_1^{(0)}; \theta_2^{(0)},\cdots, \theta_p^{(0)}}$, (step 1). The fitness of each member of the population at any step $k$, $f(\theta_i^{(k)})$, is computed and probabilities $p_i^{(k)}$ are assigned to each individual in the population, usually proportional to their fitness, (step 2). The reproducing population is formed **selection** by drawing with replacement a sample where each individual has probability of surviving equal to $p_i^{(k)}$, (step 3). A new population ${\theta_1^{(k+1)}; \theta_2^{(k+1)},\cdots, \theta_p^{(k+1)}}$ is formed from the reproducing population using crossover and mutation operators, step (4). Then, set $k = k + 1$ and the algorithm returns to the fitness evaluation step, (back to step 2). When convergence criteria are met the evolution stops, and the algorithm deliver as the optimum [@scrucca2013].
 
 ```{r, echo=FALSE, results='hide'}
 bo_12345_npv_result <- bo_12345$scoreSummary$Score
@@ -144,11 +148,28 @@ comp_data_frame <- tibble(NPV_max= NPV_max_data,
 
 ```
 
-BayesOpt VS. with other Global Optimization Algorithms
+## Comparison in Fixed Reservoir Simulation Budget (N=50)
 
-Fixed Reservoir Simulation Budget (N=50)
+In first part of the comparison, we compare the Bayesopt with PSO and GA in fixed $\overline{J}(u)$. It means that optimization process could continue, until they use $\overline{J}(u)=50$ function evaluations. It is worth to mention that in fact $\overline{J}(u)=50$ is equal to $500$ reservoir simulations, due to number of realization, $n_e=10$ and ten computation per each $\overline{J}(u)$. Another point is parameters of PSO and GA. These two methods needs parameters to be defined by the user. In GA, these parameters are: Population Size, probability of crossover between pairs of chromosomes, probability of mutation in a parent chromosome, The number of best fitness individuals to survive at each generation. For PSO, the algorithm parameters are as below: size of the swarm, the local exploration constant, the global exploration constant.
 
-```{r,echo=FALSE, fig.retina=2, fig.align='center'}
+```{r, message=FALSE, error=FALSE, fig.align='center'}
+ga_param <- data.frame(parameters = c("Population Size", "Probability of crossover", "Probability of mutation", "Number of best fitness individuals to survive"), value = c(25, "80%", "20%", "5%"))
+
+pso_param <- data.frame(parameters = c("Size of the swarm", "Local exploration constant", "Global exploration constant"), value = c(25, "5+log(2)", "5+log(2)"))
+
+param_table <- rbind(pso_param, ga_param)
+  
+kbl(param_table, booktabs = T, caption = "Parameters of GA and PSO Methods")%>%
+  #kable_paper("striped", full_width = F) %>%
+  pack_rows("PSO", 1, 3) %>%
+  pack_rows("GA", 4, 7) %>% 
+  kable_styling(position = "center", full_width = T)
+
+```
+
+In \@ref(fig:comp-fixbud) results of comparison has shown. As all of three algorithm is stochastic (meaning they depends on initial random samples), comparison has been repeated three times. We would like to note that in \@ref(fig:comp-fixbud) the $y$ axis is "Max NPV Reached", meaning that in each generation of GA and PSO algorithm, the "Max" of the each generation has been shown. Morever, the Figure shows that in BayesOpt method, number of $\overline{J}(u)$ grows as $n_{initial} + n_{iteration}$, which in this case in $n_{initial}=40$ and $n_{iteration}=10$, summing up to $50$. Whereas, in PSO and GA,number of $\overline{J}(u)$ grows as $n_{\text{popsize}}\times iteation$. As \@ref(fig:comp-fixbud) shows, in all repetition, the BayesOpt outperform the other two algorithms with reaching higher NPV at fixed simulation budget. Part of performance could be attributed how algorithms use forward model. In BayesOpt, after initial sampling, the algorithm sequentially query a "one" from the expensive function, while GA and PSO needs another sample size $n_p$ per each iteration.
+
+```{r comp-fixbud,echo=FALSE, fig.retina=2, fig.align='center', out.width="90%", fig.cap="Comparison of GA, PSO and BayesOpt performance at fixed function evaluation budget"}
 comp_data_frame_50sample <- comp_data_frame %>% 
   group_by(method) %>% 
   filter(Reservoir_Simulation<51 & Reservoir_Simulation>0)
@@ -165,9 +186,9 @@ ggplot(comp_data_frame_50sample, aes(Reservoir_Simulation, NPV_max, group=method
   theme(panel.spacing = unit(3, "lines"))
 ```
 
-BO: Reservoir Simulation Budget (N=50), GA, PSO: Reservoir Simulation Budget (N=250)
+In this work we did not suffice the comparison to only \@ref(fig:comp-freebud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{J}(u)$ evaluations to 250, while keep the results of BayesOpt to the 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and then their results, will be compared with BayesOpt from previous section. Figure \@ref(fig:comp-freebud) does not convey a single message about performance of these methods. In \@ref(tab:comp-freebud) median value of three algorithm was compared. The value in second column of \@ref(tab:comp-freebud) is mean value of each optimization method. (In three repetitions, the maximum achieved NPV is a\<b\<c, b was selected). As the \@ref(tab:comp-freebud) shows, the difference between the NPV value of BayesOpt is almost negligible compared to PSO and GA, while the max NPV in BayesOpt was achieved in 50 $\overline{J}(u)$ while other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BayesOpt reaches same optimal solution, while having computaional complexity of 5X (times) less.
 
-```{r, echo=FALSE, fig.retina=2, fig.align='center'}
+```{r comp-freebud, echo=FALSE, fig.retina=2, fig.align='center',out.width="90%", fig.cap="Comparison of GA PSO and BayesOpt performance at fixed function evaluation budget"}
 ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, group=method)) +
   geom_point(aes(shape=method, color=method), size=2)+
   scale_shape_manual(values=c(16, 5, 0))+
@@ -179,11 +200,7 @@ ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, group=method)) +
   theme(panel.spacing = unit(3, "lines"))
 ```
 
-BayesOpt VS. with other Global Optimization Algorithms
-
-Table Summarizing Comparison of BayesOpt, PSO, GA
-
-```{r, echo=FALSE, eval=FALSE}
+```{r comp-tab, echo=FALSE, eval=TRUE}
 bo_max <- c(max(bo_12345_npv_result), 
              max(bo_1234_npv_result), max(bo_123_npv_result))
 
@@ -197,10 +214,10 @@ tibbel_analyze <- tibble(methods= c("Bayesian Optimization", "Particle Swarm Opt
                          Median_max_NPV=c(median(bo_max),median(pso_max),median(ga_max)),
                          required_simulation= c(50, 250,250))
 
-colnames(tibbel_analyze) <- c("Optimization Method","Maximum Achieved NPV (median)", "#$\\bar{m}_1$")
+colnames(tibbel_analyze) <- c("Optimization Method","Maximum Achieved NPV (median)", "$\\bar{m}_1$")
 
-tibbel_analyze %>%  kableExtra::kable(format = "html", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"  # of $\\overline{J}(u)$ Evaluations")) %>% 
-    kable_styling() %>% 
+tibbel_analyze %>%  kableExtra::kable(format = "latex", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"$\\overline{J}(u)$ Evaluations"), caption = "Summary table for comparison of GA/PSO and Bayesopt") %>% 
+    kable_styling(full_width = T) %>% 
   column_spec(3, background = "blue")
 
 

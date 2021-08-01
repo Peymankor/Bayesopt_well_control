@@ -709,42 +709,101 @@ To further continue thiss dicussion on the effect of initialization on the final
 
 \newpage
 
-\hypertarget{bayesopt-performnace-versus-other-alternatives}{%
-\section{BayesOpt performnace versus other alternatives}\label{bayesopt-performnace-versus-other-alternatives}}
+\hypertarget{bayesopt-performance-versus-other-alternatives}{%
+\section{BayesOpt performance versus other alternatives}\label{bayesopt-performance-versus-other-alternatives}}
 
-In this section the aim is to compare the performance of the Bayeopt workflow with other availbale optimization alghorithm commonly used for reservoir optimization under uncertainity. The literature of field development optimzation enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021b) - Thefefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used rservoir optimization, named Genetic Algorithem (GA) (Chai et al., 2021; Holland, 1992a) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995a; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are reffered to the original papers.(Eberhart and Kennedy, 1995b; Holland, 1992b)
+In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021b) - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) (Chai et al., 2021; Holland, 1992a) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995a; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.(Eberhart and Kennedy, 1995b; Holland, 1992b)
 
-PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by Eberhart and Kennedy, Considering a swarm with \(P\) particles, there is a position vector \(X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T\) and a velocity vector \(V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T\) at a \(t\) iteration for each one of the \(i\) particle that composes it. These vectors are updated through the dimension \(j\) according to the following equations:
+\hypertarget{particle-swarm-optimization-pso}{%
+\subsection{Particle Swarm Optimization (PSO)}\label{particle-swarm-optimization-pso}}
+
+PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by (Eberhart and Kennedy, 1995a) , Considering a swarm with \(P\) particles, there is a position vector \(X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T\) and a velocity vector \(V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T\) at a \(t\) iteration for each one of the \(i\) particle that composes it. These vectors are updated through the dimension \(j\) according to the following equations:
 
 \begin{equation}
 V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^t(gbest_j-X_{ij}^{t})
 \label{eq:pso}
 \end{equation}
 
-where \(i=1,2,..., P\) and \(j =1,2,...,n\). Equation \eqref{eq:pso} explains that there are three different contributions to a particle's movement in an iteration. In the first term, the parameter \(\omega\) is the inertia weight constant. In the second term, The parameter \(c1\) is a positive constant and it is an individual-cognition parameter, and it weighs the importance of particle's own previous experiences. The other parameter second term is \(r_1^t\), and this is a random value parameter with {[}0,1{]} range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, \(gbestj\). Its format is just like the second term, the one regarding the individual learning. Thus, the difference \((gbest_j - X^t_{ij})\) acts as an attraction for the particles to the best point until found at some t iteration. Similarly, \(c_2\) is a social learning parameter, and it weighs the importance of the global learning of the swarm. And \(r_2\) plays exactly the same role as \(r_1\). Where Equation \eqref{eq:psoup} updates the particle's positions. (Almeida and Leite, 2019)
+where \(i=1,2,..., P\) and \(j =1,2,...,n\). Equation \eqref{eq:pso} explains that there are three different contributions to a particle's movement in an iteration. In the first term, the parameter \(\omega\) is the inertia weight constant. In the second term, The parameter \(c_1\) is a positive constant and it is an individual-cognition parameter, and it weighs the importance of particle's own previous experiences. The other parameter second term is \(r_1^t\), and this is a random value parameter with {[}0,1{]} range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, \(gbestj\). Its format is just like the second term, the one regarding the individual learning. Thus, the difference \((gbest_j - X^t_{ij})\) acts as an attraction for the particles to the best point until found at some t iteration. Similarly, \(c_2\) is a social learning parameter, and it weighs the importance of the global learning of the swarm. And \(r_2\) plays exactly the same role as \(r_1\). Where Equation \eqref{eq:psoup} updates the particle's positions. (Almeida and Leite, 2019)
 
 \begin{equation}
 X_{ij}^{t+1} = X_{ij}^{t} + V_{ij}^{t+1}
 \label{eq:psoup}
 \end{equation}
 
-BayesOpt VS. with other Global Optimization Algorithms
+\hypertarget{genetic-algorithm-ga}{%
+\subsection{Genetic Algorithm (GA)}\label{genetic-algorithm-ga}}
 
-Fixed Reservoir Simulation Budget (N=50)
+Genetic algorithm is a stochastic search algorithms that use evolutionary strategies inspired by the basic principles of biological evolution. First developed by John Holland (Holland, 1975) and his collaborators in the 1960s and 1970s, later has been applied for optimization and search problems Goldberg and Holland (1988); Mitchell (1998). The evolution process is as follow: GA starts with the generation of an initial random population of size \(P\), so for step \(k = 0\) we may write \({\theta_1^{(0)}; \theta_2^{(0)},\cdots, \theta_p^{(0)}}\), (step 1). The fitness of each member of the population at any step \(k\), \(f(\theta_i^{(k)})\), is computed and probabilities \(p_i^{(k)}\) are assigned to each individual in the population, usually proportional to their fitness, (step 2). The reproducing population is formed \textbf{selection} by drawing with replacement a sample where each individual has probability of surviving equal to \(p_i^{(k)}\), (step 3). A new population \({\theta_1^{(k+1)}; \theta_2^{(k+1)},\cdots, \theta_p^{(k+1)}}\) is formed from the reproducing population using crossover and mutation operators, step (4). Then, set \(k = k + 1\) and the algorithm returns to the fitness evaluation step, (back to step 2). When convergence criteria are met the evolution stops, and the algorithm deliver as the optimum (Scrucca, 2013).
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-11-1} \end{center}
+\hypertarget{comparison-in-fixed-reservoir-simulation-budget-n50}{%
+\subsection{Comparison in Fixed Reservoir Simulation Budget (N=50)}\label{comparison-in-fixed-reservoir-simulation-budget-n50}}
 
-BO: Reservoir Simulation Budget (N=50), GA, PSO: Reservoir Simulation Budget (N=250)
+In first part of the comparison, we compare the Bayesopt with PSO and GA in fixed \(\overline{J}(u)\). It means that optimization process could continue, until they use \(\overline{J}(u)=50\) function evaluations. It is worth to mention that in fact \(\overline{J}(u)=50\) is equal to \(500\) reservoir simulations, due to number of realization, \(n_e=10\) and ten computation per each \(\overline{J}(u)\). Another point is parameters of PSO and GA. These two methods needs parameters to be defined by the user. In GA, these parameters are: Population Size, probability of crossover between pairs of chromosomes, probability of mutation in a parent chromosome, The number of best fitness individuals to survive at each generation. For PSO, the algorithm parameters are as below: size of the swarm, the local exploration constant, the global exploration constant.
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-12-1} \end{center}
+\begin{table}
 
-BayesOpt VS. with other Global Optimization Algorithms
+\caption{\label{tab:unnamed-chunk-11}Parameters of GA and PSO Methods}
+\centering
+\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
+\toprule
+parameters & value\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{PSO}}\\
+\hspace{1em}Size of the swarm & 25\\
+\hspace{1em}Local exploration constant & 5+log(2)\\
+\hspace{1em}Global exploration constant & 5+log(2)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{GA}}\\
+\hspace{1em}Population Size & 25\\
+\hspace{1em}Probability of crossover & 80\%\\
+\hspace{1em}Probability of mutation & 20\%\\
+\hspace{1em}Number of best fitness individuals to survive & 5\%\\
+\bottomrule
+\end{tabu}
+\end{table}
 
-Table Summarizing Comparison of BayesOpt, PSO, GA
+In \ref{fig:comp-fixbud} results of comparison has shown. As all of three algorithm is stochastic (meaning they depends on initial random samples), comparison has been repeated three times. We would like to note that in \ref{fig:comp-fixbud} the \(y\) axis is ``Max NPV Reached,'' meaning that in each generation of GA and PSO algorithm, the ``Max'' of the each generation has been shown. Morever, the Figure shows that in BayesOpt method, number of \(\overline{J}(u)\) grows as \(n_{initial} + n_{iteration}\), which in this case in \(n_{initial}=40\) and \(n_{iteration}=10\), summing up to \(50\). Whereas, in PSO and GA,number of \(\overline{J}(u)\) grows as \(n_{\text{popsize}}\times iteation\). As \ref{fig:comp-fixbud} shows, in all repetition, the BayesOpt outperform the other two algorithms with reaching higher NPV at fixed simulation budget. Part of performance could be attributed how algorithms use forward model. In BayesOpt, after initial sampling, the algorithm sequentially query a ``one'' from the expensive function, while GA and PSO needs another sample size \(n_p\) per each iteration.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/comp-fixbud-1} 
+
+}
+
+\caption{Comparison of GA, PSO and BayesOpt performance at fixed function evaluation budget}\label{fig:comp-fixbud}
+\end{figure}
+
+In this work we did not suffice the comparison to only \ref{fig:comp-freebud}. In Figure \ref{fig:comp-freebud} we further allowed the number of \(\overline{J}(u)\) evaluations to 250, while keep the results of BayesOpt to the 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations (\(25\times8=200\)) and then their results, will be compared with BayesOpt from previous section. Figure \ref{fig:comp-freebud} does not convey a single message about performance of these methods. In \ref{tab:comp-freebud} median value of three algorithm was compared. The value in second column of \ref{tab:comp-freebud} is mean value of each optimization method. (In three repetitions, the maximum achieved NPV is a\textless b\textless c, b was selected). As the \ref{tab:comp-freebud} shows, the difference between the NPV value of BayesOpt is almost negligible compared to PSO and GA, while the max NPV in BayesOpt was achieved in 50 \(\overline{J}(u)\) while other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BayesOpt reaches same optimal solution, while having computaional complexity of 5X (times) less.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/comp-freebud-1} 
+
+}
+
+\caption{Comparison of GA PSO and BayesOpt performance at fixed function evaluation budget}\label{fig:comp-freebud}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:comp-tab}Summary table for comparison of GA/PSO and Bayesopt}
+\centering
+\begin{tabu} to \linewidth {>{\centering}X>{\centering}X>{}c}
+\toprule
+Optimization Method & Maximum Achieved NPV (median) & $\overline{J}(u)$ Evaluations\\
+\midrule
+Bayesian Optimization & 36.848 & \cellcolor{blue}{50}\\
+Particle Swarm Optimization & 36.894 & \cellcolor{blue}{250}\\
+Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
+\bottomrule
+\end{tabu}
+\end{table}
 
 Comparing the Final Solution \(u\) of the Opt algorithms\ldots(the Median Replication was used)
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-14-1} \end{center}
+\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-12-1} \end{center}
 
 \newpage
 
@@ -796,6 +855,12 @@ Fedutenko, E., Yang, C., Card, C., Nghiem, L.X., 2014. SPE Heavy Oil Conference-
 \leavevmode\vadjust pre{\hypertarget{ref-forouzanfar2014}{}}%
 Forouzanfar, F., Reynolds, A.C., 2014. Joint optimization of number of wells, well locations and controls using a gradient-based algorithm. Chemical Engineering Research and Design 92, 1315--1328.
 
+\leavevmode\vadjust pre{\hypertarget{ref-goldberg1988}{}}%
+Goldberg, D.E., Holland, J.H., 1988. Genetic algorithms and machine learning.
+
+\leavevmode\vadjust pre{\hypertarget{ref-holland1975}{}}%
+Holland, J., 1975. Adaptation in natural and artificial systems, university of michigan press, ann arbor,{''}. Cité page 100.
+
 \leavevmode\vadjust pre{\hypertarget{ref-holland1992b}{}}%
 Holland, J.H., 1992a. Adaptation in natural and artificial systems: An introductory analysis with applications to biology, control, and artificial intelligence. MIT press.
 
@@ -817,6 +882,9 @@ Jesmani, M., Bellout, M.C., Hanea, R., Foss, B., 2016. Well placement optimizati
 \leavevmode\vadjust pre{\hypertarget{ref-li2012}{}}%
 Li, L., Jafarpour, B., 2012. A variable-control well placement optimization for improved reservoir development. Computational Geosciences 16, 871--889.
 
+\leavevmode\vadjust pre{\hypertarget{ref-mitchell1998}{}}%
+Mitchell, M., 1998. An introduction to genetic algorithms. MIT press.
+
 \leavevmode\vadjust pre{\hypertarget{ref-mohaghegh2006}{}}%
 Mohaghegh, S.D., Guruswamy, S., 2006. Development of Surrogate Reservoir Models (SRM) for Fast-Track Analysis of Complex Reservoirs. San Antonio, Texas, U.S.A, p. 9.
 
@@ -831,6 +899,9 @@ Sampaio, T.P., 2009. An Application of Feed Forward Neural Network as Nonlinear 
 
 \leavevmode\vadjust pre{\hypertarget{ref-sayarpour2008}{}}%
 Sayarpour, M., 2008. Development and application of capacitance-resistive models to water/CO? floods (PhD thesis).
+
+\leavevmode\vadjust pre{\hypertarget{ref-scrucca2013}{}}%
+Scrucca, L., 2013. GA: A Package for Genetic Algorithms in R. Journal of Statistical Software 53, 1--37. doi:\href{https://doi.org/10.18637/jss.v053.i04}{10.18637/jss.v053.i04}
 
 \leavevmode\vadjust pre{\hypertarget{ref-volkov2018}{}}%
 Volkov, O., Bellout, M.C., 2018. Gradient-based constrained well placement optimization. Journal of Petroleum Science and Engineering 171, 1052--1066.

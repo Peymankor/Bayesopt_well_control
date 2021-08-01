@@ -69,6 +69,8 @@ library(patchwork)
 library(gridExtra)
 library(tidyverse)
 
+library(ParBayesianOptimization)
+
 ```
 
 ```{r onedplot, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Plot of 1-D equation with blue dash line representing the global optimum", warning=FALSE, out.width="90%"}
