@@ -1,0 +1,95 @@
+---
+title: "test_latex"
+author: "Peyman Kor"
+date: "7/14/2021"
+output:
+  pdf_document: default
+  html_document: default
+bibliography:
+- mybibfile.bib
+- paper1.bib
+---
+
+
+```{=tex}
+\begin{equation}
+\begin{aligned}
+& \underset{x}{\text{maximize}}
+& & f(x) \\
+& \text{subject to}
+& & x \subseteq \chi
+\end{aligned}
+\label{eq:1deq}
+\end{equation}
+```
+
+```{=tex}
+\begin{equation}
+V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^t(gbest_j-X_{ij}^{t})
+\label{eq:pso}
+\end{equation}
+```
+```{=tex}
+\begin{equation}
+X_{ij}^{t+1} = X_{ij}^{t} + V_{ij}^{t+1}
+\label{eq:psoup}
+\end{equation}
+```
+As the \@ref(eq:npvopt_rep) suggest, the $\overline{J}(u)$ need some parameters to be defined. The oil price ($P_o$), water production cost ($p_{wp}$) and water injection cost ($P_{wi}$) in $dollar/m^3$ has been provided in the Table \@ref(tab:npt). Also, in this work the cash flow is disconted daily and the discount factor is avilable in the \@ref(tab:npvparam). We would like to note that in this work due to avoid further computional burden in optimization process, 10 realizations of the egg model has been considered, therefore $n_e=10$ in Equation \@ref(eq:npvopt_rep).
+
+```{r npt, echo=FALSE}
+library(tidyverse)
+library(kableExtra)
+price_data <- tibble(item_1=c("P_o","P_wp","P_wi"),
+                     price=c("315","47.5","12.5"),
+                     item_2=c("b","D","n_e"),
+                     price2=c("8%","365","10"))
+
+colnames(price_data) <- c("Item","Pric", "Items", "Value")
+#price_data %>%  kableExtra::kable(format = "html", escape = FALSE) %>%
+#    kable_styling()
+kbl(price_data, format = "latex", caption = "Required Parameters needed for calculation of Expected NPV")%>%
+  kable_styling(position = "center", latex_options = "HOLD_position", full_width = T)
+```
+
+```{r}
+ga_param <- data.frame(parameters = c("Population Size", "Probability of crossover", "Probability of mutation", "Number of best fitness individuals to survive"), value = c(25, "80%", "20%", "5%"))
+
+pso_param <- data.frame(parameters = c("Size of the swarm", "Local exploration constant", "Global exploration constant"), value = c(25, "5+log(2)", "5+log(2)"))
+
+param_table <- rbind(pso_param, ga_param)
+  
+kbl(param_table, booktabs = T, format = "latex")%>%
+  #kable_paper("striped", full_width = F) %>%
+  pack_rows("PSO", 1, 3) %>%
+  pack_rows("GA", 4, 7) %>% 
+  kable_styling(position = "center", full_width = T, latex_options ="HOLD_position")
+
+```
+
+```{r}
+bo_max <- c(max(bo_12345_npv_result), 
+             max(bo_1234_npv_result), max(bo_123_npv_result))
+
+
+pso_max <- c(max(pso_12345_npv_result), max(pso_1234_npv_result), max(pso_123_npv_result))
+
+ga_max <- c(max(ga_12345_npv_result), max(ga_1234_npv_result), mean(ga_123_npv_result))
+
+tibbel_analyze <- tibble(methods= c("Bayesian Optimization", "Particle Swarm Optimization", 
+                                    "Genetic Alghorithm Optimization"),
+                         Median_max_NPV=c(median(bo_max),median(pso_max),median(ga_max)),
+                         required_simulation= c(50, 250,250))
+
+colnames(tibbel_analyze) <- c("Optimization Method","Maximum Achieved NPV (median)", "#$\\bar{m}_1$")
+
+tibbel_analyze %>%  kableExtra::kable(format = "latex", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"  # of $\\overline{J}(u)$ Evaluations")) %>% 
+    kable_styling() %>% 
+  column_spec(3, background = "blue")
+
+
+```
+```
+
+
+The underlying challenge in well-control optimization during field development is flow simulation of 3D model containing large number of grid cells is computationally expensive. Even worse,in robust optimization, where flow simulation need to be conducted over hundred(s) of geological realization, performing a proper optimization workflow becomes impractical in many real world cases. In this work, to alleviate this computational burden, a new sample efficient optimization is presented where the workflow is appropriate for the cases of objective functions either cannot be exploited or are nonexistent. Such situation typically arise when the objective function is computed as the result of solving large number of partial differential equations, such as reservoir-flow simulation. Sample efficiency in this context means that workflow needs minimum number of forward model evaluation (flow-simulation in the case of reservoir optimization) while capable to capture the global optimum of the objective function. To put it simply, in this workflow, "Bayesian Optimization", first using a proper design experiment, objective function for samples of decision variables are computed. Then, a probabilistic model is built over these initial samples, and sequentially balancing exploration-exploitation, a new decision variable is queried from the probabilistic model and flow simulation is run for query point. Later, the output of the flow-simulation is assimilated back to the probabilistic model, to update the model over the objective function, and this process continues until termination criteria. To validate the workflow, first a 1-D problem is optimized through the workflow which is a useful to gain better insight about the workflow considering being 1-D problem. Then, the workflow has been applied to 3-D, synthetic reservoir model, "Egg Reservoir Model" to perform optimization in the realistic field scenario, in the robust optimization setting. Finally, the comparison of the workflow with other two commonly used algorithm in reservoir optimization literature, namely Particle Swarm Intelligence (PSO) and Genetic Algorithm (GA) has been performed. The results of the comparison show the the Bayesian Optimization workflow presented here could reach the same(close) global optimum point achieved with GA and PSO, yet reduce computationally complexity of the optimization 5X, which could be a significant, in the case of the real world 3D optimization task, potentially taking days (months) of CPU running.
