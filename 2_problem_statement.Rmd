@@ -15,6 +15,7 @@ In general, an optimization task can be defined as a search process for the maxi
 \label{eq:globalopt}
 \end{equation}
 ```
+
 In Figure \@ref(fig:optglobal) we can see some examples where the surface of $f$ could be challenging to be optimized. The surfaces on the left side need careful attention to avoid getting stuck in local optima. Figures on the right side show presence of saddle area, where the gradient of function $f$ is zero, in some cases in only one direction, possibly all directions. In this work, the focus is on the type of objective function $f$, which is challenging to optimize because of the following three difficulties:
 
 -   $f$ is explicitly unknown. This is a typical case in reservoir optimization problems where the Net Present Value (NPV) or Recovery Factor (RF) is computed through solving a vast number of partial differential equations through flow simulation. Thus, a precise analytical expression for the objective function is not available, avoiding the applicability of techniques that exploit the analytical expression of the objective function.
