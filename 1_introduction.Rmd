@@ -15,6 +15,38 @@ Probably as first use of gradient free method in oil and gas industry [@harding1
 
 Generalized Pattern-search (GPS) methods [@torczon1997; @dennisa] are another types of gradient free techinques has been has been apliied in well control optimization problem. Pattern-search method relies on polling, at any particular iteration a stencil is centered at the current solution. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the cost function, the stencil is moved to one of these new solutions. GPS and including variante of it (Mesh Adaptive direct search) usually considered as local search methods but due to ability to parallization, it has been a one of the favorite method in well control optimization. [@echeverríaciaurri2010; @asadollahi2014; @foroud2016; @nwachukwu2018a]. To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of [@isebor2013; @debrito2020].
 
+## Survey of surrogate-based papers in Onepetro database
+
+In the previous section we reviewed commonly used optimization algorithm in well control optimization. However, it should be noted that even with low cost optimization method like Enopt, still performing full RO optimization with full physic reservoir simulators computationally prohibitive (we will discuss about detail of this computational burden more in Section 2) .[@hong2017a] To make RO feasible, two general approaches have been introduced. First set of techniques targets the flow problem . These methods include capistance-resistance models [@hong2017b; @yousef2006a; @zhao2015a], deep-learning and machine learning surrogates [@kim2021a; @nwachukwu2018c; @kim2020; @chai2021a] and reduced-physics simulations [@debrito2020a; @nasir2021; @møyner2014]. This generally entails approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or with a model based on simplified flow physics . To get insight how this line of research is evolving , we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with "one" of following keyword in their abstract:
+
+1.  "Proxy" + " Optimization" + "Reservoir"
+2.  "Surrogate" + "Optimization" + " Reservoir"
+3.  "Reduced-physics model" + "Optimization" + " Reservoir"
+
+The time period of 1995-2020 were considered. As the \@ref(fig:onepetroanalysis) just around 10 years ago in this research area we had around \~ 10 papers per year, now that number is around 3 times more. Part of this interest in developing "physic-reduced model" could be attributed to development in machine learning community and transferring knowledge for building data-driven model for subsurface application.
+
+```{r onepetroanalysis, echo=FALSE, fig.retina = 2, fig.align="center", message=FALSE, warning=FALSE, results='hide', fig.cap="Counting the number of papers with the keyword in their abstract vs year"}
+
+library(tidyverse)
+library(lubridate)
+
+paper_count_df_indyear <- readRDS("processed_data/data_paper_counts.RDS")
+
+paper_count_df_indyear_seperate_year <- paper_count_df_indyear %>% 
+  mutate(year = year(Year)) %>% 
+  filter(year>1999)
+
+ggplot(data=paper_count_df_indyear_seperate_year, aes(year,Papers_Per_YEAR)) +
+  geom_bar(stat="identity", fill="darkblue", color="red") +
+  geom_text(aes(label = Papers_Per_YEAR), vjust = -0.2, size = 5,
+            position = position_dodge(0.9)) +
+  scale_x_continuous(breaks = seq(2000,2020,2), limits = c(1999,2021)) +
+  ylab("# Published Papers") +
+  xlab("Year") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
 -   small function value f(x) with least search cost there are two conflicting objectives
 
 -   Global Optimiation [\^1]
