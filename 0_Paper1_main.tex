@@ -138,6 +138,42 @@ On the other hand, gradient free methods represent a useful alternative when gra
 
 Probably as first use of gradient free method in oil and gas industry (Harding et al., 1998) applied genetic algorithm (GA) to production scheduling of linked oil and gas field. Comparison study was performed and they showed the GA outperform simulated annealing (SA) and sequential quadratic programming (SQP) techniques,as well as a hybrid of the two. GA was utilized later by (Almeida et al., 2007) for the optimization of control valves in the intelligent wells They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, (Lushpeev and Margarit, 2018) applied Particle Swarm Optimization (PSO) to real case field to find optimum injection mode for brown field. Control variables were the change in injection rates of 3 injectors and results of field experiments shows the improve in relative recovery after applying the modified solution's of optimization algorithm.
 
+Generalized Pattern-search (GPS) methods (Dennis, n.d.; Torczon, 1997) are another types of gradient free techinques has been has been apliied in well control optimization problem. Pattern-search method relies on polling, at any particular iteration a stencil is centered at the current solution. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the cost function, the stencil is moved to one of these new solutions. GPS and including variante of it (Mesh Adaptive direct search) usually considered as local search methods but due to ability to parallization, it has been a one of the favorite method in well control optimization. (Asadollahi et al., 2014; Echeverría Ciaurri et al., 2010; Foroud and Seifi, 2016; Nwachukwu et al., 2018a). To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of (de Brito and Durlofsky, 2020; Isebor et al., 2013).
+
+\hypertarget{survey-of-surrogate-based-papers-in-onepetro-database}{%
+\subsection{Survey of surrogate-based papers in Onepetro database}\label{survey-of-surrogate-based-papers-in-onepetro-database}}
+
+In the previous section we reviewed commonly used optimization algorithm in well control optimization. However, it should be noted that even with low cost optimization method like Enopt, still performing full RO optimization is computationally prohibitive (we will discuss about detail of this computational burden more in Section 2). To make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. This generally entails approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or with a model based on simplifed flow physics. To get insight how this line of research is evolving , we did a small text mining task.Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with ``one'' of following keyword in their abstract:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  ``Proxy'' + '' Optimization'' + ``Reservoir''
+\item
+  ``Surrogate'' + ``Optimization'' + '' Reservoir''
+\item
+  ``Reduced-physics model'' + ``Optimization'' + '' Reservoir''
+\end{enumerate}
+
+The time period of 1995-2020 were considered. As the \ref{fig:onepetroanalysis}
+
+\begin{figure}
+
+{\centering \includegraphics[width=468px]{0_Paper1_main_files/figure-latex/onepetroanalysis-1} 
+
+}
+
+\caption{Counting the number of papers with the keyword in their abstract vs year}\label{fig:onepetroanalysis}
+\end{figure}
+
+\begin{itemize}
+\item
+  small function value f(x) with least search cost there are two conflicting objectives
+\item
+  Global Optimiation {[}\^{}1{]}
+\end{itemize}
+
 --\textgreater{}
 
 \hypertarget{survey-of-surrogate--based-papers-in-onepetro-database}{%
@@ -201,7 +237,7 @@ As mentioned above, Equation \eqref{eq:npvdet} lacks to capture the uncertainty 
 
 Where in Equation \eqref{eq:npvopt} contrary to Equation \eqref{eq:npvdet}, there is not one, rather \(n_e\) geological realizations, each of them written as \(G_{re}\). In this work, the objective is to optimize the Equation \eqref{eq:npvopt}, where it is simply EV value of NPV defined in \eqref{eq:npvdet} over all realizations.\\
 
-It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021a; Hong et al., 2017a; Nwachukwu et al., 2018). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
+It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021a; Hong et al., 2017a; Nwachukwu et al., 2018b). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
 
 The rest of this paper will be arguing that the Bayesian Optimization workflow has especial strength to deal with the three difficulties described above. Where the workflow needs to capture the optimum global point (area) while having a small forward evaluation budget.
 
@@ -794,17 +830,26 @@ Almeida, B.S.G. de, Leite, V.C., 2019. Particle Swarm Optimization: A Powerful T
 \leavevmode\vadjust pre{\hypertarget{ref-almeida2007}{}}%
 Almeida, L.F., Tupac, Y.J., Pacheco, M.A.C., Vellasco, M.M.B.R., Lazo, J.G.L., 2007. Latin American \& Caribbean Petroleum Engineering Conference. OnePetro. doi:\href{https://doi.org/10.2118/107872-MS}{10.2118/107872-MS}
 
+\leavevmode\vadjust pre{\hypertarget{ref-asadollahi2014}{}}%
+Asadollahi, M., Nævdal, G., Dadashpour, M., Kleppe, J., 2014. Production optimization using derivative free methods applied to Brugge field case. Journal of Petroleum Science and Engineering 114, 22--37. doi:\href{https://doi.org/10.1016/j.petrol.2013.12.004}{10.1016/j.petrol.2013.12.004}
+
 \leavevmode\vadjust pre{\hypertarget{ref-chai2021}{}}%
 Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
 
 \leavevmode\vadjust pre{\hypertarget{ref-chen2009}{}}%
 Chen, Y., Oliver, D.S., Zhang, D., 2009. Efficient ensemble-based closed-loop production optimization. SPE Journal 14, 634--645. doi:\href{https://doi.org/10.2118/112873-PA}{10.2118/112873-PA}
 
+\leavevmode\vadjust pre{\hypertarget{ref-debrito2020}{}}%
+de Brito, D.U., Durlofsky, L.J., 2020. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
+
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2021}{}}%
 de Brito, D.U., Durlofsky, L.J., 2021b. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
 
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2021a}{}}%
 de Brito, D.U., Durlofsky, L.J., 2021a. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
+
+\leavevmode\vadjust pre{\hypertarget{ref-dennisa}{}}%
+Dennis, J.E., n.d. A rigorous framework for optimization of expensive functions by surrogates 13.
 
 \leavevmode\vadjust pre{\hypertarget{ref-do2013}{}}%
 Do, S.T., Reynolds, A.C., 2013. Theoretical connections between optimization algorithms based on an approximate gradient. Computational Geosciences 17, 959--973. doi:\href{https://doi.org/10.1007/s10596-013-9368-9}{10.1007/s10596-013-9368-9}
@@ -814,6 +859,12 @@ Eberhart, R., Kennedy, J., 1995a. A new optimizer using particle swarm theory. I
 
 \leavevmode\vadjust pre{\hypertarget{ref-eberhart1995a}{}}%
 Eberhart, R., Kennedy, J., 1995b. A new optimizer using particle swarm theory. Ieee, pp. 39--43.
+
+\leavevmode\vadjust pre{\hypertarget{ref-echeverruxedaciaurri2010}{}}%
+Echeverría Ciaurri, D., Isebor, O.J., Durlofsky, L.J., 2010. Application of derivative-free methodologies to generally constrained oil production optimization problems. Procedia Computer Science, ICCS 2010 1, 1301--1310. doi:\href{https://doi.org/10.1016/j.procs.2010.04.145}{10.1016/j.procs.2010.04.145}
+
+\leavevmode\vadjust pre{\hypertarget{ref-foroud2016}{}}%
+Foroud, T., Seifi, A., 2016. A Guided Pattern Search with a non-intrusive reduced order modeling for oil production optimization: Brugge field case study. Journal of Petroleum Science and Engineering 147, 570--584. doi:\href{https://doi.org/10.1016/j.petrol.2016.09.026}{10.1016/j.petrol.2016.09.026}
 
 \leavevmode\vadjust pre{\hypertarget{ref-forouzanfar2014}{}}%
 Forouzanfar, F., Reynolds, A.C., 2014. Joint optimization of number of wells, well locations and controls using a gradient-based algorithm. Chemical Engineering Research and Design 92, 1315--1328.
@@ -839,6 +890,9 @@ Hong, A.J., Bratvold, R.B., Nævdal, G., 2017b. Robust production optimization w
 \leavevmode\vadjust pre{\hypertarget{ref-hong2017a}{}}%
 Hong, A.J., Bratvold, R.B., Nævdal, G., 2017a. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
 
+\leavevmode\vadjust pre{\hypertarget{ref-isebor2013}{}}%
+Isebor, O.J., Ciaurri, D.E., Durlofsky, L.J., 2013. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/163631-MS}{10.2118/163631-MS}
+
 \leavevmode\vadjust pre{\hypertarget{ref-jansen2014}{}}%
 Jansen, J.D., Fonseca, R.M., Kahrobaei, S., Siraj, M.M., Essen, G.M.V., Hof, P.M.J.V. den, 2014. The egg model {\textendash} a geological ensemble for reservoir simulation. Geoscience Data Journal 1, 192--195. doi:\href{https://doi.org/10.1002/gdj3.21}{10.1002/gdj3.21}
 
@@ -858,7 +912,10 @@ Mitchell, M., 1998. An introduction to genetic algorithms. MIT press.
 Murphy, K.P., 2022. Probabilistic machine learning: An introduction. MIT Press.
 
 \leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018}{}}%
-Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018b. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+
+\leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018a}{}}%
+Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018a. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
 
 \leavevmode\vadjust pre{\hypertarget{ref-sarma2005}{}}%
 Sarma, P., Aziz, K., Durlofsky, L.J., 2005. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/92864-MS}{10.2118/92864-MS}
@@ -868,6 +925,9 @@ Scrucca, L., 2013. GA: A Package for Genetic Algorithms in R. Journal of Statist
 
 \leavevmode\vadjust pre{\hypertarget{ref-stordal2016}{}}%
 Stordal, A.S., Szklarz, S.P., Leeuwenburgh, O., 2016. A Theoretical look at Ensemble-Based Optimization in Reservoir Management. Mathematical Geosciences 48, 399--417. doi:\href{https://doi.org/10.1007/s11004-015-9598-6}{10.1007/s11004-015-9598-6}
+
+\leavevmode\vadjust pre{\hypertarget{ref-torczon1997}{}}%
+Torczon, V., 1997. On the convergence of pattern search algorithms. SIAM Journal on Optimization 7, 1--25. doi:\href{https://doi.org/10.1137/S1052623493250780}{10.1137/S1052623493250780}
 
 \leavevmode\vadjust pre{\hypertarget{ref-vanessen2009}{}}%
 van Essen, G.M., Zandvliet, M.J., Jansen, J.D., 2009. Robust Waterflooding Optimization of Multiple Geological Scenarios. SPE Journal 9.
