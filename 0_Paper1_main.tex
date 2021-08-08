@@ -128,22 +128,22 @@
 
 \doublespacing
 
-Well control optimization can be defined as given a pre-defined objective function, what are the best set of control decisions to make. The objective function is usually net present value or total oil recovery. These functions, generally rely on a reservoir simulator for the evaluation of proposed well control decision for the period of reservoir life cycle. On the other hand, the control decisions to make are usually well rates or bottom-hole pressure (BHPs). Given the objective function and decision to make to maximize the objective, the uncertainty in geological model are considered through optimizing the objective function over hundred(s) of geological realization. Known, as Robust optimization, Within RO, the geological uncertainties are represented by a set of realizations (i.e., an ensemble). The objective of RO is to find a control vector (e.g., a water injection scheme) the goal is to maximize the expected value of the objective function in contrast to deterministic case, where sources of uncertainty in geological model is ignored. Well control optimization typically poses challenges as the objective function is non-linear and non-convex, expensive to evaluate. Also, in RO setting, the optimization problem becomes computionally demanding as not one, rather many of geological models must be considered.This renders the optimization computationally expensive, if not prohibitive, in large-scale systems where (potentially) hundreds of wells are involved.
+Well control optimization (also known as production optimization) can be defined as making the best decision for a set of control variables in continuous space, given a pre-defined objective function. The objective function generally relies on a reservoir simulator to evaluate the proposed well control decision for the period of the reservoir life cycle. On the other hand, the control decisions are usually well injection/production rates or bottom-hole pressure (BHPs). Given the objective function and alternatives, uncertainties are represented by a set of geological realizations (i.e., an ensemble). Known, as Robust Optimization (RO), within RO, the objective is to find a control vector to maximize the expected value of the objective function over geological uncertainty in contrast to deterministic case, where the sources of uncertainty in geological model is ignored. Well control optimization typically poses challenges as the objective function is non-linear and non-convex. Moreover, the optimization problem becomes computationally demanding in the RO setting as many geological models must be considered. This renders the optimization computationally expensive, if not prohibitive, in large-scale systems where (potentially) hundreds of wells are involved.
 
-Literature of well control optimization can be viewed from two angles. In first the focus is what type of optimization algorithm have been used for this type of problem. Broadly, speaking the type of optimization algorithm could be divided two categories, gradient based and gradient-free.
+Literature of well control optimization can be viewed from two angles. At first, the focus is on the type of optimization algorithm used for this type of problem. Broadly speaking, the type of optimization algorithm could be divided into two categories, gradient-based and gradient-free.
 
-(Sarma et al., 2005) applied adjoint-gradient based optimization to waterflooding problems. (van Essen et al., 2009) optimized hydrocarbon production under geological uncertainty (in RO setting), where an adjoint-based method is used for obtaining the gradient information. The adjoint-based procedure is more efficient because it uses gradients that are constructed efficiently from the underlying simulator. However, he adjoint-based method requires access to the source code of the reservoir simulator, which is seldom available for commercial simulators, and it is computationally intensive. Chen et al. (2009) introduced the ensemble-based optimization method (EnOpt), in which the gradient is approximated by the covariance between the objective function values and the control variables. Do and Reynolds (2013) analyzed the theoretical connections between EnOpt and other approximate gradient-based optimization methods. Having realized that it is unnecessary to approximate the ensemble mean to the sample mean as was done by Chen et al. (2009), Do and Reynolds (2013) used the ensemble mean in their EnOpt formulation. Stordal et al. (2016) had a theoretical look at Enopt formulation and showed that Enopt is as special case of ell-defined natural evolution strategy known as Gaussian Mutation. It is special case from this perspective that that EnOpt of Gaussian Mutation without evolution of covariance matrix \(\sum\) of multivariate Gaussian density.
+(Sarma et al., 2005) applied adjoint-gradient based optimization to waterflooding problem. (van Essen et al., 2009) optimized hydrocarbon production under geological uncertainty (in RO setting), where an adjoint-based method is used for obtaining the gradient information. The adjoint-based procedure is more efficient because it uses gradients that are constructed efficiently from the underlying simulator. However, the adjoint-based method requires access to the source code of the reservoir simulator, which is seldom available for commercial simulators, and it is computationally intensive. Chen et al. (2009) introduced the ensemble-based optimization method (EnOpt), in which the gradient is approximated by the covariance between the objective function values and the control variables. Do and Reynolds (2013) analyzed the theoretical connections between EnOpt and other approximate gradient-based optimization methods. Having realized that it is unnecessary to approximate the ensemble mean to the sample mean as was done by Chen et al. (2009), Do and Reynolds (2013) used the ensemble mean in their EnOpt formulation. Stordal et al. (2016) had a theoretical look at EnOpt formulation and showed that EnOpt is a special case of well-defined natural evolution strategy known as Gaussian Mutation. It is a special case from this perspective that EnOpt is Gaussian Mutation without the evolution of covariance matrix \((\sum)\) of multivariate Gaussian density.
 
-On the other hand, gradient free methods represent a useful alternative when gradients are not available or are too expensive to compute. Can be divided into two major classes, stochastic and pettern search, these methods are noninvasive with respect to the simulator, though they are usually less efficient and require a larger number of function evaluations than adjoint-gradient methods.
+On the other hand, gradient-free methods represent a useful alternative when gradients are not available or are too expensive to compute. It can be divided into two major classes, stochastic and pattern search; these methods are noninvasive with respect to the simulator, though they are usually less efficient and require a larger number of function evaluations than adjoint-gradient methods.
 
-Probably as first use of gradient free method in oil and gas industry (Harding et al., 1998) applied genetic algorithm (GA) to production scheduling of linked oil and gas field. Comparison study was performed and they showed the GA outperform simulated annealing (SA) and sequential quadratic programming (SQP) techniques,as well as a hybrid of the two. GA was utilized later by (Almeida et al., 2007) for the optimization of control valves in the intelligent wells They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, (Lushpeev and Margarit, 2018) applied Particle Swarm Optimization (PSO) to real case field to find optimum injection mode for brown field. Control variables were the change in injection rates of 3 injectors and results of field experiments shows the improve in relative recovery after applying the modified solution's of optimization algorithm.
+Probably the first use of the gradient-free method for subsurface application, (Harding et al., 1998) applied genetic algorithm (GA) to production scheduling of linked oil and gas fields. A Comparison study was performed, and they showed the GA outperforms simulated annealing (SA) and sequential quadratic programming (SQP) techniques, and a hybrid of the two. GA was utilized later by (Almeida et al., 2007) for the optimization of control valves in the intelligent wells. They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, (Lushpeev and Margarit, 2018) applied Particle Swarm Optimization (PSO) to a real field case to find optimum injection mode for the mature field. Control variables were the change in injection rates of 3 injectors, and results of field experiments show the improvement in relative recovery after applying the modified solution of the optimization algorithm.
 
-Generalized Pattern-search (GPS) methods (Dennis, n.d.; Torczon, 1997) are another types of gradient free techinques has been has been apliied in well control optimization problem. Pattern-search method relies on polling, at any particular iteration a stencil is centered at the current solution. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the cost function, the stencil is moved to one of these new solutions. GPS and including variante of it (Mesh Adaptive direct search) usually considered as local search methods but due to ability to parallization, it has been a one of the favorite method in well control optimization. (Asadollahi et al., 2014; Echeverría Ciaurri et al., 2010; Foroud and Seifi, 2016; Nwachukwu et al., 2018a). To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of (de Brito and Durlofsky, 2020; Isebor et al., 2013).
+Generalized Pattern-search (GPS) methods (Dennis, n.d.; Torczon, 1997) are another types of gradient-free techniques has been applied in well control optimization problem. The pattern-search method relies on polling; a stencil is centered at the current solution at any particular iteration. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the objective function, the stencil is moved to one of these new solutions. GPS, including its variant (Mesh Adaptive Direct Search), is usually considered a local search method, but due to its ability to parallelize, it has been well used in the literature of well control optimization. (Asadollahi et al., 2014; Echeverría Ciaurri et al., 2010; Foroud and Seifi, 2016; Nwachukwu et al., 2018a). To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of (de Brito and Durlofsky, 2020a; Isebor et al., 2013).
 
 \hypertarget{survey-of-surrogate-based-papers-in-onepetro-database}{%
 \subsection{Survey of surrogate-based papers in Onepetro database}\label{survey-of-surrogate-based-papers-in-onepetro-database}}
 
-In the previous section we reviewed commonly used optimization algorithm in well control optimization. However, it should be noted that even with low cost optimization method like Enopt, still performing full RO optimization is computationally prohibitive (we will discuss about detail of this computational burden more in Section 2). To make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. This generally entails approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or with a model based on simplifed flow physics. To get insight how this line of research is evolving , we did a small text mining task.Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with ``one'' of following keyword in their abstract:
+In the previous section, we reviewed commonly used optimization algorithms in well control optimization. However, it should be noted that even with a more efficient optimization method like EnOpt, still performing full RO optimization with full physic reservoir simulators is computationally prohibitive (we will discuss the detail of this computational burden more in Section 2) (Hong et al., 2017a). In order to make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. These methods include capacitance-resistance models (Hong et al., 2017b; Yousef, 2006; Zhao et al., 2015), deep-learning and machine learning surrogates (Chai et al., 2021a; Kim et al., 2020; Kim and Durlofsky, 2021; Nwachukwu et al., 2018b) and reduced-physics simulations (de Brito and Durlofsky, 2020b; Møyner et al., 2014; Nasir et al., 2021). These methods generally entail approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or a model based on simplified flow physics. To get insight into how this line of research is evolving, we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with ``one'' of the following keywords in their abstract:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -156,7 +156,7 @@ In the previous section we reviewed commonly used optimization algorithm in well
   ``Reduced-physics model'' + ``Optimization'' + '' Reservoir''
 \end{enumerate}
 
-The time period of 1995-2020 were considered. As the \ref{fig:onepetroanalysis}
+The period of 1995-2020 was considered. As Figure \ref{fig:onepetroanalysis} reveals, we see that just around ten years ago in this research area we had around \textasciitilde{} 10 papers per year, now that number is around three times more. Part of this interest in developing a ``physic-reduced model'' could be attributed to development in machine learning research and transferring knowledge for building data-driven models for subsurface applications.
 
 \begin{figure}
 
@@ -167,17 +167,9 @@ The time period of 1995-2020 were considered. As the \ref{fig:onepetroanalysis}
 \caption{Counting the number of papers with the keyword in their abstract vs year}\label{fig:onepetroanalysis}
 \end{figure}
 
-\begin{itemize}
-\item
-  small function value f(x) with least search cost there are two conflicting objectives
-\item
-  Global Optimiation {[}\^{}1{]}
-\end{itemize}
+In this work, we propose Bayesian Optimization (BO). We will show that BO, as a gradient-free method, has characteristics of the global optimization method in escaping local optima or saddle area. While, at the same time, the workflow overcomes the typical downside of gradient-free methods, which is need for many function evaluations. Due to utilizing the probabilistic model to mimic the expensive objective function, BO workflow is inherently efficient, meaning that a minimum number of function evaluations is needed to achieve a near-optimum solution. To validate this idea, we compared the BO with two other gradient-free, global optimization techniques (PSO, GA) while showing BO reaches similar (same) solutions while using only 20\% of function evaluations, compared to the other two algorithms. We would like to refer to the results of the ``OLYMPUS Optimization Benchmark Challenge'' (Fonseca et al., 2020) where the gradient-free methods showed the best performance in achieving the highest NPV, but participants mentioned the pain of these methods as they carry huge computational burden due to large function evaluation (Chang et al., 2020; Pinto et al., 2020; Silva et al., 2020). In light of benchmark results, bringing the efficiency to the gradient-free optimization category is a significant contribution, presented in this work.
 
---\textgreater{}
-
-\hypertarget{survey-of-surrogate--based-papers-in-onepetro-database}{%
-\subsection{Survey of surrogate -based papers in onepetro database}\label{survey-of-surrogate--based-papers-in-onepetro-database}}
+In Section 2 (``Problem Statement''), we will describe the underlying problem in well control optimization and the need for efficient optimization to deal with the enormous computational burden of optimization. In Section 3 (``Bayesian Optimization Workflow''), we will lay out the mathematical background of the BO workflow. In section 4, ``Examples Cases,'' BO workflow is applied to two numerical cases. The first one is a 1-D example where we guide our audience with a step-by-step process about applying BO. The second numerical example is the field case. Where BO is applied to a 3-D synthetic geological model for optimizing injection scheme in eight injectors. In section 5, ``Comparison with other Alternatives,'' a comparison of the BO with two global optimization techniques, PSO and GA, is presented. The paper ends with ``Concluding Remarks'' in section 6.
 
 \newpage
 
@@ -237,9 +229,9 @@ As mentioned above, Equation \eqref{eq:npvdet} lacks to capture the uncertainty 
 
 Where in Equation \eqref{eq:npvopt} contrary to Equation \eqref{eq:npvdet}, there is not one, rather \(n_e\) geological realizations, each of them written as \(G_{re}\). In this work, the objective is to optimize the Equation \eqref{eq:npvopt}, where it is simply EV value of NPV defined in \eqref{eq:npvdet} over all realizations.\\
 
-It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021a; Hong et al., 2017a; Nwachukwu et al., 2018b). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
+It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021a; Hong et al., 2017a; Nwachukwu et al., 2018c). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
 
-The rest of this paper will be arguing that the Bayesian Optimization workflow has especial strength to deal with the three difficulties described above. Where the workflow needs to capture the optimum global point (area) while having a small forward evaluation budget.
+The rest of this paper will be arguing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described above. Where the workflow needs to capture the optimum global point (area) while having a small forward evaluation budget.
 
 \newpage
 
@@ -596,7 +588,7 @@ In this section, the BayesOpt workflow is applied to the synthetic 3D reservoir 
 \caption{Well locations in Egg model, blue ones are injection, the red producers}\label{fig:eggbase}
 \end{figure}
 
-The 3D model has eight water injectors and four producers wells shown in Figure \ref{fig:eggbase}. The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \ref{fig:combine}.(Hong et al., 2017b).
+The 3D model has eight water injectors and four producers wells shown in Figure \ref{fig:eggbase}. The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \ref{fig:combine}.(Hong et al., 2017c).
 
 Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \ref{fig:combine} .All the wells are vertical and completed in all seven layers. Capillary pressure is ignored. The reservoir rock is assumed to be incompressible. The model has a life-cycle of 10 years. Here, the injection rate to be maiintaned over life-cycle of reservoir is going to be optimized. Thus, given eight injection wellls, the optimizatijon workflow has the eight dimnetions.However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, making the box-constrain optimization. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
@@ -711,7 +703,7 @@ To further continue thiss dicussion on the effect of initialization on the final
 \hypertarget{bayesopt-performance-versus-other-alternatives}{%
 \section{BayesOpt performance versus other alternatives}\label{bayesopt-performance-versus-other-alternatives}}
 
-In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021b) - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) (Chai et al., 2021; Holland, 1992a) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995a; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.(Eberhart and Kennedy, 1995b; Holland, 1992b)
+In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021b) - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) (Chai et al., 2021b; Holland, 1992a) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995a; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.(Eberhart and Kennedy, 1995b; Holland, 1992b)
 
 \hypertarget{particle-swarm-optimization-pso}{%
 \subsection{Particle Swarm Optimization (PSO)}\label{particle-swarm-optimization-pso}}
@@ -834,13 +826,22 @@ Almeida, L.F., Tupac, Y.J., Pacheco, M.A.C., Vellasco, M.M.B.R., Lazo, J.G.L., 2
 Asadollahi, M., Nævdal, G., Dadashpour, M., Kleppe, J., 2014. Production optimization using derivative free methods applied to Brugge field case. Journal of Petroleum Science and Engineering 114, 22--37. doi:\href{https://doi.org/10.1016/j.petrol.2013.12.004}{10.1016/j.petrol.2013.12.004}
 
 \leavevmode\vadjust pre{\hypertarget{ref-chai2021}{}}%
-Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
+Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021b. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
+
+\leavevmode\vadjust pre{\hypertarget{ref-chai2021a}{}}%
+Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021a. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
+
+\leavevmode\vadjust pre{\hypertarget{ref-chang2020}{}}%
+Chang, Y., Nffivdal, G., Lorentzen, R.J., 2020. SPE Norway Subsurface Conference. SPE, Virtual, p. D021S008R002. doi:\href{https://doi.org/10.2118/200743-MS}{10.2118/200743-MS}
 
 \leavevmode\vadjust pre{\hypertarget{ref-chen2009}{}}%
 Chen, Y., Oliver, D.S., Zhang, D., 2009. Efficient ensemble-based closed-loop production optimization. SPE Journal 14, 634--645. doi:\href{https://doi.org/10.2118/112873-PA}{10.2118/112873-PA}
 
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2020}{}}%
-de Brito, D.U., Durlofsky, L.J., 2020. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
+de Brito, D.U., Durlofsky, L.J., 2020a. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
+
+\leavevmode\vadjust pre{\hypertarget{ref-debrito2020a}{}}%
+de Brito, D.U., Durlofsky, L.J., 2020b. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
 
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2021}{}}%
 de Brito, D.U., Durlofsky, L.J., 2021b. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
@@ -862,6 +863,9 @@ Eberhart, R., Kennedy, J., 1995b. A new optimizer using particle swarm theory. I
 
 \leavevmode\vadjust pre{\hypertarget{ref-echeverruxedaciaurri2010}{}}%
 Echeverría Ciaurri, D., Isebor, O.J., Durlofsky, L.J., 2010. Application of derivative-free methodologies to generally constrained oil production optimization problems. Procedia Computer Science, ICCS 2010 1, 1301--1310. doi:\href{https://doi.org/10.1016/j.procs.2010.04.145}{10.1016/j.procs.2010.04.145}
+
+\leavevmode\vadjust pre{\hypertarget{ref-fonseca2020}{}}%
+Fonseca, R.M., Rossa, E.D., Emerick, A.A., Hanea, R.G., Jansen, J.D., 2020. Introduction to the special issue: Overview of OLYMPUS Optimization Benchmark Challenge. Computational Geosciences 24, 1933--1941. doi:\href{https://doi.org/10.1007/s10596-020-10003-4}{10.1007/s10596-020-10003-4}
 
 \leavevmode\vadjust pre{\hypertarget{ref-foroud2016}{}}%
 Foroud, T., Seifi, A., 2016. A Guided Pattern Search with a non-intrusive reduced order modeling for oil production optimization: Brugge field case study. Journal of Petroleum Science and Engineering 147, 570--584. doi:\href{https://doi.org/10.1016/j.petrol.2016.09.026}{10.1016/j.petrol.2016.09.026}
@@ -885,10 +889,13 @@ Holland, J.H., 1992a. Adaptation in natural and artificial systems: An introduct
 Holland, J.H., 1992b. Adaptation in natural and artificial systems: An introductory analysis with applications to biology, control, and artificial intelligence. MIT press.
 
 \leavevmode\vadjust pre{\hypertarget{ref-hong2017cg}{}}%
-Hong, A.J., Bratvold, R.B., Nævdal, G., 2017b. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
+Hong, A.J., Bratvold, R.B., Nævdal, G., 2017c. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
 
 \leavevmode\vadjust pre{\hypertarget{ref-hong2017a}{}}%
 Hong, A.J., Bratvold, R.B., Nævdal, G., 2017a. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
+
+\leavevmode\vadjust pre{\hypertarget{ref-hong2017b}{}}%
+Hong, A.J., Bratvold, R.B., Nævdal, G., 2017b. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
 
 \leavevmode\vadjust pre{\hypertarget{ref-isebor2013}{}}%
 Isebor, O.J., Ciaurri, D.E., Durlofsky, L.J., 2013. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/163631-MS}{10.2118/163631-MS}
@@ -899,6 +906,12 @@ Jansen, J.D., Fonseca, R.M., Kahrobaei, S., Siraj, M.M., Essen, G.M.V., Hof, P.M
 \leavevmode\vadjust pre{\hypertarget{ref-jesmani2016}{}}%
 Jesmani, M., Bellout, M.C., Hanea, R., Foss, B., 2016. Well placement optimization subject to realistic field development constraints. Computational Geosciences 20, 1185--1209. doi:\href{https://doi.org/10.1007/s10596-016-9584-1}{10.1007/s10596-016-9584-1}
 
+\leavevmode\vadjust pre{\hypertarget{ref-kim2020}{}}%
+Kim, J., Yang, H., Choe, J., 2020. Robust optimization of the locations and types of multiple wells using CNN based proxy models. Journal of Petroleum Science and Engineering 193, 107424. doi:\href{https://doi.org/10.1016/j.petrol.2020.107424}{10.1016/j.petrol.2020.107424}
+
+\leavevmode\vadjust pre{\hypertarget{ref-kim2021a}{}}%
+Kim, Y.D., Durlofsky, L.J., 2021. A Recurrent Neural Network{\textendash}Based Proxy Model for Well-Control Optimization with Nonlinear Output Constraints. SPE Journal 1--21. doi:\href{https://doi.org/10.2118/203980-PA}{10.2118/203980-PA}
+
 \leavevmode\vadjust pre{\hypertarget{ref-li2012}{}}%
 Li, L., Jafarpour, B., 2012. A variable-control well placement optimization for improved reservoir development. Computational Geosciences 16, 871--889.
 
@@ -908,20 +921,35 @@ Lushpeev, V., Margarit, A., 2018. OPTIMIZATION OF OIL FIELD DEVELOPMENT PROCESS 
 \leavevmode\vadjust pre{\hypertarget{ref-mitchell1998}{}}%
 Mitchell, M., 1998. An introduction to genetic algorithms. MIT press.
 
+\leavevmode\vadjust pre{\hypertarget{ref-muxf8yner2014}{}}%
+Møyner, O., Krogstad, S., Lie, K.-A., 2014. The application of flow diagnostics for reservoir management. SPE Journal 20, 306--323. doi:\href{https://doi.org/10.2118/171557-PA}{10.2118/171557-PA}
+
 \leavevmode\vadjust pre{\hypertarget{ref-murphy2022}{}}%
 Murphy, K.P., 2022. Probabilistic machine learning: An introduction. MIT Press.
 
+\leavevmode\vadjust pre{\hypertarget{ref-nasir2021}{}}%
+Nasir, Y., Volkov, O., Durlofsky, L.J., 2021. A two-stage optimization strategy for large-scale oil field development. Optimization and Engineering. doi:\href{https://doi.org/10.1007/s11081-020-09591-y}{10.1007/s11081-020-09591-y}
+
 \leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018}{}}%
-Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018b. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018c. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
 
 \leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018a}{}}%
 Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018a. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+
+\leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018c}{}}%
+Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018b. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+
+\leavevmode\vadjust pre{\hypertarget{ref-pinto2020}{}}%
+Pinto, J.W.O., Tueros, J.A.R., Horowitz, B., da Silva, S.M.B.A., Willmersdorf, R.B., de Oliveira, D.F.B., 2020. Gradient-free strategies to robust well control optimization. Computational Geosciences 24, 1959--1978. doi:\href{https://doi.org/10.1007/s10596-019-09888-7}{10.1007/s10596-019-09888-7}
 
 \leavevmode\vadjust pre{\hypertarget{ref-sarma2005}{}}%
 Sarma, P., Aziz, K., Durlofsky, L.J., 2005. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/92864-MS}{10.2118/92864-MS}
 
 \leavevmode\vadjust pre{\hypertarget{ref-scrucca2013}{}}%
 Scrucca, L., 2013. GA: A Package for Genetic Algorithms in R. Journal of Statistical Software 53, 1--37. doi:\href{https://doi.org/10.18637/jss.v053.i04}{10.18637/jss.v053.i04}
+
+\leavevmode\vadjust pre{\hypertarget{ref-silva2020}{}}%
+Silva, V.L.S., Cardoso, M.A., Oliveira, D.F.B., de Moraes, R.J., 2020. Stochastic optimization strategies applied to the OLYMPUS benchmark. Computational Geosciences 24, 1943--1958. doi:\href{https://doi.org/10.1007/s10596-019-09854-3}{10.1007/s10596-019-09854-3}
 
 \leavevmode\vadjust pre{\hypertarget{ref-stordal2016}{}}%
 Stordal, A.S., Szklarz, S.P., Leeuwenburgh, O., 2016. A Theoretical look at Ensemble-Based Optimization in Reservoir Management. Mathematical Geosciences 48, 399--417. doi:\href{https://doi.org/10.1007/s11004-015-9598-6}{10.1007/s11004-015-9598-6}
@@ -934,6 +962,12 @@ van Essen, G.M., Zandvliet, M.J., Jansen, J.D., 2009. Robust Waterflooding Optim
 
 \leavevmode\vadjust pre{\hypertarget{ref-volkov2018}{}}%
 Volkov, O., Bellout, M.C., 2018. Gradient-based constrained well placement optimization. Journal of Petroleum Science and Engineering 171, 1052--1066.
+
+\leavevmode\vadjust pre{\hypertarget{ref-yousef2006a}{}}%
+Yousef, A.A., 2006. A Capacitance Model To Infer Interwell Connectivity From Production- and Injection-Rate Fluctuations 17.
+
+\leavevmode\vadjust pre{\hypertarget{ref-zhao2015a}{}}%
+Zhao, H., Kang, Z., Zhang, X., Sun, H., Cao, L., Reynolds, A.C., 2015. SPE Reservoir Simulation Symposium. Society of Petroleum Engineers, Houston, Texas, USA. doi:\href{https://doi.org/10.2118/173213-MS}{10.2118/173213-MS}
 
 \end{CSLReferences}
 
