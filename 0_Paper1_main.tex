@@ -138,12 +138,12 @@ On the other hand, gradient-free methods represent a useful alternative when gra
 
 Probably the first use of the gradient-free method for subsurface application, (Harding et al., 1998) applied genetic algorithm (GA) to production scheduling of linked oil and gas fields. A Comparison study was performed, and they showed the GA outperforms simulated annealing (SA) and sequential quadratic programming (SQP) techniques, and a hybrid of the two. GA was utilized later by (Almeida et al., 2007) for the optimization of control valves in the intelligent wells. They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, (Lushpeev and Margarit, 2018) applied Particle Swarm Optimization (PSO) to a real field case to find optimum injection mode for the mature field. Control variables were the change in injection rates of 3 injectors, and results of field experiments show the improvement in relative recovery after applying the modified solution of the optimization algorithm.
 
-Generalized Pattern-search (GPS) methods (Dennis, n.d.; Torczon, 1997) are another types of gradient-free techniques has been applied in well control optimization problem. The pattern-search method relies on polling; a stencil is centered at the current solution at any particular iteration. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the objective function, the stencil is moved to one of these new solutions. GPS, including its variant (Mesh Adaptive Direct Search), is usually considered a local search method, but due to its ability to parallelize, it has been well used in the literature of well control optimization. (Asadollahi et al., 2014; Echeverría Ciaurri et al., 2010; Foroud and Seifi, 2016; Nwachukwu et al., 2018a). To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of (de Brito and Durlofsky, 2020a; Isebor et al., 2013).
+Generalized Pattern-search (GPS) methods (Dennis, n.d.; Torczon, 1997) are another types of gradient-free techniques has been applied in well control optimization problem. The pattern-search method relies on polling; a stencil is centered at the current solution at any particular iteration. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the objective function, the stencil is moved to one of these new solutions. GPS, including its variant (Mesh Adaptive Direct Search), is usually considered a local search method, but due to its ability to parallelize, it has been well used in the literature of well control optimization. (Asadollahi et al., 2014; Echeverría Ciaurri et al., 2010; Foroud and Seifi, 2016; Nwachukwu et al., 2018). To overcome the locality of the GPS methods, hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of (de Brito and Durlofsky, 2020; Isebor et al., 2013).
 
 \hypertarget{survey-of-surrogate-based-papers-in-onepetro-database}{%
 \subsection{Survey of surrogate-based papers in Onepetro database}\label{survey-of-surrogate-based-papers-in-onepetro-database}}
 
-In the previous section, we reviewed commonly used optimization algorithms in well control optimization. However, it should be noted that even with a more efficient optimization method like EnOpt, still performing full RO optimization with full physic reservoir simulators is computationally prohibitive (we will discuss the detail of this computational burden more in Section 2) (Hong et al., 2017a). In order to make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. These methods include capacitance-resistance models (Hong et al., 2017b; Yousef, 2006; Zhao et al., 2015), deep-learning and machine learning surrogates (Chai et al., 2021a; Kim et al., 2020; Kim and Durlofsky, 2021; Nwachukwu et al., 2018b) and reduced-physics simulations (de Brito and Durlofsky, 2020b; Møyner et al., 2014; Nasir et al., 2021). These methods generally entail approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or a model based on simplified flow physics. To get insight into how this line of research is evolving, we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with ``one'' of the following keywords in their abstract:
+In the previous section, we reviewed commonly used optimization algorithms in well control optimization. However, it should be noted that even with a more efficient optimization method like EnOpt, still performing full RO optimization with full physic reservoir simulators is computationally prohibitive (we will discuss the detail of this computational burden more in Section 2) (Hong et al., 2017). In order to make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. These methods include capacitance-resistance models (Hong et al., 2017; Yousef, 2006; Zhao et al., 2015), deep-learning and machine learning surrogates (Chai et al., 2021; Kim et al., 2020; Kim and Durlofsky, 2021; Nwachukwu et al., 2018) and reduced-physics simulations (de Brito and Durlofsky, 2020; Møyner et al., 2014; Nasir et al., 2021). These methods generally entail approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or a model based on simplified flow physics. To get insight into how this line of research is evolving, we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with ``one'' of the following keywords in their abstract:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -229,7 +229,7 @@ As mentioned above, Equation \eqref{eq:npvdet} lacks to capture the uncertainty 
 
 Where in Equation \eqref{eq:npvopt} contrary to Equation \eqref{eq:npvdet}, there is not one, rather \(n_e\) geological realizations, each of them written as \(G_{re}\). In this work, the objective is to optimize the Equation \eqref{eq:npvopt}, where it is simply EV value of NPV defined in \eqref{eq:npvdet} over all realizations.\\
 
-It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021a; Hong et al., 2017a; Nwachukwu et al., 2018c). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
+It is well defined in the literature that optimizing Equation \eqref{eq:npvopt} is computationally prohibitive (de Brito and Durlofsky, 2021; Hong et al., 2017; Nwachukwu et al., 2018). Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the \(q_o, q_{wp}, q_{wi}\); the flow simulation must be enumerated over all realizations \(n_e\) to compute \(\overline{J}(u)\). Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E\&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, \(D=10\). The geology team of the enterprise comes up with 100 geological realizations of the model.(\(n_e=100\)). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \textasciitilde1hr. Then, simply having 100 realizations means that each forward computation of \(\overline{J}(u)\) takes around \textasciitilde100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is\(\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50\) is around 50. The budget of only \(50\) forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable \(\mathbf{u}\), could be discretized into ten possible cases, then total available solutions for this optimization problem will be \(\text {Number of all possible solutions} = 10^{10}\). As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\\
 
 The rest of this paper will be arguing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described above. Where the workflow needs to capture the optimum global point (area) while having a small forward evaluation budget.
 
@@ -241,76 +241,90 @@ The rest of this paper will be arguing that the Bayesian Optimization workflow i
 \hypertarget{overal-view}{%
 \subsection{Overal View}\label{overal-view}}
 
-Workflow to perform global optimization of multimodal black-box
-functions:
+Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is build based on a finite number of function evaluations. These finite number of evaluations is done as initialization of the workflow and build a probabilistic model.
+
+After initialization and building a probabilistic model, at each iteration, a new query point is evaluated using the the expensive objective function, then the new data \((u,f(u))\) is assimilated back to probabilistic model to update the model.The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of both decision space exploration and exploitation.
+
+\hypertarget{gaussian-process}{%
+\subsection{Gaussian Process}\label{gaussian-process}}
+
+In this work, we employ the widely used Gaussian process (GP) as the probabilistic model. Known also as surrogate model (since it tries to mimic the real, expensive objective function), GPs are attractive because they are computationally tracible with capability to quantity the the uncertainty of interest (Murphy, 2022; Rasmussen and Williams, 2006). A Gaussian process can be seen as an extension of the Gaussian distribution to the functional space. Key Assumption in (GP) is that: the function values at a set of \(M > 0\) inputs, \(\mathbf{J} = [J({u_1}), ...,J(u_M)]\), is jointly Gaussian, with mean and Covariance defined as:
 
 \begin{itemize}
+\tightlist
 \item
-  Step 1. Choose some initial design points and build a probabilistic
-  model over the space of possible objective \(f\), this probabilistic
-  model serves as prior.
-\item
-  Step 2. Combine prior and the likelihood to get a posterior of
-  probabilistic model over the objective given some observations.
-\item
-  Step 3. Use the posterior to decide where to take the next
-  evaluation \(\bf{x^*}\) according to some policy for decision making.
-\item
-  Step 4. Evaluet the \(f\) at \(\bf{x^*}\) and augment it to the initial
-  data, in step 1.
+  Note: Here we use the objective function pdescribed in prvious section with the natotaon \(\overline{J}(\mathbf{u})\), where \(\mathbf{u}\) is control variables. However, just for simplicity in notation, we drop the bar sign and write objective function with \(J(\mathbf{u})\).
 \end{itemize}
-
-Iterate between 2 and 4 until the evaluation budget is over. \#\# 3.1
-Gaussian Process
-
-\newpage
-
-\hypertarget{step-1.-probalistic-model-as-prior}{%
-\subsubsection{Step 1. Probalistic Model as Prior}\label{step-1.-probalistic-model-as-prior}}
-
-\hypertarget{gaussian-process-gp}{%
-\paragraph{Gaussian Process (GP)}\label{gaussian-process-gp}}
-
-reference to the book (Murphy, 2022)
-
-Key Assumption in (GP) is that: the function values at a set of \(M > 0\)
-inputs, \(\bf{f} = [f(x_1), ...,f(x_M)]\), is jointly Gaussian, with mean
-and Covariance
-
-\begin{equation}
-(\mu = m(x_1),...m(x_M))
-\sum_{i,j}= \kappa(x_i,x_j)
-\label{eq:mean_cov}
-\end{equation}
-
-and \(\kappa\) is a positive definite (Mercer) kernel. Suppose we have a
-initial design points, set \(\mathcal{D} = {(x_n, y_n) : n = 1 : N}\),
-where \(y_n = f(x_n)\) is the noise-free observation of the function
-evaluated at \(x\).
-
-Now we consider the case of predicting the outputs for new inputs that
-may not be in \(\mathcal{D}\).
-
-\begin{equation}
-\bf{f_{*}} = [f(x_1),.., f(x_{N_{*}})]
-\label{eq:pred_fun}
-\end{equation}
-
-By definition of the GP, the joint distribution \(p(\bf{f_X},f|X,X_*)\)
-has the following form:
-
-\begin{equation}
-\begin{bmatrix}  {\bf {f}_X}  \\  {{\bf f}_*} \end{bmatrix} \sim\mathcal{N} \begin{pmatrix} (\begin{bmatrix}  {{\bf \mu}_X}  \\  {{\bf \mu}_*} \end{bmatrix}),\begin{bmatrix} {{\bf K}_{X,X}}  & {{\bf
-K}_{X,*}}  \\  {{\bf \mathbf{K}^\intercal}_{X,*}} & {{\bf K}_{*,*} } \end{bmatrix}\end{pmatrix}
-\label{eq:gp_model}
-\end{equation}
 
 \begin{equation}
   \begin{split}
-\mu_X = [m(x_1),...,m(x_N)] \\ 
-\mu^\ast = [m(x^\ast_1,...m(x^\ast_N))]
+& \mathbf{\mu(u)} = [\mu(u_1),\cdots,\mu(u_M)] \\
+& \text{Cov}(J(\mathbf{u}),J(\mathbf{u'}))= \kappa(\mathbf{u},\mathbf{u'})
   \end{split}
-\label{eq:mu_val}
+\label{eq:mean_cov}
+\end{equation}
+
+where \(\mathbf{\mu(u)}\) is a mean function and \(\kappa(\mathbf{u},\mathbf{u'})\) is a covariance function (or kernel). being specified is the similarity between two values of a function evaluated on each object A GP is a distribution over functions completely defined by its mean covariance function as:
+
+\begin{equation}
+J(\mathbf{u}) \sim \mathcal{N}(\mathbf{\mu(u)}, \kappa{u,u'})
+\label{eq:mean_cov_gp}
+\end{equation}
+
+where N denotes the normal distribution. For simplicity we assume the prior mean function to be zero: m (x) = 0. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. The following covariance functions are considered in this work (Shahriari et al.~2015): being specified is the similarity between two values of a function evaluated on each object A. There are many other choices of covariance functions available which may be better suited to a
+
+\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
+\toprule
+Covariance Kernels & assumeing $h=||x-x'||$\\
+\midrule
+Gaussain & $\Large \kappa (u,u') =\sigma_f^2 exp(-\frac{h^2}{2\ell^2})$\\
+Matern $\mu=\frac{5}{2}$ & $\Large \kappa (u,u') =\sigma_f^2(1 + \frac{\sqrt{5}|h|}{\ell}\frac{5h^2}{3\ell^2})exp(-\frac{ -\sqrt{5}|h|}{\ell})$\\
+Matern $\mu=\frac{3}{2}$ & $\Large \kappa (u,u') =\sigma_f^2(1 + \frac{\sqrt{3}|h|}{\ell})exp(-\frac{-\sqrt{3}|h|}{\ell})$\\
+Exponetial & $\Large \kappa (u,u') =\sigma_f^2 exp(-\frac{|h|}{\ell})$\\
+Power-Exponetial & $\Large \kappa (u,u') =\sigma_f^2 exp(-(\frac{|h|}{\ell})^p)$\\
+\bottomrule
+\end{tabu}
+
+In this work:
+
+\begin{equation}
+\kappa (u,u') =\sigma_f^2(1 + \frac{\sqrt{5}|h|}{\ell}\frac{5h^2}{3\ell^2})exp(-\frac{-\sqrt{5}|h|}{\ell})
+\label{eq:kernels}
+\end{equation}
+
+Where \(\ell\) lengthscale, and \(h\) is eludian distance of \(u\), \(u'\) (\(|h|^2=(u-u')^\intercal(u-u')\)). Given \(N\) observations of the objective function \(J(u)\) at points \(x_i\), the complete covariance/kernel matrix is given by:
+
+Since we assume this holds for any \(M>0\) this includes the case where , where \(M=N+1\), containig \(N\) training points \(u_n\) and 1 test point \(x^*\) Thus we can infer \(f(u^*)\) from knowledge of \(f(x_1), \cdots,f(x_N)\) by manupulating the joint gaussian distribution \(p(f(x1), \cdots, f(xn), f(x*))\)
+
+\begin{equation}
+\left (
+\begin{array}{ccc}
+\begin{array}{l}
+\kappa(\mathbf{u_1},\mathbf{u_2})
+\end{array}
+& \cdots & 
+\begin{array}{l}
+\kappa(\mathbf{u_1},\mathbf{u_N})
+\end{array} \\
+\vdots & \ddots & \vdots\\
+\begin{array}{l}
+\kappa(\mathbf{u_N},\mathbf{u_1})
+\end{array} &
+\cdots & 
+\begin{array}{l}
+\kappa(\mathbf{u_N},\mathbf{u_N})
+\end{array} 
+\end{array}
+\right )
+\label{eq:kernel_struct}
+\end{equation}
+
+Suppose we observe a training set \(\mathcal{D}={(u_n,J(u_n) : n=1:N )}\) g, where \(J(u_n)\) is the noise-free observation of the function evaluated at \(u_n\). Now we consider the case of predicting the outputs for new inputs that may not be in \(\mathcal{D}\). Specifically, given a test set (prediction set) set \(U^*\) of size \(N_* \times D\), we want to predict the function outputs \(J^* = [J(u_1),\cdots, J(x_{N_*})]\). By definition of the GP, the joint distribution \(p(f(X); f^*(J_X); X^*)\) has the following form
+
+\begin{equation}
+\begin{bmatrix}  {\bf {J}_U}  \\  {{\bf J}_*} \end{bmatrix} \sim \mathcal{N} \begin{pmatrix} (\begin{bmatrix}  {{\bf \mu}_U}  \\  {{\bf \mu}_*} \end{bmatrix}),\begin{bmatrix} {{\bf K}_{X,X}}  & {{\bf
+K}_{U,*}}  \\  {{\bf \mathbf{K}^\intercal}_{X,*}} & {{\bf K}_{*,*} } \end{bmatrix}\end{pmatrix}
+\label{eq:gp_model}
 \end{equation}
 
 \begin{equation}
@@ -320,23 +334,6 @@ K_{X,\ast} = {\Large \kappa} (X,X_\ast; \theta), \; \; \; \; \; \ size (N \times
 K_{\ast,\ast} = {\Large \kappa} (X_\ast, X_\ast; \theta), \; \; \; \; \; \ size(N_\ast \times N_\ast)
  \end{split}
 \label{eq:cov_sign}
-\end{equation}
-
-\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
-\toprule
-Covariance Kernels & assumeing $h=||x-x'||$\\
-\midrule
-Gaussain & $\Large \kappa (x,x') =\sigma_f^2 exp(-\frac{h^2}{2\ell^2})$\\
-Matern $\mu=\frac{5}{2}$ & $\Large \kappa (x,x') =\sigma_f^2(1 + \frac{\sqrt{5}|h|}{\ell}\frac{5h^2}{3\ell^2})exp(-\frac{ -\sqrt{5}|h|}{\ell})$\\
-Matern $\mu=\frac{3}{2}$ & $\Large \kappa (x,x') =\sigma_f^2(1 + \frac{\sqrt{3}|h|}{\ell})exp(-\frac{-\sqrt{3}|h|}{\ell})$\\
-Exponetial & $\Large \kappa (x,x') =\sigma_f^2 exp(-\frac{|h|}{\ell})$\\
-Power-Exponetial & $\Large \kappa (x,x') =\sigma_f^2 exp(-(\frac{|h|}{\ell})^p)$\\
-\bottomrule
-\end{tabu}
-
-\begin{equation}
-{\Large \kappa} (x,x'; ;\theta) = (1 + \frac{\sqrt{5}|h|}{\theta} + \frac{5h^2}{3\theta^2})exp(-\frac{-\sqrt{5}|h|}{\theta}
-\label{eq:pred_fun1}
 \end{equation}
 
 \hypertarget{covariance-kernel-parameter-estimation}{%
@@ -352,166 +349,18 @@ p(y|\bf{X,\theta}) = \int p(y|\bf{f,X})p(f|\bf{X,\theta})
 \label{eq:log_like}
 \end{equation}
 
-Where the dependence of the \(\bf{K}_{X,X}\) on \(\theta\) is implicit.The
-gradient-based optimizer is performed in order to:
+Where the dependence of the \(\bf{K}_{X,X}\) on \(\theta\) is implicit.The gradient-based optimizer is performed in order to:
 
 \begin{equation}
 [\zeta^\ast, \sigma_f^{2\ast}]=argmax\mathcal{L}(\zeta,\sigma^2_f)
 \label{eq:log_like_opt}
 \end{equation}
 
-However, since the objective \(\mathcal{L}\) is not convex, local minima
-can be a problem, so we may need to use multiple restarts.
+However, since the objective \(\mathcal{L}\) is not convex, local minima can be a problem, so we may need to use multiple restarts.
 
-\hypertarget{step-2.-posterior-of-probabilistic-model}{%
-\subsubsection{Step 2. Posterior of Probabilistic Model}\label{step-2.-posterior-of-probabilistic-model}}
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{posterior-of-gaussain-process-conditioning-on-initial-data}{%
-\paragraph{Posterior of Gaussain Process, (conditioning on initial data)}\label{posterior-of-gaussain-process-conditioning-on-initial-data}}
-
-Here in \ref{fig:gaus-norm}
-
-\begin{figure}
-
-{\centering \includegraphics[width=400px,height=100px]{img/gaus_norm} 
-
-}
-
-\caption{proof of}\label{fig:gaus-norm}
-\end{figure}
-
-\begin{equation}
-p(f_\ast|X_\ast,\mathcal{D}) = \mathcal{N}(f_\ast|{{\bf \mu}_\ast} , \scriptsize{\sum}_{\ast}\normalsize)
-\label{eq:post_proba}
-\end{equation}
-
-\begin{equation}
-  \begin{split}
-{{\bf \mu}_\ast}=m(\bf X_\ast) +{\bf \mathbf{K}^\intercal}_{X,*}{\bf \mathbf{K}^{-1}}_{X,X}(f_X-m(X)) \\
-\scriptsize{\sum}_{\ast}=\normalsize{\mathbf{K}_{\ast,\ast}-\mathbf{K}^\intercal_{X,\ast}\mathbf{K}_{X,X}^{-1}\mathbf{K}_{X,\ast}}
-  \end{split}
-\label{eq:post_mean_cov}
-\end{equation}
-
-\hypertarget{example-of-step.1-and-step.2}{%
-\subsubsection{Example of Step.1 and Step.2}\label{example-of-step.1-and-step.2}}
-
-Assume \(X=[0,3,5,6]\) and \(f_X=sin(X)\), giving \(\mathcal{D}=(X,f_X)\).
-What is \(p(f_\ast|X_\ast,\mathcal{D})\)
-
-\begin{figure}
-\includegraphics[width=1\linewidth]{0_Paper1_main_files/figure-latex/guass-1-1} \caption{Gaussin Process Regression conditioned on 4 points}\label{fig:guass-1}
-\end{figure}
-
-Now we sample the point \(X=1\), and add to \(\mathcal{D}\)
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth,height=0.5\textheight]{0_Paper1_main_files/figure-latex/guass-2-1} 
-
-}
-
-\caption{Gaussin Process Regression conditioned on 5 points}\label{fig:guass-2}
-\end{figure}
-
-\hypertarget{step.3-deciding-on-next-bfxast-based-on-posterior}{%
-\subsubsection{\texorpdfstring{Step.3 Deciding on next \(\bf{x}^\ast\) based on Posterior}{Step.3 Deciding on next \textbackslash bf\{x\}\^{}\textbackslash ast based on Posterior}}\label{step.3-deciding-on-next-bfxast-based-on-posterior}}
-
-Posterior of the probalistic model quantify the uncertainty over the
-space of the \(f\). The question is what is the next \(\bf{x}^\ast\) to be
-sampled from the \emph{expensive function}?
-
-Define an utility function to collect new data points satisfying some
-optimality criterion: optimization as decision making.
-
-There are a few of policies in the literature of Bayesopt, here the
-\emph{Expected Improvement (EI)} policy will be used.
-
-\hypertarget{expected-improvement-as-policy-for-decision-making}{%
-\paragraph{Expected Improvement as Policy for Decision Making}\label{expected-improvement-as-policy-for-decision-making}}
-
-In Expected Improvement (EI) policy choose the next query point as the
-one which has the highest expected improvement over the space of the
-\emph{expensive function}
-
-\begin{equation}
-utility(x;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,y-f)p(y|x;\theta,\mathcal{D})
-\label{eq:uti_int}
-\end{equation}
-
-\[utility(x;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,y-f)p(y|x;\theta,\mathcal{D}) \,dy\]
-
-However, we do not have access to the \emph{expensive function}, \(f\),
-therefore we replace the \(f\) with the best available solution found so
-far, \(y^+\)
-
-\begin{equation}
-utility(x;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,y-y^{\dagger})p(y|x;\theta,\mathcal{D}) \,dy
-\label{eq:uti_int_2}
-\end{equation}
-
-\(y^{+}\) : The best solution found in the training dataset \(\mathcal{D}\)
-
-The good news: The analytical form of the utility function is available
-for the gaussian process
-
-\begin{equation}
-\gamma(\mathbf{x})=\frac{\mu(\mathbf{x;\theta,\mathcal{D}})-y^{\dagger}}{\sigma(\mathbf{x;\theta,\mathcal{D}})}
-\label{eq:uti_int_gamma}
-\end{equation}
-
-\begin{equation}
-utility(\mathbf{x};\theta,\mathcal{D})=\alpha_{EI}(x;\theta,\mathcal{D})=(\mu(x;\theta,\mathcal{D})-y^{\dagger})\Phi(\gamma(x)) + \sigma(x;\theta,\mathcal{D})\phi(\gamma(x))
-\label{eq:uti_int2}
-\end{equation}
-
-Where \(\Phi(.)\) and \(\phi(.)\) are CDF and PDF of standard Gaussian
-distribution.
-
-It is too greedy in the context of the sequential decision making.
-Therefore, an explorative term is added as explorative'' parameter
-\(\epsilon\).
-
-\begin{equation}
-\gamma(\mathbf{x})=\frac{\mu(\mathbf{x;\theta,\mathcal{D}})-y^{\dagger}-\epsilon}{\sigma(\mathbf{x;\theta,\mathcal{D}})}
-\label{eq:uti_greed_gamma}
-\end{equation}
-
-\begin{equation}
-\alpha_{EI}(x;\theta,\mathcal{D})=(\mu(x;\theta,\mathcal{D})-y^{\dagger}-\epsilon)\Phi(\gamma(x)) + \sigma(x;\theta,\mathcal{D})\phi(\gamma(x))
-\label{eq:uti_int_gred2}
-\end{equation}
-
-\hypertarget{bo-as-a-mapping-between-two-problems}{%
-\paragraph{BO As a ``mapping'' between two problems}\label{bo-as-a-mapping-between-two-problems}}
-
-BO is an strategy to transform the problem
-
-\begin{equation}
-u_M = \underset{u\in \text{constraints}}{\mathrm{argmax}}\overline{J}(u)
-\label{eq:exp_eq}
-\end{equation}
-
-unsolvabale!
-
-\begin{equation}
-u^{next}=\underset{u\in \text{constraints}}{\mathrm{argmax}} \alpha_{EI}(u;\mathcal{D}_n, \theta^\ast)
-\label{eq:exp-easy}
-\end{equation}
-
-solvabale!
-
-\begin{itemize}
-\tightlist
-\item
-  \(\alpha_{EI}(u)\) is inexpensive to evaluate.
-\item
-  The analytical expression for gradient of \(\alpha_{EI}(u)\) is
-  available.
-\item
-  Still need to find \(u^{next}\), the multi-start BFGS is used for
-  finding \(u^{next}\).
-\end{itemize}
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \newpage
 
@@ -588,7 +437,7 @@ In this section, the BayesOpt workflow is applied to the synthetic 3D reservoir 
 \caption{Well locations in Egg model, blue ones are injection, the red producers}\label{fig:eggbase}
 \end{figure}
 
-The 3D model has eight water injectors and four producers wells shown in Figure \ref{fig:eggbase}. The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \ref{fig:combine}.(Hong et al., 2017c).
+The 3D model has eight water injectors and four producers wells shown in Figure \ref{fig:eggbase}. The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \ref{fig:combine}.(Hong et al., 2017).
 
 Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \ref{fig:combine} .All the wells are vertical and completed in all seven layers. Capillary pressure is ignored. The reservoir rock is assumed to be incompressible. The model has a life-cycle of 10 years. Here, the injection rate to be maiintaned over life-cycle of reservoir is going to be optimized. Thus, given eight injection wellls, the optimizatijon workflow has the eight dimnetions.However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, making the box-constrain optimization. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
@@ -703,12 +552,12 @@ To further continue thiss dicussion on the effect of initialization on the final
 \hypertarget{bayesopt-performance-versus-other-alternatives}{%
 \section{BayesOpt performance versus other alternatives}\label{bayesopt-performance-versus-other-alternatives}}
 
-In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021b) - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) (Chai et al., 2021b; Holland, 1992a) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995a; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.(Eberhart and Kennedy, 1995b; Holland, 1992b)
+In this section the aim is to compare the performance of the Bayesopt workflow with other available optimization algorithm commonly used for reservoir optimization under uncertainty. The literature of field development optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in (Forouzanfar and Reynolds, 2014; Li and Jafarpour, 2012; Volkov and Bellout, 2018) can provide computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.(de Brito and Durlofsky, 2021) - Therefore, in this work two well-know Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) (Chai et al., 2021; Holland, 1992) and Particle Swarm Optimization (PSO) (Eberhart and Kennedy, 1995; Jesmani et al., 2016) have been considered. In this section we provide a brief overview of each methods, but interested readers are refereed to the original papers.(Eberhart and Kennedy, 1995; Holland, 1992)
 
 \hypertarget{particle-swarm-optimization-pso}{%
 \subsection{Particle Swarm Optimization (PSO)}\label{particle-swarm-optimization-pso}}
 
-PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by (Eberhart and Kennedy, 1995a) , Considering a swarm with \(P\) particles, there is a position vector \(X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T\) and a velocity vector \(V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T\) at a \(t\) iteration for each one of the \(i\) particle that composes it. These vectors are updated through the dimension \(j\) according to the following equations:
+PSO is a global stochastic search technique that operates based on analogies to the behaviors of swarms/flocks of living organisms. Originally developed by (Eberhart and Kennedy, 1995) , Considering a swarm with \(P\) particles, there is a position vector \(X_{i}^{t}=(x_{i1},x_{i2}, x_{i3},x_{in})^T\) and a velocity vector \(V^t_i=(v_{i1},v_{i2},v_{i3},v_{in})^T\) at a \(t\) iteration for each one of the \(i\) particle that composes it. These vectors are updated through the dimension \(j\) according to the following equations:
 
 \begin{equation}
 V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^t(gbest_j-X_{ij}^{t})
@@ -734,7 +583,7 @@ In first part of the comparison, we compare the Bayesopt with PSO and GA in fixe
 
 \begin{table}
 
-\caption{\label{tab:unnamed-chunk-11}Parameters of GA and PSO Methods}
+\caption{\label{tab:unnamed-chunk-10}Parameters of GA and PSO Methods}
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
 \toprule
@@ -794,7 +643,7 @@ Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
 
 Comparing the Final Solution \(u\) of the Opt algorithms\ldots(the Median Replication was used)
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-12-1} \end{center}
+\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-11-1} \end{center}
 
 \newpage
 
@@ -806,7 +655,7 @@ Comparing the Final Solution \(u\) of the Opt algorithms\ldots(the Median Replic
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
 
-This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (http://digires.no). We acknowledge the access to Eclipse licenses granted by Schlumberger.
+(Hong et al., 2017) This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (\url{http://digires.no}). We acknowledge the access to Eclipse licenses granted by Schlumberger.
 
 \newpage
 
@@ -826,10 +675,7 @@ Almeida, L.F., Tupac, Y.J., Pacheco, M.A.C., Vellasco, M.M.B.R., Lazo, J.G.L., 2
 Asadollahi, M., Nævdal, G., Dadashpour, M., Kleppe, J., 2014. Production optimization using derivative free methods applied to Brugge field case. Journal of Petroleum Science and Engineering 114, 22--37. doi:\href{https://doi.org/10.1016/j.petrol.2013.12.004}{10.1016/j.petrol.2013.12.004}
 
 \leavevmode\vadjust pre{\hypertarget{ref-chai2021}{}}%
-Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021b. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
-
-\leavevmode\vadjust pre{\hypertarget{ref-chai2021a}{}}%
-Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021a. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
+Chai, Z., Nwachukwu, A., Zagayevskiy, Y., Amini, S., Madasu, S., 2021. An integrated closed-loop solution to assisted history matching and field optimization with machine learning techniques. Journal of Petroleum Science and Engineering 198, 108204. doi:\href{https://doi.org/10.1016/j.petrol.2020.108204}{10.1016/j.petrol.2020.108204}
 
 \leavevmode\vadjust pre{\hypertarget{ref-chang2020}{}}%
 Chang, Y., Nffivdal, G., Lorentzen, R.J., 2020. SPE Norway Subsurface Conference. SPE, Virtual, p. D021S008R002. doi:\href{https://doi.org/10.2118/200743-MS}{10.2118/200743-MS}
@@ -838,28 +684,19 @@ Chang, Y., Nffivdal, G., Lorentzen, R.J., 2020. SPE Norway Subsurface Conference
 Chen, Y., Oliver, D.S., Zhang, D., 2009. Efficient ensemble-based closed-loop production optimization. SPE Journal 14, 634--645. doi:\href{https://doi.org/10.2118/112873-PA}{10.2118/112873-PA}
 
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2020}{}}%
-de Brito, D.U., Durlofsky, L.J., 2020a. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
-
-\leavevmode\vadjust pre{\hypertarget{ref-debrito2020a}{}}%
-de Brito, D.U., Durlofsky, L.J., 2020b. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
+de Brito, D.U., Durlofsky, L.J., 2020. Well control optimization using a two-step surrogate treatment. Journal of Petroleum Science and Engineering 187, 106565. doi:\href{https://doi.org/10.1016/j.petrol.2019.106565}{10.1016/j.petrol.2019.106565}
 
 \leavevmode\vadjust pre{\hypertarget{ref-debrito2021}{}}%
-de Brito, D.U., Durlofsky, L.J., 2021b. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
+de Brito, D.U., Durlofsky, L.J., 2021. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
 
-\leavevmode\vadjust pre{\hypertarget{ref-debrito2021a}{}}%
-de Brito, D.U., Durlofsky, L.J., 2021a. Field development optimization using a sequence of surrogate treatments. Computational Geosciences 25, 35--65. doi:\href{https://doi.org/10.1007/s10596-020-09985-y}{10.1007/s10596-020-09985-y}
-
-\leavevmode\vadjust pre{\hypertarget{ref-dennisa}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-dennis}{}}%
 Dennis, J.E., n.d. A rigorous framework for optimization of expensive functions by surrogates 13.
 
 \leavevmode\vadjust pre{\hypertarget{ref-do2013}{}}%
 Do, S.T., Reynolds, A.C., 2013. Theoretical connections between optimization algorithms based on an approximate gradient. Computational Geosciences 17, 959--973. doi:\href{https://doi.org/10.1007/s10596-013-9368-9}{10.1007/s10596-013-9368-9}
 
 \leavevmode\vadjust pre{\hypertarget{ref-eberhart1995}{}}%
-Eberhart, R., Kennedy, J., 1995a. A new optimizer using particle swarm theory. Ieee, pp. 39--43.
-
-\leavevmode\vadjust pre{\hypertarget{ref-eberhart1995a}{}}%
-Eberhart, R., Kennedy, J., 1995b. A new optimizer using particle swarm theory. Ieee, pp. 39--43.
+Eberhart, R., Kennedy, J., 1995. A new optimizer using particle swarm theory. Ieee, pp. 39--43.
 
 \leavevmode\vadjust pre{\hypertarget{ref-echeverruxedaciaurri2010}{}}%
 Echeverría Ciaurri, D., Isebor, O.J., Durlofsky, L.J., 2010. Application of derivative-free methodologies to generally constrained oil production optimization problems. Procedia Computer Science, ICCS 2010 1, 1301--1310. doi:\href{https://doi.org/10.1016/j.procs.2010.04.145}{10.1016/j.procs.2010.04.145}
@@ -876,26 +713,17 @@ Forouzanfar, F., Reynolds, A.C., 2014. Joint optimization of number of wells, we
 \leavevmode\vadjust pre{\hypertarget{ref-goldberg1988}{}}%
 Goldberg, D.E., Holland, J.H., 1988. Genetic algorithms and machine learning.
 
-\leavevmode\vadjust pre{\hypertarget{ref-harding1998a}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-harding1998}{}}%
 Harding, T.J., Radcliffe, N.J., King, P.R., 1998. Hydrocarbon production scheduling with genetic algorithms. SPE Journal 3, 99--107. doi:\href{https://doi.org/10.2118/36379-PA}{10.2118/36379-PA}
 
 \leavevmode\vadjust pre{\hypertarget{ref-holland1975}{}}%
 Holland, J., 1975. Adaptation in natural and artificial systems, university of michigan press, ann arbor,{''}. Cité page 100.
 
-\leavevmode\vadjust pre{\hypertarget{ref-holland1992b}{}}%
-Holland, J.H., 1992a. Adaptation in natural and artificial systems: An introductory analysis with applications to biology, control, and artificial intelligence. MIT press.
+\leavevmode\vadjust pre{\hypertarget{ref-holland1992}{}}%
+Holland, J.H., 1992. Adaptation in natural and artificial systems: An introductory analysis with applications to biology, control, and artificial intelligence. MIT press.
 
-\leavevmode\vadjust pre{\hypertarget{ref-holland1992c}{}}%
-Holland, J.H., 1992b. Adaptation in natural and artificial systems: An introductory analysis with applications to biology, control, and artificial intelligence. MIT press.
-
-\leavevmode\vadjust pre{\hypertarget{ref-hong2017cg}{}}%
-Hong, A.J., Bratvold, R.B., Nævdal, G., 2017c. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
-
-\leavevmode\vadjust pre{\hypertarget{ref-hong2017a}{}}%
-Hong, A.J., Bratvold, R.B., Nævdal, G., 2017a. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
-
-\leavevmode\vadjust pre{\hypertarget{ref-hong2017b}{}}%
-Hong, A.J., Bratvold, R.B., Nævdal, G., 2017b. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
+\leavevmode\vadjust pre{\hypertarget{ref-hong2017}{}}%
+Hong, A.J., Bratvold, R.B., Nævdal, G., 2017. Robust production optimization with capacitance-resistance model as precursor. Computational Geosciences 21, 1423--1442. doi:\href{https://doi.org/10.1007/s10596-017-9666-8}{10.1007/s10596-017-9666-8}
 
 \leavevmode\vadjust pre{\hypertarget{ref-isebor2013}{}}%
 Isebor, O.J., Ciaurri, D.E., Durlofsky, L.J., 2013. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/163631-MS}{10.2118/163631-MS}
@@ -909,7 +737,7 @@ Jesmani, M., Bellout, M.C., Hanea, R., Foss, B., 2016. Well placement optimizati
 \leavevmode\vadjust pre{\hypertarget{ref-kim2020}{}}%
 Kim, J., Yang, H., Choe, J., 2020. Robust optimization of the locations and types of multiple wells using CNN based proxy models. Journal of Petroleum Science and Engineering 193, 107424. doi:\href{https://doi.org/10.1016/j.petrol.2020.107424}{10.1016/j.petrol.2020.107424}
 
-\leavevmode\vadjust pre{\hypertarget{ref-kim2021a}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-kim2021}{}}%
 Kim, Y.D., Durlofsky, L.J., 2021. A Recurrent Neural Network{\textendash}Based Proxy Model for Well-Control Optimization with Nonlinear Output Constraints. SPE Journal 1--21. doi:\href{https://doi.org/10.2118/203980-PA}{10.2118/203980-PA}
 
 \leavevmode\vadjust pre{\hypertarget{ref-li2012}{}}%
@@ -931,16 +759,13 @@ Murphy, K.P., 2022. Probabilistic machine learning: An introduction. MIT Press.
 Nasir, Y., Volkov, O., Durlofsky, L.J., 2021. A two-stage optimization strategy for large-scale oil field development. Optimization and Engineering. doi:\href{https://doi.org/10.1007/s11081-020-09591-y}{10.1007/s11081-020-09591-y}
 
 \leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018}{}}%
-Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018c. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
-
-\leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018a}{}}%
-Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018a. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
-
-\leavevmode\vadjust pre{\hypertarget{ref-nwachukwu2018c}{}}%
-Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018b. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
+Nwachukwu, A., Jeong, H., Sun, A., Pyrcz, M., Lake, L.W., 2018. SPE Improved Oil Recovery Conference. OnePetro. doi:\href{https://doi.org/10.2118/190239-MS}{10.2118/190239-MS}
 
 \leavevmode\vadjust pre{\hypertarget{ref-pinto2020}{}}%
 Pinto, J.W.O., Tueros, J.A.R., Horowitz, B., da Silva, S.M.B.A., Willmersdorf, R.B., de Oliveira, D.F.B., 2020. Gradient-free strategies to robust well control optimization. Computational Geosciences 24, 1959--1978. doi:\href{https://doi.org/10.1007/s10596-019-09888-7}{10.1007/s10596-019-09888-7}
+
+\leavevmode\vadjust pre{\hypertarget{ref-rasmussen2006}{}}%
+Rasmussen, C.E., Williams, C.K.I., 2006. Gaussian processes for machine learning, Adaptive computation and machine learning. MIT Press, Cambridge, Mass.
 
 \leavevmode\vadjust pre{\hypertarget{ref-sarma2005}{}}%
 Sarma, P., Aziz, K., Durlofsky, L.J., 2005. SPE Reservoir Simulation Symposium. OnePetro. doi:\href{https://doi.org/10.2118/92864-MS}{10.2118/92864-MS}
@@ -963,10 +788,10 @@ van Essen, G.M., Zandvliet, M.J., Jansen, J.D., 2009. Robust Waterflooding Optim
 \leavevmode\vadjust pre{\hypertarget{ref-volkov2018}{}}%
 Volkov, O., Bellout, M.C., 2018. Gradient-based constrained well placement optimization. Journal of Petroleum Science and Engineering 171, 1052--1066.
 
-\leavevmode\vadjust pre{\hypertarget{ref-yousef2006a}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-yousef2006}{}}%
 Yousef, A.A., 2006. A Capacitance Model To Infer Interwell Connectivity From Production- and Injection-Rate Fluctuations 17.
 
-\leavevmode\vadjust pre{\hypertarget{ref-zhao2015a}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-zhao2015}{}}%
 Zhao, H., Kang, Z., Zhang, X., Sun, H., Cao, L., Reynolds, A.C., 2015. SPE Reservoir Simulation Symposium. Society of Petroleum Engineers, Houston, Texas, USA. doi:\href{https://doi.org/10.2118/173213-MS}{10.2118/173213-MS}
 
 \end{CSLReferences}
