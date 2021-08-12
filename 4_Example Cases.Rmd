@@ -365,7 +365,7 @@ In this section, the BayesOpt workflow is applied to the synthetic 3D reservoir 
 knitr::include_graphics("img/egg_base.jpg")
 ```
 
-The 3D model has eight water injectors and four producers wells shown in Figure \@ref(fig:eggbase). The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \@ref(fig:combine).[@hong2017cg].
+The 3D model has eight water injectors and four producers wells shown in Figure \@ref(fig:eggbase). The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \@ref(fig:combine).[@hong2017].
 
 Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \@ref(fig:combine) .All the wells are vertical and completed in all seven layers. Capillary pressure is ignored. The reservoir rock is assumed to be incompressible. The model has a life-cycle of 10 years. Here, the injection rate to be maiintaned over life-cycle of reservoir is going to be optimized. Thus, given eight injection wellls, the optimizatijon workflow has the eight dimnetions.However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, making the box-constrain optimization. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
