@@ -26,7 +26,7 @@ geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
 date: "`r Sys.Date()`"
-bibliography: [mybibfile.bib,paper1.bib, references.bib]
+bibliography: [references.bib]
 linenumbers: true
 numbersections: true
 keywords: "Optimization, Gaussian Process, Probabilistic Modeling, Bayesian"
