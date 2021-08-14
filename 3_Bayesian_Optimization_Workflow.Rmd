@@ -8,7 +8,16 @@ bibliography: references.bib
 
 Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is a inference from a finite number of function evaluations. These finite number of evaluations is done as initialization of the workflow and build a probabilistic model.
 
-After initialization and building a probabilistic model, at each iteration, a new query point is evaluated using the the expensive objective function, then the new data $(u^{new},f(u^{new}))$ is assimilated back to probabilistic model to update the model.The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of both  exploration and exploitation of space of decision.
+After initialization and building a probabilistic model, at each iteration, a new query point is evaluated using the the expensive objective function, then the new data $(u^{new},f(u^{new}))$ is assimilated back to probabilistic model to update the model.The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of both  exploration and exploitation of space of decision. 
+
+In the rest of this section, the objective function is shown with $\overline{J}(\mathbf{u})$, cosnisten with the Equation \@ref(eq:npvopt). However, for simplicity, we drop the bar and writes the $\overline{J}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Morever, $\mathbf{u}$ is the control decision, with dimention of $D$,  $\mathbf{u}=[u_1,\cdots,u_D]$. While, the capital letter, $\mathbf{U}$ is collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
+
+The workflow of BO can bedivides into two steps:
+
+- Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build probabilistic model infered from $\mathcal{D}$
+- Step 2: Deciding on next $\mathbf{u}^{next}$ and evalaute $\mathbf{J(u^{next})}$  based on probalistic model and $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$
+
+After the Step 2, we come back to the Step 1 with the new $\mathcal{D}$ and we itearte this process until we are out of computional budjet. We will explain these two steps n depth, but before we Gaussian Process is introduced, as it is needed as background for explaining the steps.
 
 ## Gaussian Process
 
@@ -24,8 +33,6 @@ In this work, we employ the widely used Gaussian process (GP) as the probabilist
 \end{equation}
 ```
 
-Note: Here we use the objective function described in previous section with the notation $\overline{\mathbf{J(u)}}$, where $\mathbf{u}$ is control variables. However, just for simplicity in notation, we drop the bar sign and write objective function with ${\mathbf{J(u)}}$.
-
 In \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . A GP is a distribution over functions completely defined by its mean and covariance function as:
 
 ```{=tex}
@@ -37,7 +44,7 @@ J(\mathbf{u}) \sim \mathcal{N}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
 
 where $\mathcal{N}$ denotes the multivariate normal distribution. As was discussed in [@shahriari2016] there many choice for the covariance function, most commonly used ones in the literature has been depicted in the Table \@ref(tab:cov-tab).
 
-```{r cov-table, echo=FALSE, message=FALSE, error=FALSE, eval=TRUE, fig.align='center'}
+```{r cov-tab, echo=FALSE, message=FALSE, error=FALSE, eval=TRUE, fig.align='center'}
 library(tidyverse)
 library(kableExtra)
 df <- data.frame(key = c("Gaussain", 
@@ -52,30 +59,30 @@ df <- data.frame(key = c("Gaussain",
 "$\\Large \\kappa (u,u') =\\sigma_f^2 exp(-(\\frac{|h|}{\\ell})^p)$"
 ))
 
-colnames(df) <- c("Covariance Kernels","assumeing $h=||x-x'||$")
+colnames(df) <- c("Covariance Kernels","assumeing $h=||u-u'||$")
 
-kbl(df, booktabs = T,escape = FALSE, format = "html", caption=" Several types of covariance function for the GP process") %>%
+kbl(df, booktabs = T,escape = FALSE, format = "latex", caption=" Several types of covariance function for the GP process") %>%
   kable_styling(position = "center", latex_options = "HOLD_position", full_width = T)
 ```
 
-Where in the Table \@ref(tab:cov-tab), $\ell$ is lengthscale, and $h$ is eludian distance of $u$, $u$. ( Note that $|h|^2=(u-u')^\intercal(u-u')$). In this work, Matern Covariance function with $\nu=\frac{5}{2}$ was employed. 
+Where in the Table \@ref(tab:cov-tab), $\ell$ is lengthscale, and $h$ is eludian distance of $\mathbf{u}$, $\mathbf{u'}$. ( Note that $|h|^2=(\mathbf{u}-\mathbf{u'})^\intercal(\mathbf{u}-\mathbf{u'})$). In this work, Matern Covariance function with $\nu=\frac{5}{2}$ was employed. However, depending to any choice of covariance function, the parameters of  $\ell$, $h$  need to be optimized, as it will be explained later. With this background, BO workflow is explained as follow.
 
-### Step 1. Choose some initial design points to build probalistic model conditional to those points 
+### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build probabilistic model infered from $\mathcal{D}$
 
-Assuming we start GP with finite number of initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the dataset $\mathcal{D}$ as: 
+Assuming we start GP with finite number of initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the dataset $\mathcal{D}$ as:
 
 ```{=tex}
-\begin{align*}
+\begin{align}
   \begin{split}
 \mathbf{U}= & \: [\mathbf{u_1},\cdots,\mathbf{u_N}] \\
 \mathbf{J_U}= & \: [\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}] \\
 \mathcal{D}= & \: \{\mathbf{U},\mathbf{\mathbf{J_U}}\}
   \end{split}
 \label{eq:init-data}
-\end{align*}
+\end{align}
 ```
 
-Now we consider the case of predicting the outputs for new inputs that are not be in $\mathcal{D}$. Specifically, given a test set (prediction set) set $\mathbf{U_*}$ of size $N_* \times D$, we want to predict the function outputs $\mathbf{J_*} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$. By definition of the GP, the joint distribution $p(\mathbf{{J}_{U}}, \mathbf{J}_*| \mathbf{U}, \mathbf{U_*})$ has the following form:
+Now we consider the case of predicting the outputs for new inputs that are not be in $\mathcal{D}$. Specifically, given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$, we want to predict the function outputs $\mathbf{J_*} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$. By definition of the GP, the joint distribution $p(\mathbf{{J}_{U}}, \mathbf{J}_*| \mathbf{U}, \mathbf{U_*})$ has the following form:
 
 ```{=tex}
 \begin{equation}
@@ -85,7 +92,7 @@ K}_{U,*}}  \\  {{\bf \mathbf{K}^\intercal}_{U,*}} & {{\bf K}_{*,*} } \end{bmatri
 \end{equation}
 ```
 
-Where,$m(\mathbf{U})$ is prior knolwdge about mean value of $\mathbf{J_U}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can assume the prior mean function to be zero: $m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have linear trend in the form of:
+Where, $m(\mathbf{U})$ is prior knolwdge about mean value of $\mathbf{J_U}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can assume the prior mean function to be zero: $m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have linear trend in the form of:
 
 
 ```{=tex}
@@ -96,7 +103,7 @@ m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}
 ```
 
 
-The *Gram* matrix, $\mathbf{K}_{U,U}$, is $N \times N$ matrix, with each element is covariance of $\mathbf{u}$ and $\mathbf{u'}$:
+The *Gram* matrix, $\mathbf{K}_{U,U}$, is $\mathbf{N \times N}$ matrix, with each element is covariance of $\mathbf{u}$ and $\mathbf{u'}$:
 
 ```{=tex}
 \begin{equation}
@@ -123,50 +130,64 @@ The *Gram* matrix, $\mathbf{K}_{U,U}$, is $N \times N$ matrix, with each element
 \end{equation}
 ```
 
-By the standard rules for conditioning mutivariate gaussain distribution,we can drive the posterior (conditional distribution of $\mathbf{J(U_*)}$ given the $\mathcal{D}$, in closed form as following:
+By the standard rules for conditioning mutivariate gaussain distribution, we can drive the posterior (conditional distribution of $\mathbf{J(U_*)}$ given the $\mathcal{D}$, in closed form as following:
 
 ```{=tex}
-\begin{align*}
+\begin{align}
   \begin{split}
 p(\mathbf{J}_*|\mathbf{U_*,\mathcal{D})}= & \:  \mathcal{N}(\mathbf{J_*| \mathbf{\mu_*},\textstyle \sum_{\ast}}) \\
 {\mathbf{\mu_\ast}}= & \:  m(\mathbf{U_\ast}) +\mathbf{K}^\intercal_{U,*} \mathbf{K}^{-1}_{U,U}(\mathbf{J}_U-m(\mathbf{U})) \\
 \textstyle \sum_{\ast}=& \:  \normalsize{\mathbf{K}_{\ast,\ast}-\mathbf{K}^\intercal_{U,\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,\ast}}
   \end{split}
-\label{eq:post_mean_cov}
-\end{align*}
+\label{eq:post-mean-cov}
+\end{align}
 ```
 
 #### Parameter Estimation of Covariance Kernel
 
-As it shown in the \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parametrs to be estimated, namely $\sigma^2_f$ and $\ell$.
+
+As it shown in the \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parametrs to be estimated, namely $\sigma^2_f$ and $\ell$. We call these two parameter as kernel parameters and can be shown as
 
 ```{=tex}
 \begin{equation}
-p(y|\bf{X,\theta}) = \int p(y|\bf{f,X})p(f|\bf{X,\theta})
-\label{eq:lig_int}
+\theta=[\sigma_{f}^{2}, \ell]
 \end{equation}
 ```
 
+Here we consider an empirical Bayes approach, which will allow us to use gradient-based optimization methods, which are much faster. In particular, we will maximize the marginal likelihood
+
+
 ```{=tex}
 \begin{equation}
-\text{log} p(y|\bf{X,\theta})=\mathcal{L}(\zeta,\sigma_f^2)=-\frac{1}{2}(y-\mu_X)^{\intercal}\mathbf{K}_{X,X}^{-1}(y-\mu_X)-\frac{1}{2}log|K_{X,X}|-\frac{n}{2}log(2\pi)
+p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})= \int p(\mathbf{y}|\mathbf{J_U})p(\mathbf{J_U}|\mathbf{\theta})d\mathbf{J}
+\label{eq:marg_like_int}
+\end{equation}
+```
+
+The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. The $log$ of marginal likelihood then can be writeen as:
+
+
+```{=tex}
+\begin{equation}
+\text{log} \: p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})=\mathcal{L}(\sigma_f^2,\ell)=-\frac{1}{2}(\mathbf{y}-m(\mathbf{U}))^{\intercal}\mathbf{K}_{U,U}^{-1}(\mathbf{y}-m(\mathbf{U}))-\frac{1}{2}\text{log}|\mathbf{K}_{U,U}|-\frac{N}{2}log(2\pi)
 \label{eq:log_like}
 \end{equation}
 ```
 
-Where the dependence of the $\bf{K}_{X,X}$ on $\theta$ is implicit.The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit.The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
-[\zeta^\ast, \sigma_f^{2\ast}]=argmax\mathcal{L}(\zeta,\sigma^2_f)
+\theta^{\ast}=[\sigma_f^{2\ast}, \ell^{\ast}]=argmax \: \mathcal{L}(\sigma^2_f,\ell)
 \label{eq:log_like_opt}
 \end{equation}
 ```
+
 However, since the objective $\mathcal{L}$ is not convex, local minima can be a problem, so we may need to use multiple restarts.
 
-### Step.2 Deciding on next $\bf{u}^{next}$ based on brobalistic model
+### Step.2 Deciding on next $\mathbf{u}^{next}$ based on probalistic model
 
-Posterior of the probalistic model quantify the uncertainty over the space of the unknown function, $f$. The question is what is the next $\mathbf{u}^\ast$ to be sampled from the *expensive function*? One could select the next point arbitrarily but that would be wasteful.
+Posterior of the probalistic model by Equation \@ref(eq:post-mean-cov) can quantify the uncertainty over the space of the unknown function, $f$. The question is what is the next $\mathbf{u}^{next}$ to be sampled from the *expensive function*? One could select the next point arbitrarily but that would be wasteful.
 
 To answer this question, we define an utility function and the next query point is the point which has the maximum utility. The literature of BO have seen many utility function (called acquisition function in the computer science community). These include the Improvement based policies (Probability of Improvement (PI), Expected Improvement(EI)), optimistic policies (Upper Confidence Bound (UCB)) or Information-based (like Thompson Sampling (TS)). The full review of these utility function an their strengthen and weakness could be reviewed in [@shahriari2016].
 
@@ -174,11 +195,8 @@ In Expected Improvement (EI) policy choose the next query point as the one which
 
 ```{=tex}
 \begin{equation}
-
-utility(u;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J}(u_*)-f)p(\mathbf{J}(\mathbf{u_*})|\mathcal{D}) \,dy
-
-\label{eq:uti_int}
-
+utility(\mathbf{u};\theta^{\ast},\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J}(u_*)-f)p(\mathbf{J}(\mathbf{u_*})|\mathcal{D}) \,dy
+\label{eq:utiint}
 \end{equation}
 ```
 
@@ -186,13 +204,69 @@ utility(u;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J}(u_*)-f)p(\
 However, we do not have access to the *expensive function*, $f$, therefore we replace the $f$ with the best available solution found so far, $\mathbf{J}^+$ . We would like to note that $\mathbf{u}_*$ is
 
 ```{=tex}
-\begin{eqution}
+\begin{equation}
+utility(\mathbf{u};\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J}(\mathbf{u_*})-\mathbf{J}^+)p(\mathbf{J}(\mathbf{u_*})|\mathcal{D}) \,dy
+\label{eq:utiint2}
+\end{equation}
+```
 
-utility(u;\theta,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J}(u_*)-\mathbf{J}^+)p(\mathbf{J}(\mathbf{u_*})|\mathcal{D}) \,dy
+The good news: The analytical form of the utility function is available .for the gaussian process
 
-\label{eq:uti_int_2}
-
+```{=tex}
+\begin{equation}
+\gamma(\mathbf{u_*})=\frac{\mu(\mathbf{u_*;\theta^{\ast},\mathcal{D}})-\mathbf{J}^{+}}{\sigma(\mathbf{\mathbf{u_*};\theta^{\ast},\mathcal{D}})}
+\label{eq:gamma}
 \end{equation}
 ```
 
 
+Given the $\gamma(\mathbf{u_*})$, the right side of Equation \@ref(eq:utiint2) can be written as:
+
+```{=tex}
+\begin{equation}
+utility(\mathbf{u_*};\theta,\mathcal{D})=\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mu(\mathbf{u_*};\theta,\mathcal{D})-\mathbf{J}^{+})\Phi(\gamma(\mathbf{u
+_*})) + \sigma(\mathbf{u_*};\theta,\mathcal{D})\phi(\gamma(\mathbf{u_*}))
+\label{eq:utility}
+\end{equation}
+```
+
+
+
+Where $\Phi(.)$ and $\phi(.)$ are CDF and PDF of standard Gaussian distribution.It is too greedy in the context of the sequential decision making.Therefore, an explorative term is added as explorative" parameter $\epsilon$.
+
+```{=tex}
+\begin{equation}
+\gamma(\mathbf{u_*})=\frac{\mu(\mathbf{u_*};\theta,\mathcal{D})-\mathbf{J}^+-\epsilon}{\sigma(\mathbf{u_*};\theta,\mathcal{D})}
+\label{eq:gamma_no_greed}
+\end{equation}
+```
+
+Expected improvement (EI) at point $\mathbf{u_*}$ can be defined as:
+
+
+```{=tex}
+\begin{equation}
+\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mu(\mathbf{u_*};\theta,\mathcal{D})-\mathbf{J}^{+}-\epsilon)\Phi(\gamma(\mathbf{\mathbf{u_*}})) + \sigma(\mathbf{u_*};\theta,\mathcal{D})\phi(\gamma(\mathbf{u_*}))
+\label{eq:utility_no_greed}
+\end{equation}
+```
+
+```{=tex}
+\begin{equation}
+\mathbf{u}_*^{next}=\underset{\mathbf{u_*} \in \mathbf{U_*} }{\mathrm{argmax}} \alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})
+\label{eq:exp-easy}
+\end{equation}
+```
+
+solvabale!
+
+
+-   $\alpha_{EI}(u)$ is inexpensive to evaluate.
+
+-   The analytical expression for gradient of $\alpha_{EI}(u)$ is
+
+    available.
+
+-   Still need to find $u^{next}$, the multi-start BFGS is used for
+
+    finding $u^{next}$.
