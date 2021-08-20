@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021) (preloaded format=pdflatex 2021.7.27)  12 AUG 2021 12:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021) (preloaded format=pdflatex 2021.7.27)  19 AUG 2021 20:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -706,7 +706,7 @@ Overfull \vbox (15.58621pt too high) has occurred while \output is active []
 
 
 {/home/peyman/.TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
-<0_Paper1_main_files/figure-latex/onepetroanalysis-1.pdf, id=111, 463.7325pt x 
+<0_Paper1_main_files/figure-latex/onepetroanalysis-1.pdf, id=119, 463.7325pt x 
 313.17pt>
 File: 0_Paper1_main_files/figure-latex/onepetroanalysis-1.pdf Graphic file (typ
 e pdf)
@@ -725,7 +725,7 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
 (/home/peyman/.TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<img/globalopt.png, id=133, 1036.87375pt x 689.57625pt>
+<img/globalopt.png, id=141, 1036.87375pt x 689.57625pt>
 File: img/globalopt.png Graphic file (type png)
 <use img/globalopt.png>
 Package pdftex.def Info: img/globalopt.png  used on input line 205.
@@ -747,266 +747,266 @@ Underfull \hbox (badness 10000) in paragraph at lines 232--233
 
 [8] [9]
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 286.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 298.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 286.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 298.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 286.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 298.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 286.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 298.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 286.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 298.
+
+[10pdfTeX warning (ext4): destination with the same identifier (name{table.1}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.315 \end{align}
+                 ]
+
+LaTeX Font Warning: Command \normalsize invalid in math mode on input line 366.
 
 
-Overfull \hbox (15.00002pt too wide) in paragraph at lines 276--287
-[][] 
- []
+
+LaTeX Font Warning: Command \normalsize invalid in math mode on input line 366.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
+
+LaTeX Warning: Reference `(' on page 11 undefined on input line 368.
+
+[11]
+
+LaTeX Font Warning: Command \normalsize invalid in math mode on input line 411.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
+
+LaTeX Font Warning: Command \normalsize invalid in math mode on input line 411.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
-
-
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
-
-
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
-
-
-LaTeX Font Warning: Command \Large invalid in math mode on input line 335.
-
-[10] [11]
-<0_Paper1_main_files/figure-latex/onedplot-1.pdf, id=205, 459.7175pt x 313.17pt
+[12] [13] [14]
+<0_Paper1_main_files/figure-latex/onedplot-1.pdf, id=248, 459.7175pt x 313.17pt
 >
 File: 0_Paper1_main_files/figure-latex/onedplot-1.pdf Graphic file (type pdf)
 <use 0_Paper1_main_files/figure-latex/onedplot-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/onedplot-1.pdf  used 
-on input line 389.
+on input line 508.
 (pdftex.def)             Requested size: 422.77664pt x 288.01953pt.
-[12pdfTeX warning (ext4): destination with the same identifier (name{figure.3})
+[15pdfTeX warning (ext4): destination with the same identifier (name{figure.3})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.397 
+l.516 
        <./0_Paper1_main_files/figure-latex/onedplot-1.pdf>]
-<0_Paper1_main_files/figure-latex/exampleshow-1.pdf, id=225, 449.68pt x 296.106
+<0_Paper1_main_files/figure-latex/exampleshow-1.pdf, id=268, 449.68pt x 296.106
 25pt>
 File: 0_Paper1_main_files/figure-latex/exampleshow-1.pdf Graphic file (type pdf
 )
 <use 0_Paper1_main_files/figure-latex/exampleshow-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/exampleshow-1.pdf  us
-ed on input line 404.
+ed on input line 523.
 (pdftex.def)             Requested size: 469.77638pt x 487.84033pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 404--405
+Underfull \hbox (badness 10000) in paragraph at lines 523--524
 
  []
 
-[13] [14pdfTeX warning (ext4): destination with the same identifier (name{figur
+[16] [17pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.411 
+l.530 
        <./0_Paper1_main_files/figure-latex/exampleshow-1.pdf>]
-<0_Paper1_main_files/figure-latex/allinone-1.pdf, id=252, 459.7175pt x 314.1737
+<0_Paper1_main_files/figure-latex/allinone-1.pdf, id=294, 459.7175pt x 314.1737
 5pt>
 File: 0_Paper1_main_files/figure-latex/allinone-1.pdf Graphic file (type pdf)
 <use 0_Paper1_main_files/figure-latex/allinone-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/allinone-1.pdf  used 
-on input line 414.
+on input line 533.
 (pdftex.def)             Requested size: 422.79791pt x 585.4693pt.
-[15] [16pdfTeX warning (ext4): destination with the same identifier (name{figur
+[18] [19pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.421 \newpage
+l.540 \newpage
                <./0_Paper1_main_files/figure-latex/allinone-1.pdf>]
-<img/egg_base.jpg, id=273, 454.06pt x 333.61pt>
+<img/egg_base.jpg, id=317, 454.06pt x 333.61pt>
 File: img/egg_base.jpg Graphic file (type jpg)
 <use img/egg_base.jpg>
-Package pdftex.def Info: img/egg_base.jpg  used on input line 433.
+Package pdftex.def Info: img/egg_base.jpg  used on input line 552.
 (pdftex.def)             Requested size: 301.1261pt x 221.25735pt.
-<img/combine.jpg, id=277, 998.73125pt x 147.55125pt>
+<img/combine.jpg, id=321, 998.73125pt x 147.55125pt>
 File: img/combine.jpg Graphic file (type jpg)
 <use img/combine.jpg>
-Package pdftex.def Info: img/combine.jpg  used on input line 446.
+Package pdftex.def Info: img/combine.jpg  used on input line 565.
 (pdftex.def)             Requested size: 469.75502pt x 69.40086pt.
-[17pdfTeX warning (ext4): destination with the same identifier (name{figure.6})
+[20pdfTeX warning (ext4): destination with the same identifier (name{figure.6})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.460 \end{equation}
-                     <./img/egg_base.jpg>] [18pdfTeX warning (ext4): destinatio
+l.579 \end{equation}
+                     <./img/egg_base.jpg>] [21pdfTeX warning (ext4): destinatio
 n with the same identifier (name{figure.7}) has been already used, duplicate ig
 nored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.494 
-      pdfTeX warning (ext4): destination with the same identifier (name{table.1
+l.613 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.2
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.494 
+l.613 
        <./img/combine.jpg>]
-<0_Paper1_main_files/figure-latex/lhssampling-1.pdf, id=304, 463.7325pt x 314.1
+<0_Paper1_main_files/figure-latex/lhssampling-1.pdf, id=347, 463.7325pt x 314.1
 7375pt>
 File: 0_Paper1_main_files/figure-latex/lhssampling-1.pdf Graphic file (type pdf
 )
 <use 0_Paper1_main_files/figure-latex/lhssampling-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/lhssampling-1.pdf  us
-ed on input line 497.
+ed on input line 616.
 (pdftex.def)             Requested size: 469.75671pt x 318.26216pt.
-<0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf, id=306, 463.7325pt x 314.17
+<0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf, id=349, 463.7325pt x 314.17
 375pt>
 File: 0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf Graphic file (type pdf)
 
 <use 0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf  use
-d on input line 508.
+d on input line 627.
 (pdftex.def)             Requested size: 469.75671pt x 318.26216pt.
-
-LaTeX Warning: Reference `eq:exp-easy' on page 19 undefined on input line 515.
-
-[19pdfTeX warning (ext4): destination with the same identifier (name{figure.8})
+[22pdfTeX warning (ext4): destination with the same identifier (name{figure.8})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.516 
-       <./0_Paper1_main_files/figure-latex/lhssampling-1.pdf>] [20pdfTeX warnin
+l.635 
+       <./0_Paper1_main_files/figure-latex/lhssampling-1.pdf>] [23pdfTeX warnin
 g (ext4): destination with the same identifier (name{figure.9}) has been alread
 y used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.516 
+l.635 
        <./0_Paper1_main_files/figure-latex/lhsbayesop-1.pdf>]
-<0_Paper1_main_files/figure-latex/utilitycurve-1.pdf, id=337, 461.725pt x 313.1
+<0_Paper1_main_files/figure-latex/utilitycurve-1.pdf, id=380, 461.725pt x 313.1
 7pt>
 File: 0_Paper1_main_files/figure-latex/utilitycurve-1.pdf Graphic file (type pd
 f)
 <use 0_Paper1_main_files/figure-latex/utilitycurve-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/utilitycurve-1.pdf  u
-sed on input line 519.
+sed on input line 638.
 (pdftex.def)             Requested size: 469.75671pt x 318.61679pt.
-[21pdfTeX warning (ext4): destination with the same identifier (name{figure.10}
+[24pdfTeX warning (ext4): destination with the same identifier (name{figure.10}
 ) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.527 
+l.646 
        <./0_Paper1_main_files/figure-latex/utilitycurve-1.pdf>]
-<0_Paper1_main_files/figure-latex/difinit-1.pdf, id=357, 461.725pt x 314.17375p
+<0_Paper1_main_files/figure-latex/difinit-1.pdf, id=400, 461.725pt x 314.17375p
 t>
 File: 0_Paper1_main_files/figure-latex/difinit-1.pdf Graphic file (type pdf)
 <use 0_Paper1_main_files/figure-latex/difinit-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/difinit-1.pdf  used o
-n input line 530.
+n input line 649.
 (pdftex.def)             Requested size: 422.77719pt x 585.4693pt.
-<0_Paper1_main_files/figure-latex/diffu-1.pdf, id=361, 459.7175pt x 299.1175pt>
+<0_Paper1_main_files/figure-latex/diffu-1.pdf, id=404, 459.7175pt x 299.1175pt>
 
 File: 0_Paper1_main_files/figure-latex/diffu-1.pdf Graphic file (type pdf)
 <use 0_Paper1_main_files/figure-latex/diffu-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/diffu-1.pdf  used on 
-input line 541.
+input line 660.
 (pdftex.def)             Requested size: 422.77664pt x 275.09558pt.
-[22] [23pdfTeX warning (ext4): destination with the same identifier (name{figur
+[25] [26pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.11}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.548 \newpage
-               <./0_Paper1_main_files/figure-latex/difinit-1.pdf>] [24pdfTeX wa
+l.667 \newpage
+               <./0_Paper1_main_files/figure-latex/difinit-1.pdf>] [27pdfTeX wa
 rning (ext4): destination with the same identifier (name{figure.12}) has been a
 lready used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.561 
-       <./0_Paper1_main_files/figure-latex/diffu-1.pdf>] [25]
-<0_Paper1_main_files/figure-latex/comp-fixbud-1.pdf, id=409, 463.7325pt x 309.1
+l.680 
+       <./0_Paper1_main_files/figure-latex/diffu-1.pdf>] [28]
+<0_Paper1_main_files/figure-latex/comp-fixbud-1.pdf, id=453, 463.7325pt x 309.1
 55pt>
 File: 0_Paper1_main_files/figure-latex/comp-fixbud-1.pdf Graphic file (type pdf
 )
 <use 0_Paper1_main_files/figure-latex/comp-fixbud-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/comp-fixbud-1.pdf  us
-ed on input line 611.
+ed on input line 730.
 (pdftex.def)             Requested size: 422.77664pt x 281.8551pt.
-[26pdfTeX warning (ext4): destination with the same identifier (name{table.2}) 
+[29pdfTeX warning (ext4): destination with the same identifier (name{table.3}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.619 
+l.738 
       ]
-<0_Paper1_main_files/figure-latex/comp-freebud-1.pdf, id=424, 465.74pt x 309.15
+<0_Paper1_main_files/figure-latex/comp-freebud-1.pdf, id=468, 465.74pt x 309.15
 5pt>
 File: 0_Paper1_main_files/figure-latex/comp-freebud-1.pdf Graphic file (type pd
 f)
 <use 0_Paper1_main_files/figure-latex/comp-freebud-1.pdf>
 Package pdftex.def Info: 0_Paper1_main_files/figure-latex/comp-freebud-1.pdf  u
-sed on input line 622.
+sed on input line 741.
 (pdftex.def)             Requested size: 422.77664pt x 280.64746pt.
-<0_Paper1_main_files/figure-latex/unnamed-chunk-11-1.pdf, id=425, 453.695pt x 3
+<0_Paper1_main_files/figure-latex/unnamed-chunk-10-1.pdf, id=469, 453.695pt x 3
 51.3125pt>
-File: 0_Paper1_main_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (typ
+File: 0_Paper1_main_files/figure-latex/unnamed-chunk-10-1.pdf Graphic file (typ
 e pdf)
-<use 0_Paper1_main_files/figure-latex/unnamed-chunk-11-1.pdf>
-Package pdftex.def Info: 0_Paper1_main_files/figure-latex/unnamed-chunk-11-1.pd
-f  used on input line 646.
+<use 0_Paper1_main_files/figure-latex/unnamed-chunk-10-1.pdf>
+Package pdftex.def Info: 0_Paper1_main_files/figure-latex/unnamed-chunk-10-1.pd
+f  used on input line 765.
 (pdftex.def)             Requested size: 469.75671pt x 363.75356pt.
-[27pdfTeX warning (ext4): destination with the same identifier (name{figure.13}
+[30pdfTeX warning (ext4): destination with the same identifier (name{figure.13}
 ) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.646 ...re-latex/unnamed-chunk-11-1} \end{center}
+l.765 ...re-latex/unnamed-chunk-10-1} \end{center}
                                                   pdfTeX warning (ext4): destin
-ation with the same identifier (name{table.3}) has been already used, duplicate
+ation with the same identifier (name{table.4}) has been already used, duplicate
  ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.646 ...re-latex/unnamed-chunk-11-1} \end{center}
+l.765 ...re-latex/unnamed-chunk-10-1} \end{center}
                                                    <./0_Paper1_main_files/figur
 e-latex/comp-fixbud-1.pdf>]
 Overfull \vbox (31.02657pt too high) has occurred while \output is active []
 
-[28pdfTeX warning (ext4): destination with the same identifier (name{figure.14}
+[31pdfTeX warning (ext4): destination with the same identifier (name{figure.14}
 ) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.646 ...re-latex/unnamed-chunk-11-1} \end{center}
+l.765 ...re-latex/unnamed-chunk-10-1} \end{center}
                                                    <./0_Paper1_main_files/figur
 e-latex/comp-freebud-1.pdf> <./0_Paper1_main_files/figure-latex/unnamed-chunk-1
-1-1.pdf>] [29] [30] [31]
-Overfull \hbox (23.62514pt too wide) in paragraph at lines 737--739
+0-1.pdf>] [32] [33] [34]
+Overfull \hbox (23.62514pt too wide) in paragraph at lines 856--858
 \T1/lmr/m/n/10 (-20) based proxy mod-els. Jour-nal of Petroleum Sci-ence and En
 -gi-neer-ing 193, 107424. doi:[]10.1016/j.petrol.2020.107424[] 
  []
 
-[32]
-Overfull \hbox (4.20015pt too wide) in paragraph at lines 770--772
+[35]
+Overfull \hbox (4.20015pt too wide) in paragraph at lines 889--891
 []\T1/lmr/m/n/10 (-20) Sarma, P., Aziz, K., Durlof-sky, L.J., 2005. SPE Reser-v
 oir Sim-u-la-tion Sym-po-sium. OnePetro. doi:[]10.2118/92864-
  []
 
-[33] (./0_Paper1_main.aux)
+[36] (./0_Paper1_main.aux)
 
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `0_Paper1_main.out' has not changed.
-(rerunfilecheck)             Checksum: 6E33E40B6D0B4FD86DE93081F484BC35;3381.
+(rerunfilecheck)             Checksum: 02ED1BD5B6F19F1BE6BB0FDB2F61CD8A;4711.
  ) 
 Here is how much of TeX's memory you used:
- 14736 strings out of 480502
- 222238 string characters out of 5899516
- 575202 words of memory out of 5000000
- 31738 multiletter control sequences out of 15000+600000
- 485555 words of font info for 174 fonts, out of 8000000 for 9000
+ 14789 strings out of 480502
+ 223260 string characters out of 5899516
+ 575305 words of memory out of 5000000
+ 31752 multiletter control sequences out of 15000+600000
+ 486533 words of font info for 184 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,17n,80p,2629b,513s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,18n,80p,2629b,534s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exi
 st, replaced by a fixed one
 
@@ -1036,10 +1036,10 @@ mf-dist/fonts/type1/public/lm/lmsy6.pfb></home/peyman/.TinyTeX/texmf-dist/fonts
 /type1/public/lm/lmsy7.pfb></home/peyman/.TinyTeX/texmf-dist/fonts/type1/public
 /amsfonts/symbols/msam7.pfb></home/peyman/.TinyTeX/texmf-dist/fonts/type1/publi
 c/amsfonts/symbols/msbm10.pfb>
-Output written on 0_Paper1_main.pdf (33 pages, 1344384 bytes).
+Output written on 0_Paper1_main.pdf (36 pages, 1356989 bytes).
 PDF statistics:
- 711 PDF objects out of 1000 (max. 8388607)
- 578 compressed objects within 6 object streams
- 158 named destinations out of 1000 (max. 500000)
- 45284 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 760 PDF objects out of 1000 (max. 8388607)
+ 623 compressed objects within 7 object streams
+ 177 named destinations out of 1000 (max. 500000)
+ 45300 words of extra memory for PDF output out of 51595 (max. 10000000)
 
