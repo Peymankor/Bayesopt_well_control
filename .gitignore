@@ -5,6 +5,7 @@
 .RData
 # User-specific files
 .Ruserdata
+0_Paper1_main_files/
 # Example code in package build process
 *-Ex.R
 # Output files from R CMD build
