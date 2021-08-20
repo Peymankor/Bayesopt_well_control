@@ -5,7 +5,6 @@
 .RData
 # User-specific files
 .Ruserdata
-0_Paper1_main_files/
 # Example code in package build process
 *-Ex.R
 # Output files from R CMD build
@@ -27,7 +26,5 @@ vignettes/*.pdf
 *.knit.md
 # R Environment Variables
 .Renviron
-0_Paper1_main.tex
-0_Paper1_main.spl
-0_Paper1_main.pdf
-2_problem_statement.html
+# bookdown files
+/*_files/
