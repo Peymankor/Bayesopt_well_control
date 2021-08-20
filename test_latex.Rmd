@@ -3,33 +3,17 @@ title: "test_latex"
 author: "Peyman Kor"
 date: "7/14/2021"
 output:
-  pdf_document: default
-  html_document: default
-bibliography:
-- mybibfile.bib
-- paper1.bib
+  bookdown::pdf_book:
+bibliography: references.bib
 ---
 
-$$\Large{\kappa} $$
-
 ```{=tex}
-\begin{equation}
-\begin{split}
-& \mathbf{\mu} = [m(u_1),\cdots,m(u_M)] \\
-& \sum_{i,j}= \kappa \\
-{{\bf K}_{X,X}} K
-\label{eq:mean_cov}
-\end{split}
-\end{equation}
+\begin{align}
+  \begin{split}
+p(\mathbf{J}_*|\mathbf{U_*,\mathcal{D})}= & \:  \mathcal{N}(\mathbf{J_*| \mathbf{\mu_*},\textstyle \sum_{\ast}}) \\
+{\mathbf{\mu_\ast}}= & \:  m(\mathbf{U_\ast}) +\mathbf{K}^\intercal_{U,*} \mathbf{K}^{-1}_{U,U}(\mathbf{J}_U-m(\mathbf{U})) \\
+\textstyle \sum_{\ast}=& \:  \normalsize{\mathbf{K}_{\ast,\ast}-\mathbf{K}^\intercal_{U,\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,\ast}}
+  \end{split}
+\label{eq:post_mean_cov}
+\end{align}
 ```
-
-```{=tex}
-\begin{equation}
-\Large {\kappa} 
-(u,u') =\sigma_f^2(1 + \frac{\sqrt{5}|h|}{\ell}\frac{5h^2}{3\ell^2})exp(-\frac{ -\sqrt{5}|h|}{\ell})
-\label{eq:mean_cov_gp}
-\end{equation}
-```
-
-Suppose we observe a training set $\mathcal{D}={(u_n,J(u_n) : n=1:N )}$ g, where $J(u_n)$ is the noise-free observation of the function evaluated at $u_n$. Now we consider the case of predicting the outputs for new inputs that may not be in $\mathcal{D}$. Specifically, given a test set (prediction set) set $U^*$ of size $N_* \times D$, we want to predict the function outputs
-$J^* = [J(u_1), \cdots, J(x_{N_*})]$ 
