@@ -405,7 +405,7 @@ It is useful to note that vlaue of \(\theta^{\ast}\) could be estimatedusing onl
   \begin{split}
 p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
 \mathbf{\mu_{u_\ast}}= & \:  m(\mathbf{u_\ast}) +\mathbf{K}^\intercal_{U,u_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
-\textstyle \sigma^2_{u_{\ast}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
+\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
   \end{split}
 \label{eq:post-mean-cov-single}
 \end{align}
@@ -427,37 +427,37 @@ utility(\mathbf{u_\ast};\theta^{\ast},\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,
 However, we do not have access to the \emph{expensive function}, \(f\), therefore we replace the \(f\) with the best available solution found so far, \(\mathbf{J}^+\) . We would like to note that \(\mathbf{u}_*\) is
 
 \begin{equation}
-utility(\mathbf{u_\ast};\theta^\ast,\mathcal{D})=\alpha_{EI}=\int_{y}^{}max(0,\mathbf{J_{u_*}}-\mathbf{J^+})p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast}) \,dy
+\alpha_{EI}(\mathbf{u_\ast};\theta^\ast,\mathcal{D})=\int_{y}^{}max(0,\mathbf{J_{u_*}}-\mathbf{J^+})p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast}) \,dy
 \label{eq:utiint2}
 \end{equation}
 
 The good news: The analytical form of the utility function is available .for the Gaussian process
 
 \begin{equation}
-\gamma(\mathbf{u_*})=\frac{\mathbf{\mu_{u_\ast}}-\mathbf{J^+}}{\sigma_{u_{\ast}}}
+\gamma(\mathbf{u_*})=\frac{\mathbf{\mu_{u_\ast}}-\mathbf{J^+}}{\sigma_\mathbf{u_{\ast}}}
 \label{eq:gamma}
 \end{equation}
 
 Given the \(\gamma(\mathbf{u_*})\), the right side of Equation \eqref{eq:utiint2} can be written as:
 
 \begin{equation}
-utility(\mathbf{u_*};\theta,\mathcal{D})=\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mathbf{\mu_{u_\ast}}-\mathbf{J^+})\Phi(\gamma(\mathbf{u
-_*})) + \sigma_{u_{\ast}} \phi(\gamma(\mathbf{u_*}))
+\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mathbf{\mu_{u_\ast}}-\mathbf{J^+})\Phi(\gamma(\mathbf{u
+_*})) + \sigma_{\mathbf{u_{\ast}}} \phi(\gamma(\mathbf{u_*}))
 \label{eq:utility}
 \end{equation}
 
 Where \(\Phi(.)\) and \(\phi(.)\) are CDF and PDF of standard Gaussian distribution.It is too greedy in the context of the sequential decision making.Therefore, an explorative term is added as ``explorative'' parameter \(\epsilon\).
 
 \begin{equation}
-\gamma(\mathbf{u_*})=\frac{\mathbf{\mu_{u_\ast}}-\mathbf{J^+}-\epsilon}{\sigma^2_{u_{\ast}}}
+\gamma(\mathbf{u_*})=\frac{\mathbf{\mu_{u_\ast}}-\mathbf{J^+}-\epsilon}{\sigma^2_{\mathbf{u_{\ast}}}}
 \label{eq:gamma_no_greed}
 \end{equation}
 
 Expected improvement (EI) at point \(\mathbf{u_*}\) can be defined as:
 
 \begin{equation}
-utility(\mathbf{u_*};\theta,\mathcal{D})=\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mathbf{\mu_{u_\ast}}-\mathbf{J^+}-\epsilon)\Phi(\gamma(\mathbf{u
-_*})) + \sigma_{u_{\ast}} \phi(\gamma(\mathbf{u_*}))
+\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})=(\mathbf{\mu_{u_\ast}}-\mathbf{J^+}-\epsilon)\Phi(\gamma(\mathbf{u
+_*})) + \sigma_{\mathbf{u_{\ast}}} \phi(\gamma(\mathbf{u_*}))
 \label{eq:eq:utility_no_greed}
 \end{equation}
 
@@ -468,18 +468,13 @@ _*})) + \sigma_{u_{\ast}} \phi(\gamma(\mathbf{u_*}))
 
 solvable!
 
-\begin{itemize}
-\item
-  \(\alpha_{EI}(u)\) is inexpensive to evaluate.
-\item
-  The analytical expression for gradient of \(\alpha_{EI}(u)\) is
+\(\alpha_{EI}(u)\) is inexpensive to evaluate.
 
-  available.
-\item
-  Still need to find \(u^{next}\), the multi-start BFGS is used for
+The analytical expression for gradient of \(\alpha_{EI}(u)\) is
+available.
 
-  finding \(u^{next}\).
-\end{itemize}
+Still need to find \(u^{next}\), the multi-start BFGS is used for
+finding \(u^{next}\).
 
 \newpage
 
