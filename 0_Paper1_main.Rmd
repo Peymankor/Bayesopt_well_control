@@ -36,10 +36,9 @@ csl: elsevier-harvard.csl
 output:
   bookdown::pdf_book:
     base_format: rticles::elsevier_article
+    keep_md: true
 number_sections: true
 fig_caption: yes
-
-# output: 
 #   rticles::elsevier_article: default
 #   word_document: default
 # output:
