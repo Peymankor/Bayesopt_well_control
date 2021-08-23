@@ -150,7 +150,7 @@ p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}= & \:  \mathcal{MN}(\mathbf{J_{U
 \end{align}
 ```
 
-The conditional probability of the $\mathbf{J_{U_*}}$ Equation \ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation.
+The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation.
 
 #### Parameter Estimation of Covariance Kernel
 
@@ -177,7 +177,7 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 ```{=tex}
 \begin{equation}
 \theta^{\ast}=[\sigma_f^{2\ast}, \ell^{\ast}]=argmax \: \mathcal{L}(\sigma^2_f,\ell)
-\label{eq:log_like_opt}
+\label{eq:log-like-opt}
 \end{equation}
 ```
 
