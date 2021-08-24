@@ -151,6 +151,32 @@ km_model <- function(obs_data, predict_x) {
 }
 
 ###################################
+```
+
+```{r}
+
+source("plot_funcs/plot_post_indi.R")
+source("plot_funcs/plot_post.R")
+source("plot_funcs/utility_cal_plot_ind.R")
+source("plot_funcs/utility_cal_plot.R")
+
+
+utility_cal <- function(predict_list, x_predict,obs_data,eps) {
+ 
+  y_max <- max(obs_data$y_norm)
+  
+  z <- (predict_list$mean - y_max - eps) / (predict_list$sd)
+  
+  utility <- (predict_list$mean - y_max - eps) * pnorm(z) + (predict_list$sd) * dnorm(z)
+  
+  new_x <- x_predict[which(utility==max(utility))] 
+  
+  return(new_x)
+}
+```
+
+
+```{r, echo=FALSE, message=FALSE, include=FALSE}
 
 plot_post <- function(predict_list,x_predict,obs_data) {
   
