@@ -25,7 +25,7 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-08-23"
+date: "2021-08-29"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -320,7 +320,7 @@ p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}= & \:  \mathcal{MN}(\mathbf{J_{U
 \end{align}
 ```
 
-The conditional probability of the $\mathbf{J_{U_*}}$ Equation \ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation.
+The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation.
 
 #### Parameter Estimation of Covariance Kernel
 
@@ -347,7 +347,7 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 ```{=tex}
 \begin{equation}
 \theta^{\ast}=[\sigma_f^{2\ast}, \ell^{\ast}]=argmax \: \mathcal{L}(\sigma^2_f,\ell)
-\label{eq:log_like_opt}
+\label{eq:log-like-opt}
 \end{equation}
 ```
 
@@ -458,7 +458,7 @@ The Equation in \@ref(eq:exp-easy) represents a need for internal optimization i
 
 ## 1-D Toy Problem
 
-In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the steps of the workflow, hence better explanation of equations. Though, it it can bee seen from 1-D problem that, the workflow can easily extended to to higher dimeentional problem. The *True function* to be optimized in this section has an analytical expression as, given the box constrains:
+In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the workflow steps, hence a better explanation of equations. Though, it can be seen from the 1-D problem that the workflow can easily extend to a higher dimensional problem. The *True function* to be optimized in this section has an analytical expression with the box constraints, can be shown as:
 
 ```{=tex}
 \begin{equation}
@@ -466,13 +466,13 @@ In this section, a 1-D toy problem is considered to illustrate the BO workflow d
 & \underset{u}{\text{maximize}}
 & & \mathbf{J(u)} = 1-\frac{1}{2} \left(\frac{\sin (12\mathbf{u})}{1+\mathbf{u}} + 2\cos(7\mathbf{u})\mathbf{u}^5 + 0.7 \right)  \\
 & \text{subject to}
-& & 0 \leq u \leq 1
+& & 0 \leq \mathbf{u} \leq 1
 \end{aligned}
 \label{eq:1deq}
 \end{equation}
 ```
 
-Since the analytical expression of function available and being 1-D problem, the global optimum of the function had been found at the $u_M = 3.90$. The plot of the function and the optimum point has been shown in the Figure \@ref(fig:onedplot)
+Since the analytical expression of function is available and being a 1-D problem, the global optimum of the function had been found at $\mathbf{u}_M = 3.90$. The plot of the function and the optimum point has been shown in the Figure \@ref(fig:onedplot). The function in the plot has some local optimum around $\mathbf{u}=0.75$. Choosing a 1-D problem with a non-convex structure was purposeful in this example, in order to see whether BO avoids local optima and converges to a global one or not.
 
 
 
@@ -487,15 +487,27 @@ Since the analytical expression of function available and being 1-D problem, the
 \caption{Plot of 1-D equation with blue dash line representing the global optimum}(\#fig:onedplot)
 \end{figure}
 
-However, it is worth to mention that the exact analytical expression of objective function in many of real world problems is not available (blac-box optimization). What is available is a *samples* of $\mathbf{U}$ and $\mathbf{J(U)}$, represented as $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. Therefore,, in the 1-D example, in order to mimic the real world case, we sample a few points to form our $\mathcal{D}$. However, we know the the analytical expression of objective function and  global optimum of the objective function in hindsight, just for the case we want to compare the performance of BO workdlow.
+However, it is worth mentioning that the exact analytical expression of the objective function in many real-world problems is not available (black-box optimization). What is available is a *sample* of $\mathbf{U}$ and $\mathbf{J(U)}$, represented as $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. Therefore, in the 1-D example, in order to mimic the real world case, we sample a few points to form our $\mathcal{D}$. We know the analytical expression of the objective function and  global optimum of the objective function in hindsight, just for the case we want to compare the performance of BO workflow.
 
-To form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$ (Equation \@ref(eq:init-data)), as Figure \@ref(fig:exampleshow) the five points, the 5 sample points, $\mathbf{U}=[0.05,0.2,0.5,0.6,0.95]$ were selected as the initialization of the workflow. This $\mathbf{U}$ vector with thir corospondant $\mathbf{J(U)}$, formed the $\mathcal{D}$ as $[\mathbf{U},\mathbf{J_U}]=[[0.05,0.2,0.5,0.6,0.95];[0.38, 0.36, 0.77,0.44, 0.16]]$. In upper plot of Figure \@ref(fig:exampleshow), green points in diamond shape shows the $\mathcal{D}$. Having the $\mathcal{D}$, we can find the $\theta^*$ through optimizing the Equation \@ref(eq:log_like_opt). Having $\theta^*$, we can find the mean value of function $\mathbf{J(u^*)}$ through Equation \@ref(eq:post-mean-cov-single). This mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ has been depicted with red line in Figure \@ref(fig:exampleshow). The blue lines in \@ref(fig:exampleshow) represtnts 100 samples of $\mathbf{J_{u_*}}$ from gaussian distribution with mean and variance defined at \@ref(eq:post-mean-cov-single) at each $\mathbf{u^*}$. The grey area represents the 95% confidence interval. 
+To form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$ as Equation \@ref(eq:init-data), a sample of five points, $\mathbf{U}=[0.05,0.2,0.5,0.6,0.95]$ was selected to  initialize the workflow. This $\mathbf{U}$ vector with their correspondent $\mathbf{J(U)}$, forms the 
 
-The first point to infer from the upper plot at Figure \@ref(fig:exampleshow) is there no uncertainty on the points in $\mathcal{D}$. The reason for this is (as was discussed in the previous section), here we consider the "noise-free" observation. Also, worth to mention that we have wider grey area (more uncertainty) in the areas that are more distant from the observation, simply meaning uncertainty is less in points close to observation points. When it comes to "extrapolation", meaning in the areas outside of the observation points, the probabilistic model shows interesting behaviour On those "exterme" area (say for example points $\mathbf{u^*=0}$ and $\mathbf{u^*=1}$ ), the mean curve tend to move toward the mean of all observation points , here around 0. Suggesting the model shows the mean-reversion behaviour when it comes extrapolation.
+$$\mathcal{D}=[\mathbf{U},\mathbf{J_U}]=[[0.05,0.2,0.5,0.6,0.95];[0.38, 0.36, 0.77,0.44, 0.16]]$$ 
+In the upper plot of Figure \@ref(fig:exampleshow), green points in diamond shape show the $\mathcal{D}$. Then, we can find the $\theta^*$ through performing optimizing in Equation \@ref(eq:log-like-opt) (as it only needs $\mathcal{D})$. Having $\theta^*$, we can find the mean value of function $\mathbf{J(u^*)}$ through Equation \@ref(eq:post-mean-cov-single). This mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ have been depicted with a red line in Figure \@ref(fig:exampleshow). The blue lines in \@ref(fig:exampleshow) represents 100 samples of $\mathbf{J_{u_*}}$ from the gaussian distribution with mean and variance defined at \@ref(eq:post-mean-cov-single) at each $\mathbf{u^*}$. The grey area represents the 95% confidence interval. At this stage, we completed step 1 of the BO.
 
-The lower plot at Figure \@ref(fig:exampleshow), shows the plot of utility function at each $\mathbf{u^*}$ values. Worth to note that as the plot suggest, the utility($\alpha_{EI}$) function will have the muti-modal structure, meaning in the optimization process need multi-start gradient method (as it was mentioned in last part of previous section). After performing optimization of Equation \@ref(eq:exp-easy), the blue vertical dotted line shows the the $\mathbf{u}_*^{next}=0.46$ which is the point where the utility function, is maximum. Then this $\mathbf{u}_*^{next}$ is feed into the real function, and the the pair of $[(\mathbf{u}_*^{next}, \mathbf{J}(\mathbf{u}_*^{next})]$ is added to the initial data set, leaving $\mathcal{D}=[[0.05,0.2,0.5,0.6,0.95,0.46];[0.38, 0.36, 0.77,0.44, 0.16, 0.91]]$. 
+The first point to infer from the upper plot at Figure \@ref(fig:exampleshow) is that there is no uncertainty on the points in $\mathcal{D}$. The reason for this is (as was discussed in the previous section), here we consider "noise-free" observations. Also, worth mentioning that we have a wider grey area (more uncertainty) in the areas that are more distant from the observations, simply meaning uncertainty is less in points close to observation points. When it comes to "extrapolation", meaning in the areas outside of the range of observation points, the probabilistic model shows interesting behavior on those "extreme" area (say for example two points at $\mathbf{u^*=0}$ and $\mathbf{u^*=1}$ ), the mean curve tend to move toward the mean of all observation points , here it is $\text{average}\left(\mathbf{J(U)}\right)=0.42$. Suggesting the model shows the mean-reversion behavior when it comes to extrapolation.
 
-Going back to the lower figure at Figure \@ref(fig:exampleshow), the utility has two mode around two sides of point $\mathbf{u_*}=0.5$, say $\mathbf{u_*^+}$ and $\mathbf{u_*^-}$, however the point $x_{0.5}^-$ is selected as the next query point. Readers can be referred to the upper plot and it is clear that there is more uncertainity around point $x_{0.5}^-$ than $x_{0.5}^+$ (while their mean values are same). The utility function always looking for the point that not only maximize the mean value, but also interested in the points that has higher variance (\@ref(eq:utility)), which is the case between two points $x_{0.5}^+$ and $x_{0.5}^-$.
+The lower plot at Figure \@ref(fig:exampleshow), shows the plot of utility function- Equation \@ref(eq:utility) - at each $\mathbf{u^*}$ value. As the plot suggests, the utility function ($\alpha_{EI}$) will have a multi-modal structure. Meaning the optimization process needs a multi-start gradient method (as mentioned in last part of previous section). After performing optimization of Equation \@ref(eq:exp-easy), the blue vertical dotted line shows the $\mathbf{u}_*^{next}=0.46$ which is the point where the utility function, is maximum. Then this $\mathbf{u}_*^{next}$ is feed into the true objective function in \@ref(eq:1deq), and the pair of $[(\mathbf{u}_*^{next}, \mathbf{J}(\mathbf{u}_*^{next})]$ is added to the initial data set, leaving 
+
+$$\mathcal{D}= \mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u}^{next}]=[[0.05,0.2,0.5,0.6,0.95,0.46];[0.38, 0.36, 0.77,0.44, 0.16, 0.91]]$$
+
+We complete step 2 of the workflow at this stage, and we performed the first iteration of BO.
+
+Looking again to the lower figure at Figure \@ref(fig:exampleshow), the utility has two modes around two sides of point $\mathbf{u_*}=0.5$, say $\mathbf{u_{0.5}^+}=0.5 + \epsilon$ and $\mathbf{u_{0.5}^-}=0.5-\epsilon$, however the point $\mathbf{u_{0.5}^-}$ is selected as the next query point. Readers can be referred to the upper plot and it is clear that there is more uncertainty around point $\mathbf{u_{0.5}^-}$ than $\mathbf{u_{0.5}^+}$ (while their mean values are the same, due to symmetry around $\mathbf{u_*}=0.5$). The utility function always looking for the point that not only maximizes the mean value but is also interested in the points that have higher variance - Equation \@ref(eq:utility) -, which is the case between two points $\mathbf{u_{0.5}^+}$ and $\mathbf{u_{0.5}^-}$.
+
+
+
+
+
 
 
 
@@ -506,7 +518,7 @@ Going back to the lower figure at Figure \@ref(fig:exampleshow), the utility has
 \caption{Ite1 - Top: Gaussian posterior over the initial sample points; Lower: Utility function over the x values}(\#fig:exampleshow)
 \end{figure}
 
-If we call the Figure \@ref(fig:exampleshow) as the iteration \# 1, now we can go back to step 1 of BO workflow and start process with new $\mathcal{D}$. In the Figure \@ref(fig:allinone) another two iterations has been provided. Where in each row, the plot on the left represents the posterior on the gaussian condistioning (Equation @\ref(eq:post-mean-cov-single)), the right show the utility function (Equation @\ref(eq:utiint)). Note that in the Figure \@ref(fig:allinone) all axis labels and legned were removed, to have better visibity. (more info about each plot can ben found in \@ref(fig:exampleshow)). Interesting to see tat in this example case, at the irteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Thefiore, after just two iteration we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7%$ of the global optima. Although this is case for 1-D problem, it is clearly showing the strength of the workflow to approach the global optima, in as few as possible iteration. In this case after iteration\#2, the total number of time,that the real function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(total iteration) = 5 + 2=7$.
+If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(total iteration) = 5 + 2=7$.
 
 \begin{figure}
 
@@ -515,7 +527,7 @@ If we call the Figure \@ref(fig:exampleshow) as the iteration \# 1, now we can g
 \caption{Gaussian posterior of over the initial sample points}(\#fig:allinone)
 \end{figure}
 
-Before going to apply the same workflow at the field scale, the 1-D example presented here offer another useful feature of the BO workflow. Looking at \@ref(fig:allinone), we can see that the maximum of utility function is at the iteration \# 3 is in order of $10^{-6}$ . That shows that after optimization, even best point to be evaluated with expensive function has a very little utility. So can safely stop the process, since querying points to be sampled from the expensive function has a negligible potential to improve our search in optimization.
+Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at \@ref(fig:allinone), we can see that the maximum of the utility function is at the iteration \# 3 is in order of $10^{-6}$ . That shows that after optimization, even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process, since querying points to be sampled from the expensive function has a negligible potential to improve our search in optimization.
 
 \newpage
 
@@ -682,7 +694,7 @@ In first part of the comparison, we compare the Bayesopt with PSO and GA in fixe
 
 \begin{table}
 
-\caption{(\#tab:unnamed-chunk-9)Parameters of GA and PSO Methods}
+\caption{(\#tab:unnamed-chunk-11)Parameters of GA and PSO Methods}
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
 \toprule
@@ -743,7 +755,7 @@ Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
 Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication was used)
 
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-10-1} \end{center}
+\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-12-1} \end{center}
 
 \newpage
 
