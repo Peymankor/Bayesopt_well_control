@@ -69,7 +69,7 @@ price_data <- tibble(item_1=c("P_o","P_wp","P_wi"),
 colnames(price_data) <- c("Item","Price", "Items", "Value")
 #price_data %>%  kableExtra::kable(format = "html", escape = FALSE) %>%
 #    kable_styling()
-kbl(price_data, format = "html", caption = "Required Parameters needed for calculation of Expected NPV")%>%
+kbl(price_data, format = "latex", caption = "Required Parameters needed for calculation of Expected NPV")%>%
   kable_styling(position = "center", latex_options = "HOLD_position", full_width = T)
 ```
 
