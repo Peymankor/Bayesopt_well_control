@@ -25,7 +25,7 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-08-29"
+date: "2021-09-09"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -531,11 +531,12 @@ Before applying the same workflow at the field scale, the 1-D example presented 
 
 \newpage
 
-## Field Scale
 
-### Synthetic 3D Reservoir Model
+# Field Scale
 
-In this section, the BayesOpt workflow is applied to the synthetic 3D reservoir model. The trough introduction of the model and gelogical describtion can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system.
+## Synthetic 3D Reservoir Model
+
+In this section, the BO workflow is applied to a synthetic 3D reservoir model. The trough introduction of the model and it's gelogical describition can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system. The 3D model has eight water injectors and four producers wells shown in Figure \@ref(fig:eggbase). The geological model has highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \@ref(fig:combine).[@hong2017].
 
 \begin{figure}
 
@@ -546,9 +547,7 @@ In this section, the BayesOpt workflow is applied to the synthetic 3D reservoir 
 \caption{Well locations in Egg model, blue ones are injection, the red producers}(\#fig:eggbase)
 \end{figure}
 
-The 3D model has eight water injectors and four producers wells shown in Figure \@ref(fig:eggbase). The has a geological realizations of patterns of highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \@ref(fig:combine).[@hong2017].
-
-Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \@ref(fig:combine) .All the wells are vertical and completed in all seven layers. Capillary pressure is ignored. The reservoir rock is assumed to be incompressible. The model has a life-cycle of 10 years. Here, the injection rate to be maiintaned over life-cycle of reservoir is going to be optimized. Thus, given eight injection wellls, the optimizatijon workflow has the eight dimnetions.However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, making the box-constrain optimization. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
+Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has  life-cycle of 10 years, as it was suggested in [@jansen2014]. Here, the injection rate to be maintained over life-cycle of reservoir is going to be optimized. Thus, given eight injection wells, the optimization workflow has the eight dimention Meaning, what is the optimum injection rate for eight injector wells, for whole 10 year period of reservoir production. However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
 \begin{figure}
 
@@ -561,24 +560,29 @@ Relative permeabilities and the associated fractional flow curve of the model ha
 
 ### Well Control Optimization
 
-Reviewing the equation raised in the section 3, here the goal is robust optimization of the field , given geological realizations as follow:
+Reviewing the equation raised in the section 3, here we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations,
+$\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, approximating the expextaion of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
 
 ```{=tex}
 \begin{equation}
-\text{Objective Func(u)}= \overline{J}(u) = \frac{\sum_{i=1}^{n_e} J_r(u,G_i)}{n_e}  (\#eq:npvoptrep)
+\mathbf{\overline{J}(u)} = \frac{\sum_{i=1}^{n_e} \mathbf{J}(\mathbf{u},\mathbf{G}_i)}{n_e} 
+\label{eq:npvoptrep}
 \end{equation}
 ```
-Equation \@ref(eq:npvoptrep)
 
-$u$ is Injection rate for the each injection well, therefore the control vector, to be optimizaed in this case is defined as:
+$\mathbf{u}$ is Injection rate for the each injection well, therefore the control vector, to be optimizaed in this case is defined as:
 
 ```{=tex}
 \begin{equation}
-u=[u_{inj1},u_{inj2},u_{inj3},u_{inj4},u_{inj5},u_{inj6},u_{inj7},u_{inj8}]^{\intercal} 
+\mathbf{u}=[u_{inj1},u_{inj2},u_{inj3},u_{inj4},u_{inj5},u_{inj6},u_{inj7},u_{inj8}]^{\intercal} 
 \label{eq:cont-vec}
 \end{equation}
 ```
+
 As the \@ref(eq:npvoptrep) suggest, the $\overline{J}(u)$ need some parameters to be defined. The oil price ($P_o$), water production cost ($p_{wp}$) and water injection cost ($P_{wi}$) in $dollar/m^3$ has been provided in the Table \@ref(tab:npvparam). Also, in this work the cash flow is disconted daily and the discount factor is avilable in the \@ref(tab:npvparam). We would like to note that in this work due to avoid further computional burden in optimization process, 10 realizations of the egg model has been considered, therefore $n_e=10$ in Equation \@ref(eq:npvoptrep).
+
+The procedure for calcuting $\mathbf{\overline{J}(u)}$ is as follows: first we decide on the $\mathbf{u}$ and write that in the *DATA* file of reservoir simulator. Then we run the file in the numerical resevoir simulators given that the production life of the resecvoir is 10 years. We repeat te simulation for all geological realizations $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, we have oil production, watre production and water injection as output of simulators. Then, we can insert $q_o$, $q_{wp}$ and $q_{wi}$ into eqaution \@ref(eq:npvoptrep) and \@ref(tab:npvparam) to get $\mathbf{\overline{J}(u)}$, for given $\mathbf{u}$.
+
 
 \begin{table}[H]
 
@@ -597,9 +601,9 @@ P\_wi & 12.5 & n\_e & 10\\
 \end{tabu}
 \end{table}
 
-### BayesOpt Workflow
+### BO Workflow
 
-As it was discussed, the starting point of the BAyesOpt workflow is to randomly sample the initial data pairs $\mathcal{D}$ which is used to build the Gaussian model of the response surface to the input variables. In this work, forty samples fom the Latin hyper cube sampling (LHS) method were drawn. The LHS is prefred in this work to Monte Carlo since it provides the stratifcation of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of the $\overline{J}(u)$ for each sample from LHS. Also, The maximum $\overline{J}(u)$ found from sampling has been shown with blue line. Setting the specific seed number (since LHS is in itself is random process), we get the max $NPV$ aciehved here was $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth to mention that random sampling like the LHS is not helpful to consistently approach the global optimum point, and there is a need for efficient workflow to find the optimum point while using the a few as possible sampling from real function.
+As it was discussed, the starting point of the BO workflow is to randomly sample the initial data pairs $\mathcal{D}$ which is used to build the Gaussian model of the response surface to the input variables. In this work, forty samples from the Latin hyper cube sampling (LHS) method were drawn. Note that we draw forty sample of $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ can only take value between 10 to 100. The LHS is prefred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of the $\mathbf{\overline{J}(u)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u)}$ found from sampling has been shown with blue line. Setting the specific seed number (since LHS is in itself is random process), we get the max $NPV$ achieved here was $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth to mention that random sampling like the LHS is not helpful to consistently approach the global optimum point, as it the solution does not improve. There is a need for efficient workflow to find the optimum point while using the a few as possible sampling from real function.
 
 \begin{figure}
 
@@ -610,7 +614,7 @@ As it was discussed, the starting point of the BAyesOpt workflow is to randomly 
 \caption{Expected NPV as result of forty sampling from LHS}(\#fig:lhssampling)
 \end{figure}
 
-Having the initial data found through LHS, we can build the probalistic model of the reposnse surface and sequentially sample from the *expensive-to-evaluate* function. Unfortunately, win this section we can not plot the posterior of the probalistic model, condition on the above forty LHS samples, due being the space is eight-dimetional, and hard to visulize. The Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential sampling resulted from the BayesOpt workflow. Readers are refreed to this point that in the figure, not all red points are increasing and some points are lower than previous points. The reason for this behaviour is the nature of BayesOpt algorith. We can suggest that in the points that has lower expected NPV from the previous, we may reached the lower optimum point, but those points helped us to decrease the uncertainity, which is helpful for the further sampling. We can see that after just ten evaluation of the expenside function (here it means finding the expected NPv from running 10 geological realization using flow simulation) we reach the new record Expeted NPV of $max \overline{J}(u)=36.85$$\$MM$.
+Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:init-data) we can build the probabilistic model of, representing our understinding of surface of objective function. Unfortunately, in this section we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, due being the space is eight-dimetional, and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) to get the idea of how plot of the probalitc model condtioned to initial point look like (at 1D case). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$.  the Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential sampling resulted from the BO workflow. Readers are refereed to this point that in the figure, not all red points are increasing and some points are lower than previous points. The reason for this behaviour is the nature of BayesOpt algorith. We can suggest that in the points that has lower expected NPV from the previous, we may reached the lower optimum point, but those points helped us to decrease the uncertainty, which is helpful for the further sampling. We can see that after just ten evaluation of the expenside function (here it means finding the expected NPv from running 10 geological realization using flow simulation) we reach the new record Expeted NPV of $max \overline{J}(u)=36.85$$\$MM$.
 
 \begin{figure}
 
@@ -694,7 +698,7 @@ In first part of the comparison, we compare the Bayesopt with PSO and GA in fixe
 
 \begin{table}
 
-\caption{(\#tab:unnamed-chunk-11)Parameters of GA and PSO Methods}
+\caption{(\#tab:unnamed-chunk-12)Parameters of GA and PSO Methods}
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
 \toprule
@@ -755,7 +759,7 @@ Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
 Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication was used)
 
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-12-1} \end{center}
+\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-13-1} \end{center}
 
 \newpage
 
