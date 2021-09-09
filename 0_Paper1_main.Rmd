@@ -77,18 +77,24 @@ knitr::opts_chunk$set(warning = F, message = F, echo = FALSE)
 
 \newpage
 
-```{r child = '4_Example Cases.Rmd'}
+```{r child = '4_Example_Cases.Rmd'}
 
 ```
 
 \newpage
 
-```{r child = '5_comparison_with_other.Rmd'}
+```{r child = '5_Field_Scale.Rmd'}
 
 ```
 
 \newpage
 
-```{r child = '6_Conclusing_Remarks.Rmd'}
+```{r child = '6_comparison_with_other.Rmd'}
+
+```
+
+\newpage
+
+```{r child = '7_Conclusing_Remarks.Rmd'}
 
 ```
