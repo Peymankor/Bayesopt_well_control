@@ -1,0 +1,393 @@
+
+# Example Cases
+
+## 1-D Toy Problem
+
+In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the workflow steps, hence a better explanation of equations. Though, it can be seen from the 1-D problem that the workflow can easily extend to a higher dimensional problem. The *True function* to be optimized in this section has an analytical expression with the box constraints, can be shown as:
+
+```{=tex}
+\begin{equation}
+\begin{aligned}
+& \underset{u}{\text{maximize}}
+& & \mathbf{J(u)} = 1-\frac{1}{2} \left(\frac{\sin (12\mathbf{u})}{1+\mathbf{u}} + 2\cos(7\mathbf{u})\mathbf{u}^5 + 0.7 \right)  \\
+& \text{subject to}
+& & 0 \leq \mathbf{u} \leq 1
+\end{aligned}
+\label{eq:1deq}
+\end{equation}
+```
+
+Since the analytical expression of function is available and being a 1-D problem, the global optimum of the function had been found at $\mathbf{u}_M = 3.90$. The plot of the function and the optimum point has been shown in the Figure \@ref(fig:onedplot). The function in the plot has some local optimum around $\mathbf{u}=0.75$. Choosing a 1-D problem with a non-convex structure was purposeful in this example, in order to see whether BO avoids local optima and converges to a global one or not.
+
+```{r loaddata, cache=TRUE, message=FALSE, error=FALSE, warning=FALSE, echo=FALSE}
+bo_12345 <- readRDS("processed_data/bo_12345_401000.Rds")
+#
+bo_1234 <- readRDS("processed_data/bo_1234_401000.Rds")
+#
+bo_123 <- readRDS("processed_data/bo_123_401000.Rds")
+
+#######################BO_50 ############################
+bo_123_50 <- readRDS("processed_data/bo_1234_50_10000.Rds")
+ss_50 <- bo_123_50$scoreSummary
+
+########### GA ######################################
+
+ga_12345 <- readRDS("processed_data/GA_12345.Rds")
+#
+ga_1234 <- readRDS("processed_data/GA_1234.Rds")
+#
+ga_123 <- readRDS("processed_data/GA_123.Rds")
+
+########### PSO #######################################
+#
+pso_12345 <- readRDS("processed_data/pso_12345.Rds")
+#
+pso_1234 <- readRDS("processed_data/pso_1234.Rds")
+#
+pso_123 <- readRDS("processed_data/pso_123.Rds")
+```
+
+```{r loadlibraries, message=FALSE, echo=FALSE, error=FALSE}
+
+one_d_fun <- function(x) {
+  y <- (1-1/2*((sin(12*x)/(1+x))+(2*cos(7*x)*x^5)+0.7))
+  return(y)
+}
+
+xmin <- optimize(one_d_fun, c(0, 1), tol = 0.0001, maximum = TRUE)
+
+library(DiceKriging)
+library(mvtnorm)
+library(tidyverse)
+
+library(tibble)
+library(kableExtra)
+
+library(tidyverse)
+library(latex2exp)
+
+library(patchwork)
+library(gridExtra)
+library(tidyverse)
+
+library(ParBayesianOptimization)
+
+```
+
+```{r onedplot, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Plot of 1-D equation with blue dash line representing the global optimum", warning=FALSE, out.width="90%"}
+
+x_domain <- seq(0,1,0.01)
+y_domain <- one_d_fun(x_domain)
+
+data_domain <- tibble(x=x_domain, y= y_domain)
+
+df_text <- data.frame(
+  x = 0.39,
+  y = 0,
+  text = c("bottom-left")
+)
+ggplot(data_domain, aes(x,y)) +
+  geom_point() +
+  geom_vline(xintercept = 0.390, linetype="dotted", 
+                color = "blue", size=1.5) +
+   annotate("text", x=0.32, y=0, label= "u_M", hjust = 0, vjust=+1 ,colour = "blue") +
+  ylim(0,1.04) +
+  ylab("f(x)")
+
+```
+
+However, it is worth mentioning that the exact analytical expression of the objective function in many real-world problems is not available (black-box optimization). What is available is a *sample* of $\mathbf{U}$ and $\mathbf{J(U)}$, represented as $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. Therefore, in the 1-D example, in order to mimic the real world case, we sample a few points to form our $\mathcal{D}$. We know the analytical expression of the objective function and  global optimum of the objective function in hindsight, just for the case we want to compare the performance of BO workflow.
+
+To form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$ as Equation \@ref(eq:init-data), a sample of five points, $\mathbf{U}=[0.05,0.2,0.5,0.6,0.95]$ was selected to  initialize the workflow. This $\mathbf{U}$ vector with their correspondent $\mathbf{J(U)}$, forms the 
+
+$$\mathcal{D}=[\mathbf{U},\mathbf{J_U}]=[[0.05,0.2,0.5,0.6,0.95];[0.38, 0.36, 0.77,0.44, 0.16]]$$ 
+In the upper plot of Figure \@ref(fig:exampleshow), green points in diamond shape show the $\mathcal{D}$. Then, we can find the $\theta^*$ through performing optimizing in Equation \@ref(eq:log-like-opt) (as it only needs $\mathcal{D})$. Having $\theta^*$, we can find the mean value of function $\mathbf{J(u^*)}$ through Equation \@ref(eq:post-mean-cov-single). This mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ have been depicted with a red line in Figure \@ref(fig:exampleshow). The blue lines in \@ref(fig:exampleshow) represents 100 samples of $\mathbf{J_{u_*}}$ from the gaussian distribution with mean and variance defined at \@ref(eq:post-mean-cov-single) at each $\mathbf{u^*}$. The grey area represents the 95% confidence interval. At this stage, we completed step 1 of the BO.
+
+The first point to infer from the upper plot at Figure \@ref(fig:exampleshow) is that there is no uncertainty on the points in $\mathcal{D}$. The reason for this is (as was discussed in the previous section), here we consider "noise-free" observations. Also, worth mentioning that we have a wider grey area (more uncertainty) in the areas that are more distant from the observations, simply meaning uncertainty is less in points close to observation points. When it comes to "extrapolation", meaning in the areas outside of the range of observation points, the probabilistic model shows interesting behavior on those "extreme" area (say for example two points at $\mathbf{u^*=0}$ and $\mathbf{u^*=1}$ ), the mean curve tend to move toward the mean of all observation points , here it is $\text{average}\left(\mathbf{J(U)}\right)=0.42$. Suggesting the model shows the mean-reversion behavior when it comes to extrapolation.
+
+The lower plot at Figure \@ref(fig:exampleshow), shows the plot of utility function- Equation \@ref(eq:utility) - at each $\mathbf{u^*}$ value. As the plot suggests, the utility function ($\alpha_{EI}$) will have a multi-modal structure. Meaning the optimization process needs a multi-start gradient method (as mentioned in last part of previous section). After performing optimization of Equation \@ref(eq:exp-easy), the blue vertical dotted line shows the $\mathbf{u}_*^{next}=0.46$ which is the point where the utility function, is maximum. Then this $\mathbf{u}_*^{next}$ is feed into the true objective function in \@ref(eq:1deq), and the pair of $[(\mathbf{u}_*^{next}, \mathbf{J}(\mathbf{u}_*^{next})]$ is added to the initial data set, leaving 
+
+$$\mathcal{D}= \mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u}^{next}]=[[0.05,0.2,0.5,0.6,0.95,0.46];[0.38, 0.36, 0.77,0.44, 0.16, 0.91]]$$
+
+We complete step 2 of the workflow at this stage, and we performed the first iteration of BO.
+
+Looking again to the lower figure at Figure \@ref(fig:exampleshow), the utility has two modes around two sides of point $\mathbf{u_*}=0.5$, say $\mathbf{u_{0.5}^+}=0.5 + \epsilon$ and $\mathbf{u_{0.5}^-}=0.5-\epsilon$, however the point $\mathbf{u_{0.5}^-}$ is selected as the next query point. Readers can be referred to the upper plot and it is clear that there is more uncertainty around point $\mathbf{u_{0.5}^-}$ than $\mathbf{u_{0.5}^+}$ (while their mean values are the same, due to symmetry around $\mathbf{u_*}=0.5$). The utility function always looking for the point that not only maximizes the mean value but is also interested in the points that have higher variance - Equation \@ref(eq:utility) -, which is the case between two points $\mathbf{u_{0.5}^+}$ and $\mathbf{u_{0.5}^-}$.
+
+```{r echo=FALSE, message=FALSE}
+set.seed(123)
+# ######################################################
+# one_d_fun <- function(x) {
+#   y <- (1-1/2*((sin(12*x)/(1+x))+(2*cos(7*x)*x^5)+0.7))
+#   return(y)
+# }
+# #################################################
+# 
+# xmin <- optimize(one_d_fun, c(0, 1), tol = 0.0001, maximum = TRUE)
+#########################################################
+
+x_domain <- seq(0,1,0.01)
+y_domain <- one_d_fun(x_domain)
+#y_domain <- max(y_domain) - min(y_domain)
+data_domain <- tibble(x=x_domain, y= y_domain)
+#data_domain
+
+#r <- max(vec) - min(vec)
+#vec <- (vec - min(vec))/r
+#########################################################
+obs_data_return <- function(x) {
+  y_norm <- one_d_fun(x)
+  #y_norm = y-mean(y)
+  df <- data.frame(x,y_norm)
+}
+#################################
+
+km_model <- function(obs_data, predict_x) {
+  
+  model <- km(~0, design = data.frame(x=obs_data$x), response = obs_data$y_norm, multistart = 100, 
+              control =list(trace=FALSE))
+  paste0(model@covariance@range.val)
+  p.SK <- predict(model, newdata=data.frame(x=predict_x), type="SK",cov.compute = TRUE)
+  return(list(predict_list=p.SK,cov_par=model@covariance@range.val))
+}
+
+###################################
+```
+
+```{r, echo=FALSE}
+
+source("plot_funcs/plot_post_indi.R")
+source("plot_funcs/plot_post.R")
+source("plot_funcs/utility_cal_plot_ind.R")
+source("plot_funcs/utility_cal_plot.R")
+
+
+utility_cal <- function(predict_list, x_predict,obs_data,eps) {
+ 
+  y_max <- max(obs_data$y_norm)
+  
+  z <- (predict_list$mean - y_max - eps) / (predict_list$sd)
+  
+  utility <- (predict_list$mean - y_max - eps) * pnorm(z) + (predict_list$sd) * dnorm(z)
+  
+  new_x <- x_predict[which(utility==max(utility))] 
+  
+  return(new_x)
+}
+```
+
+
+```{r, echo=FALSE, message=FALSE, include=FALSE}
+
+plot_post <- function(predict_list,x_predict,obs_data) {
+  
+  mv_sample <- mvtnorm::rmvnorm(100, predict_list$mean, predict_list$cov)
+  ss <- t(mv_sample)
+  
+  dat <-data.frame(x=x_predict, ss) %>% 
+    pivot_longer(-x, names_to = "rep", values_to = "value") %>% 
+    mutate(rep=as.numeric(as.factor(rep)))
+  
+  data_gp <- data.frame(x=x_predict,upper95=predict_list$upper95,
+                        lower95=predict_list$lower95, mean_curve=predict_list$mean)
+  
+  
+  ggplot(dat,aes(x=x,y=value)) + 
+    geom_line(aes(group=as.factor(rep), color="blue"), alpha=0.7) +
+    #scale_colour_manual("",values = cols) +
+    scale_color_manual("", values = c("black","blue", "red"), 
+                       labels=c("True Function", "Sample from the posterior","Mean Value")) +#REPLICATES +
+    geom_ribbon(data = data_gp, 
+                aes(x, 
+                    y = mean_curve, 
+                    ymin = lower95, 
+                    ymax = upper95,
+                    fill="grey"), alpha = 0.6, show.legend = T) +
+    scale_fill_manual("",values="gray", labels="95% CI") +
+    geom_line(dat = data_gp, aes(x=x,y=mean_curve, color="red"), size=1) + #MEAN
+    geom_point(data=obs_data,aes(x=x,y=y_norm),fill="green", color="yellow",shape=23, size=2) +
+    geom_line(data=data_domain,aes(x=x_domain,y=y_domain, color="black"),size=1, alpha=0.7) +
+    scale_y_continuous(lim=c(-0.5,1.2)) +
+    scale_x_continuous(lim=c(0,1)) +
+    theme(legend.position="none") +
+    theme(legend.text=element_text(size=4)) +
+    theme(text = element_text(size=6)) +
+    theme(axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+    #theme(legend.position="top")
+  
+}
+
+##################################################################
+
+utility_cal <- function(predict_list, x_predict,obs_data,eps) {
+ 
+  y_max <- max(obs_data$y_norm)
+  
+  z <- (predict_list$mean - y_max - eps) / (predict_list$sd)
+  
+  utility <- (predict_list$mean - y_max - eps) * pnorm(z) + (predict_list$sd) * dnorm(z)
+  
+  new_x <- x_predict[which(utility==max(utility))] 
+  
+  return(new_x)
+}
+
+########################################################################
+
+
+utility_cal_plot <- function(predict_list, x_predict,obs_data,eps,x_next) {
+  
+  y_max <- max(obs_data$y_norm)
+  z <- (predict_list$mean - y_max - eps) / (predict_list$sd)
+  
+  utility <- (predict_list$mean - y_max - eps) * pnorm(z) + (predict_list$sd) * dnorm(z)
+  
+  data_utility <- data.frame(x=x_predict, utility=utility)
+  
+  ggplot(data_utility,aes(x,utility)) +
+    geom_line() +
+    scale_y_continuous(position = "right") +
+    theme(text = element_text(size=6)) +
+    geom_vline(xintercept = x_next, linetype="dotted", 
+                color = "blue", size=0.5) +
+   annotate("text", x=x_next, y=0, label= "x_next", hjust = -0.5, vjust=-2 ,colour = "blue") +
+    theme(axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+}
+
+###############################################
+
+
+
+plot_post_indi <- function(predict_list,x_predict,obs_data) {
+  
+  
+  mv_sample <- mvtnorm::rmvnorm(100, predict_list$mean, predict_list$cov)
+  ss <- t(mv_sample)
+  
+  dat <-data.frame(x=x_predict, ss) %>% 
+    pivot_longer(-x, names_to = "rep", values_to = "value") %>% 
+    mutate(rep=as.numeric(as.factor(rep)))
+  
+  data_gp <- data.frame(x=x_predict,upper95=predict_list$upper95,
+                        lower95=predict_list$lower95, mean_curve=predict_list$mean)
+  
+  
+  ggplot(dat,aes(x=x,y=value)) + 
+    geom_line(aes(group=as.factor(rep), color="blue"), alpha=0.7) +
+    #scale_colour_manual("",values = cols) +
+    scale_color_manual("", values = c("black","blue", "red"), 
+                       labels=c("True Function","Sample from the posterior","Mean Value")) +#REPLICATES +
+    geom_ribbon(data = data_gp, 
+                aes(x, 
+                    y = mean_curve, 
+                    ymin = lower95, 
+                    ymax = upper95,
+                    fill="grey"), alpha = 0.6, show.legend = T) +
+    scale_fill_manual("",values="gray", labels="95% CI") +
+    geom_line(dat = data_gp, aes(x=x,y=mean_curve, color="red"), size=1) + #MEAN
+    geom_point(data=obs_data,aes(x=x,y=y_norm),fill="green", color="yellow",shape=23, size=2) +
+    geom_line(data=data_domain,aes(x=x_domain,y=y_domain, color="black"),size=1, alpha=0.7) +
+    scale_y_continuous(lim=c(-0.5,1.25)) +
+    scale_x_continuous(lim=c(0,1)) +
+    xlab("x") +
+    ylab("f(x)") +
+    theme(legend.position="top") 
+  
+}
+
+utility_cal_plot_ind <- function(predict_list, x_predict,obs_data,eps,x_next) {
+  
+  y_max <- max(obs_data$y_norm)
+  z <- (predict_list$mean - y_max - eps) / (predict_list$sd)
+  
+  utility <- (predict_list$mean - y_max - eps) * pnorm(z) + (predict_list$sd) * dnorm(z)
+  
+  data_utility <- data.frame(x=x_predict, utility=utility)
+  
+  ggplot(data_utility,aes(x,utility)) +
+    geom_line() +
+    geom_vline(xintercept = x_next, linetype="dotted", 
+                color = "blue", size=1) +
+   annotate("text", x=x_next, y=0, label= "x_next", hjust = 1.2, vjust=-1 ,colour = "blue") 
+   
+}
+
+```
+
+```{r exampleshow, fig.retina=2, warning=FALSE, fig.cap="Ite1 - Top: Gaussian posterior over the initial sample points; Lower: Utility function over the x values", out.width="100%", fig.align='left', echo=FALSE, out.height="75%"}
+
+set.seed(123)
+x <- c(0.05,0.2,0.5,0.6,0.95)
+obs_data <- obs_data_return(x)
+x_predict <- seq(0,1,0.005)
+
+predict_list <- km_model(obs_data,x_predict)
+posterior_1 <- plot_post_indi(predict_list$predict_list,x_predict,obs_data)
+
+
+new_x_point1 <- utility_cal(predict_list$predict_list,x_predict,obs_data,0.1)
+utility_1 <- utility_cal_plot_ind(predict_list$predict_list,x_predict,obs_data,0.1, new_x_point1)
+
+posterior_1 /
+  utility_1
+```
+
+If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(total iteration) = 5 + 2=7$.
+
+```{r allinone, echo=FALSE, fig.align='left', fig.cap="Gaussian posterior of over the initial sample points", fig.retina=2, message=FALSE, warning=FALSE, out.height="90%", out.width="90%"}
+set.seed(123)
+
+x <- c(0.05,0.15,0.2,0.5,0.6,0.95)
+obs_data <- obs_data_return(x)
+x_predict <- seq(0,1,0.005)
+
+predict_list <- km_model(obs_data,x_predict)
+posterior_1 <- plot_post(predict_list$predict_list,x_predict,obs_data)
+
+new_x_point1 <- utility_cal(predict_list$predict_list,x_predict,obs_data,0.1)
+utility_1 <- utility_cal_plot(predict_list$predict_list,x_predict,obs_data,0.1, new_x_point1)
+#utility_1
+#################
+
+x2 <- c(0.05,0.15,0.2,0.5,0.6,0.95,new_x_point1)
+obs_data2 <- obs_data_return(x2)
+x_predict <- seq(0,1,0.005)
+
+predict_list2 <- km_model(obs_data2,x_predict)
+posterior_2 <- plot_post(predict_list2$predict_list,x_predict,obs_data2)
+new_x_point2 <- utility_cal(predict_list2$predict_list,x_predict,obs_data2,0.1)
+utility_2 <- utility_cal_plot(predict_list2$predict_list,x_predict,obs_data2,0.1, new_x_point2)
+
+###################
+
+x3 <- c(0.05,0.15,0.2,0.5,0.6,0.95,new_x_point1,new_x_point2)
+obs_data3 <- obs_data_return(x3)
+x_predict <- seq(0,1,0.005)
+
+predict_list3 <- km_model(obs_data3,x_predict)
+posterior_3 <- plot_post(predict_list3$predict_list,x_predict,obs_data3)
+
+new_x_point3 <- utility_cal(predict_list3$predict_list,x_predict,obs_data3,0.1)
+utility_3 <- utility_cal_plot(predict_list3$predict_list,x_predict,obs_data3,0.1, new_x_point3)
+
+##################
+
+# (posterior_1 + utility_1) / 
+# (posterior_2 + utility_2) / 
+# (posterior_3 + utility_3) 
+  #plot_layout(ncol = 2)
+
+
+library(gridExtra)
+grid.arrange(posterior_1, utility_1, posterior_2, utility_2, posterior_3, utility_3, ncol=2,
+             widths = c(6, 4))  
+# (posterior_3 + utility_3) , ncol=2)
+
+# (posterior_1 + theme(plot.margin = unit(c(0,30,0,0), "pt"))) +
+# (utility_1 + theme(plot.margin = unit(c(0,0,0,30), "pt")))
+# p1 + p2 + p3 + p4 + 
+#   plot_layout(ncol = 3)
+```
+
+Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at \@ref(fig:allinone), we can see that the maximum of the utility function is at the iteration \# 3 is in order of $10^{-6}$ . That shows that after optimization, even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process, since querying points to be sampled from the expensive function has a negligible potential to improve our search in optimization.
