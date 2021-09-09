@@ -536,7 +536,7 @@ Before applying the same workflow at the field scale, the 1-D example presented 
 
 ## Synthetic 3D Reservoir Model
 
-In this section, the BO workflow is applied to a synthetic 3D reservoir model. The trough introduction of the model and it's gelogical describition can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system. The 3D model has eight water injectors and four producers wells shown in Figure \@ref(fig:eggbase). The geological model has highly permeable channels which are described by 100 equi-probable geological realizations, three of which are illustrated in left side of Figure \@ref(fig:combine).[@hong2017].
+This section applies the BO workflow to a synthetic 3D reservoir model to optimize field production by controlling the water flooding scheme. A thorough introduction of the model and its geological description can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system. The 3D model has eight water injectors and four producers shown in Figure \@ref(fig:eggbase).  One hundred equiprobable geological realizations describe the highly permeable channels, three of which are illustrated on the left side of Figure \@ref(fig:combine).[@hong2017].
 
 \begin{figure}
 
@@ -547,7 +547,7 @@ In this section, the BO workflow is applied to a synthetic 3D reservoir model. T
 \caption{Well locations in Egg model, blue ones are injection, the red producers}(\#fig:eggbase)
 \end{figure}
 
-Relative permeabilities and the associated fractional flow curve of the model have shown in right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has  life-cycle of 10 years, as it was suggested in [@jansen2014]. Here, the injection rate to be maintained over life-cycle of reservoir is going to be optimized. Thus, given eight injection wells, the optimization workflow has the eight dimention Meaning, what is the optimum injection rate for eight injector wells, for whole 10 year period of reservoir production. However, the optimization in not unbounded, the water can be adjusted from 0 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
+Relative permeabilities and the associated fractional flow curve of the model have shown on the right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has a life-cycle of 10 years, as suggested in [@jansen2014]. Here, the injection rate to be maintained over the reservoir's life cycle will be optimized. Thus, given eight injection wells, the optimization workflow has eight dimensions. In other words, given the objective function and uncertainty in the geological model, what is the optimum injection rate for eight injector wells for the whole ten-year period of reservoir production. However, the optimization is not unbounded, and water injection per well can be adjusted from 5 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
 \begin{figure}
 
@@ -560,8 +560,7 @@ Relative permeabilities and the associated fractional flow curve of the model ha
 
 ### Well Control Optimization
 
-Reviewing the equation raised in the section 3, here we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations,
-$\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, approximating the expextaion of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
+Reviewing the equations raised in section 3, here we assume that the uncertainty in $\mathbf{G}$ can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations, $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, approximating the expectation of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
 
 ```{=tex}
 \begin{equation}
@@ -570,7 +569,7 @@ $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, approximating the expextaion of $\math
 \end{equation}
 ```
 
-$\mathbf{u}$ is Injection rate for the each injection well, therefore the control vector, to be optimizaed in this case is defined as:
+$\mathbf{u}$ is 1d vector with a dimension of eight, where each element contains injection rate for each injection well, therefore the control vector, to be optimized in this case, is defined as:
 
 ```{=tex}
 \begin{equation}
@@ -579,9 +578,14 @@ $\mathbf{u}$ is Injection rate for the each injection well, therefore the contro
 \end{equation}
 ```
 
-As the \@ref(eq:npvoptrep) suggest, the $\overline{J}(u)$ need some parameters to be defined. The oil price ($P_o$), water production cost ($p_{wp}$) and water injection cost ($P_{wi}$) in $dollar/m^3$ has been provided in the Table \@ref(tab:npvparam). Also, in this work the cash flow is disconted daily and the discount factor is avilable in the \@ref(tab:npvparam). We would like to note that in this work due to avoid further computional burden in optimization process, 10 realizations of the egg model has been considered, therefore $n_e=10$ in Equation \@ref(eq:npvoptrep).
+As the \@ref(eq:npvoptrep) suggests, the $\mathbf{\overline{J}(u)}$ need some parameters to be defined. These economical parameters, oil price ($P_o$), water production cost ($p_{wp}$), and water injection cost ($P_{wi}$) in unit of $\$/m^3$ has been provided in the Table \@ref(tab:npvparam). The cash flow is discounted daily and the discount factor is available in the \@ref(tab:npvparam). We want to note that in this work, to avoid further computational burden in the optimization process, ten realizations of the Egg model have been considered, therefore $n_e=10$ in Equation \@ref(eq:npvoptrep).
 
-The procedure for calcuting $\mathbf{\overline{J}(u)}$ is as follows: first we decide on the $\mathbf{u}$ and write that in the *DATA* file of reservoir simulator. Then we run the file in the numerical resevoir simulators given that the production life of the resecvoir is 10 years. We repeat te simulation for all geological realizations $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, we have oil production, watre production and water injection as output of simulators. Then, we can insert $q_o$, $q_{wp}$ and $q_{wi}$ into eqaution \@ref(eq:npvoptrep) and \@ref(tab:npvparam) to get $\mathbf{\overline{J}(u)}$, for given $\mathbf{u}$.
+The calculation procedure for $\mathbf{\overline{J}(u)}$ is as follows: first we decide on the $\mathbf{u}$ and write that in the *DATA* file of reservoir simulator. Then we run the file in the numerical reservoir simulators given that the production life of the reservoir is ten years. We repeat the simulation for all geological realizations $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, we have oil production, water production and water injection as output of simulator. Then, we can insert $q_o$, $q_{wp}$, $q_{wi}$ and values in Table \@ref(tab:npvparam) into eqaution \@ref(eq:npvoptrep) to get $\mathbf{\overline{J}(u)}$.
+
+
+
+
+
 
 
 \begin{table}[H]
@@ -590,7 +594,7 @@ The procedure for calcuting $\mathbf{\overline{J}(u)}$ is as follows: first we d
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
 \hline
-Item & Pric & Items & Value\\
+Item & Price & Items & Value\\
 \hline
 P\_o & 315 & b & 8\%\\
 \hline
@@ -603,7 +607,8 @@ P\_wi & 12.5 & n\_e & 10\\
 
 ### BO Workflow
 
-As it was discussed, the starting point of the BO workflow is to randomly sample the initial data pairs $\mathcal{D}$ which is used to build the Gaussian model of the response surface to the input variables. In this work, forty samples from the Latin hyper cube sampling (LHS) method were drawn. Note that we draw forty sample of $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ can only take value between 10 to 100. The LHS is prefred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of the $\mathbf{\overline{J}(u)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u)}$ found from sampling has been shown with blue line. Setting the specific seed number (since LHS is in itself is random process), we get the max $NPV$ achieved here was $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth to mention that random sampling like the LHS is not helpful to consistently approach the global optimum point, as it the solution does not improve. There is a need for efficient workflow to find the optimum point while using the a few as possible sampling from real function.
+
+As discussed, the BO workflow's starting point is to randomly sample the initial data pairs $\mathcal{D}$, which is used to build the probabilistic model (GP model) of the response surface to the input variables. In this work, forty samples from the Latin Hyper Cube Sampling (LHS) method were drawn. Note that we draw forty samples of $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ can only take a value between 5 to 100 (constraints). The LHS is preferred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of $\mathbf{\overline{J}(u)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u)}$ found from random sampling has been shown with a blue line. Setting the specific seed number (since LHS is in itself is random process), we get the maximum $NPV$ achieved here is $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth mentioning that random sampling like the LHS is not helpful to consistently approach the global optimum point, as the solution does not improve with additional sampling. There is a need for an efficient workflow to find the optimum point while using a few as possible sampling from real function.
 
 \begin{figure}
 
@@ -614,7 +619,7 @@ As it was discussed, the starting point of the BO workflow is to randomly sample
 \caption{Expected NPV as result of forty sampling from LHS}(\#fig:lhssampling)
 \end{figure}
 
-Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:init-data) we can build the probabilistic model of, representing our understinding of surface of objective function. Unfortunately, in this section we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, due being the space is eight-dimetional, and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) to get the idea of how plot of the probalitc model condtioned to initial point look like (at 1D case). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$.  the Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential sampling resulted from the BO workflow. Readers are refereed to this point that in the figure, not all red points are increasing and some points are lower than previous points. The reason for this behaviour is the nature of BayesOpt algorith. We can suggest that in the points that has lower expected NPV from the previous, we may reached the lower optimum point, but those points helped us to decrease the uncertainty, which is helpful for the further sampling. We can see that after just ten evaluation of the expenside function (here it means finding the expected NPv from running 10 geological realization using flow simulation) we reach the new record Expeted NPV of $max \overline{J}(u)=36.85$$\$MM$.
+Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:init-data), we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, due being the space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) to get the idea of the plot of the probabilistic model conditioned to the initial point looks like (at 1D case). For the mathematical expression of the posterior model, it can be referred to Equation \@eq(ref:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. And this process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$, then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential sampling resulted from the BO workflow. Readers are refereed to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty, which is helpful for further sampling. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running 10 geological realizations using flow simulation) we reach the new record Expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
 
 \begin{figure}
 
@@ -625,7 +630,7 @@ Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:in
 \caption{Blue points represnts the sample from LHS, red points represents the samples from the BayesOpt Workflow}(\#fig:lhsbayesop)
 \end{figure}
 
-Now, as we explained in the 1-D section, the plot of the utility at each iteration could provide some useful information about the optimization process. The Figure \@ref(fig:utilitycurve) plots the $\alpha_{EI}^*(\mathcal{D}, \theta^*)$ (Equation \@ref(eq:exp-easy) )versus the ten iteration in this work. In fact the notaion $\alpha_{EI}^*$ means the optimum of the $\alpha_{EI}(u;\mathcal{D},\theta^*)$ after running multi-start (1000)- L-BFGS-B on all $u$ values. Now, we can see that in the figure the $\alpha_{EI}^*$ is decreasing going toward the zero. It can be inferred from this trend that, we are going out of the *good* $u$ values to be sampled from the expensive function, can be intepreted that we are in the vicinity of global optima, if we see after several iteration still $\alpha_{EI}^*$ is less than $10^-6$.
+Now, as we explained in the 1-D section, the plot of the utility at each iteration could provide some useful information about the optimization process. The Figure \@ref(fig:utilitycurve) plots the $\alpha_{EI}^*(\mathcal{D}, \theta^*)$ (Equation \@ref(eq:exp-easy) ) versus the ten iteration in this work. In fact the notaion $\alpha_{EI}^*$ means the optimum of the $\alpha_{EI}(u;\mathcal{D},\theta^*)$ after running multi-start (1000)- L-BFGS-B. Now, we can see that in the figure the $\alpha_{EI}^*$ is decreasing going toward the zero. It can be inferred from this trend that, we are going out of the *good* $\mathbf{u}$ values to be returned from the expensive function, can be interpreted that we are in the vicinity of global optima, if we see after several iteration still $\alpha_{EI}^*$ is less than $10^-6$.
 
 \begin{figure}
 
@@ -636,7 +641,9 @@ Now, as we explained in the 1-D section, the plot of the utility at each iterati
 \caption{Maximum utility at each iteration, after running L-BFGS-B to find the u with max utility, $\alpha_{EI}^*$}(\#fig:utilitycurve)
 \end{figure}
 
-Given that the BayesOpt inherintely has stochasric natrae ( from this perspective that having thje diffrenet initialization in LHS sampling will affect the final solution), in this section BayesOpt is repeated with diffret initilization. Ideally, this repeation shouwl be conducted 100 or 1000 times, to get better overview of the convergence of the algorithm given diffrent initilization. Though, because of the computional burden, in this work only three repeations were performed. optimization Repeat the Optimization, three times, in different initial design points. Figure \@ref(fig:difinit) shows results of three repeations. At each repeation (top, middle, bottom), the blue dots come from diffrente seed numbers and they are diffrente. Then, gicen that initialization $\mathcal{D}$, sequential sampling from the expenive function is perfomred, shown in the red points. Like previous case, in these repeations, 40 samples drawn from LHS algortihem, the 10 were taken thorigh BAyesOpt lagorith, totaling 50 samples. At each row of the Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\overline{NPV}$ in both random sampling phase (LHS) and BayesOpt phase. As it can be noted from the Figure \@ref(fig:difinit), at each repeation, the BayesOpt will improve the solution with small sample evaluation of the $\overline{J}(u)$. Thefore, improvemnet following the BayesOpt phase indepned of the initial design, yet the bigger question is whether given different initial design, the algorithm converge the vicinity of global optima. What is refered here is that if having different initilaization will lead completely different final solution, that hints that the algorithm has a "local" search, in conrast, if the solutions leads to one specif close $u^*$, that reprsents that algorithm have a "global" view on the surface of the objective function. In the case of "global" optimization having diferent initilizatin should lead to simular final solution, since the algorithm will not get stuck in local optimum points, close to initilalized data. This is common practice in the gradient-based optimization where the algorithm is powerfull in local optimization and in order to avoid stuck in local exterme points, "multi-start" runs are performed in order to search the global point in the objective function.
+Given that the BO inherently has stochastic nature (from this perspective that having different initialization in LHS sampling will affect the final solution), in this part BO is repeated with three different initialization. Ideally, this repetitions need to be conducted 100 or 1000 times, to get better overview of the stability of the algorithm to different initialization. Though, because of the computional burden, in this work only three repetitions were performed. Figure \@ref(fig:difinit) shows results of three repetitions, (top, middle, bottom), where each blue points in the plot has it's own specific seed number for random generation at LHS process. Then, given that initialization $\mathcal{D}$, sequential finding of $\mathbf{u}^{next}$ is performed, shown in the red points. Like the previous case, in each repeation, forty samples are drawn from LHS, the ten were taken through iterations in BO, leaving $\mathcal{D}$ with fifty pair of $\mathbf{u},\mathbf{J(u)}$ . At each row of the Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\mathbf{\overline{J}(u)}$ in both random sampling phase (LHS) and BO phase. As it can be noted from the Figure \@ref(fig:difinit), at each repeation, the BO will improve the solution with small sample evaluation of the $\overline{J}(u)$. Therefore, improvement following the BO phase is independent of the initial design, and fairly we can conclde that randomness in initialization will not degrade the prformnace of workflo. 
+
+Yet the bigger question is whether given different initial design, does the algorithm converge the vicinity of a global optima? What is meant here is that if having different initialization will lead completely different final solution, that hints that the algorithm has a "local" search, in contrast, if the solutions leads to one specif close $\mathbf{u}$, that represents that algorithm have a "global" view on the surface of the objective function. In the case of "global" optimization having different initialization should lead to a similar final solution. In that case, since the algorithm will not get stuck in local optimum point. This is common practice in the gradient-based optimization where the algorithm is powerfull in local optimization and in order to avoid stuck in local exterme points, "multi-start" runs are performed in order to search the global point in the objective function.
 
 \begin{figure}
 
@@ -647,7 +654,7 @@ Given that the BayesOpt inherintely has stochasric natrae ( from this perspectiv
 \caption{BayesOpt workflow applied to Syntetic 3D model, in three different initialization}(\#fig:difinit)
 \end{figure}
 
-To further continue thiss dicussion on the effect of initialization on the final solution, the $u^*$ value for each repeatation has been show on the left side of Figure \@ref(fig:diffu). Where the $u^*$ is the vector of 8 dimention, each value shows the optimum injection rate for the 10 years life cycle of the field, in $m^3/D$. We woul like to note that the y axis was plotted from the range of 5 to 100. The reason for this is to show that in this optimization problem, injection of each wells can take any number between 5$m^3/D$ to 100 $m^3/D$, and the y axis shows the full extend of the value optimum zation worlkflow can reach. Visually, looking at the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repeations at each weels, does not differ significantly from each other . With small exception of (injection \#2), it seems all the final solutions converges to the same solution. This feature that can be loosly said as "robustness" of optimization workflow to initial design is very helpfu, from this sense that we do not neeed to resetart the optimization with different initilaization, since they all will converges to the similar solution. From this perspective, authours can infere that BayesOpt workflow can be considered as "global" optimization method, as it shows the workflow avoids stuck in local exterme pointsor saddle regions. The plot on the left side of Figure \@ref(fig:diffu) shows that mean injection rate (mean of three repeations) and erro bar at each injection wells. The bottom of error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repeations, also the plots recoomnds that in the case of repeating the optimization with more than three times (like 10 or 100), it can lead to lower variation in final solution.
+To further continue this discussion on the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition has been show on the left side of Figure \@ref(fig:diffu). Where the $\mathbf{u}^{best}$ is the vector of 8 dimention, each value shows the optimum injection rate for the 10 years life cycle of the field, in $m^3/D$. We would like to note that the y axis was plotted from the range of 5 to 100. The reason for this is to show that in this optimization problem, injection of each wells can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking at the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetition at each well, does not differ significantly from each other. With small exception of (injection \#2), it seems all the final solutions converges to the same solution. This feature that can be loosly said as "robustness" of optimization workflow to initial design is very helpful, from this sense that we do not need to restart the optimization with different initialization, since they all will converges to the similar solution. From this perspective, authors can infer that BO workflow can be considered as "global" optimization method, as it shows the workflow avoids stuck in local exterme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows that mean injection rate (mean of three repetition) and erro bar at each injection wells. The bottom of error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition, also the plots recommends that in the case of repeating the optimization with more than three times (like 10 or 100), it can lead to lower variation in final solution.
 
 \begin{figure}
 
@@ -698,7 +705,7 @@ In first part of the comparison, we compare the Bayesopt with PSO and GA in fixe
 
 \begin{table}
 
-\caption{(\#tab:unnamed-chunk-12)Parameters of GA and PSO Methods}
+\caption{(\#tab:unnamed-chunk-14)Parameters of GA and PSO Methods}
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
 \toprule
@@ -759,7 +766,7 @@ Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
 Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication was used)
 
 
-\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-13-1} \end{center}
+\begin{center}\includegraphics[width=468px]{0_Paper1_main_files/figure-latex/unnamed-chunk-15-1} \end{center}
 
 \newpage
 
