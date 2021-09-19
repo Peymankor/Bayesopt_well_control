@@ -17,11 +17,11 @@ This work received support from the Research Council of Norway and the companies
 
 # Glossary {#glossary .unnumbered}
 
-## Nomenclature
+**Nomenclature**
 
 - $p$
 
-price in $dollar/m^3$
+Price in $dollar/m^3$
 
 - $q$
 
@@ -52,11 +52,11 @@ $k$
 Covariance function
 
 
-## Greek Symbols
+**Greek Symbols**
 
 - $\mathcal{MN}$
 
-Multivariate Normal distribution
+Multivariate normal distribution
 
 - $\mathcal{N}$
 
@@ -72,7 +72,7 @@ Parameter of covariance function
 
 - $\sigma$
 
-Standar deviation of normal distributaion
+Standard deviation of normal distribution
 
 - $\alpha_{EI}$
 
@@ -90,7 +90,7 @@ PDF of standard Gaussian distribution
 
 Explorative term 
 
-## Subscribtion
+**Subscribtion**
 
 - $o$
 
