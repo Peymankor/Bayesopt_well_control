@@ -25,7 +25,7 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-09-11"
+date: "2021-09-19"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -773,13 +773,115 @@ Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication
 \newpage
 
 
-# Concluding Remarks
+# Conclusion
+
+In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D toy case was considered to illustrate the workflow better and expand the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
+
+We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where hundred(s) of geological realizations are considered to represent uncertainty. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic objective function model. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. The selection of the next point for evaluation in other population-based methods is based on random sampling, wherein BO, as a utility function, is defined, and the point with maximum is selected for a new evaluation. 
+
+In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The problem size considered was a relative medium dimension problem. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem where it would be helpful in the BO performance when there are some inequality constraints (typical in placement problems). Finally, from the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
+
 
 \newpage
 
 # Acknowledgements
 
 This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (<http://digires.no>). We acknowledge the access to Eclipse licenses granted by Schlumberger.
+
+\newpage
+
+# Glossary {#glossary .unnumbered}
+
+## Nomenclature
+
+- $p$
+
+price in $dollar/m^3$
+
+- $q$
+
+Volume in $m^3/D$
+
+- $N_p$
+
+Number of production wells
+
+- $N_{wi}$
+
+Number of injection wells
+
+- $\mathbf{u}$
+
+Control variable (decision to make)
+
+- $\mathbf{U}$
+
+Vector of control variables
+
+- $m$
+
+Mean function
+
+$k$
+
+Covariance function
+
+
+## Greek Symbols
+
+- $\mathcal{MN}$
+
+Multivariate Normal distribution
+
+- $\mathcal{N}$
+
+Normal distribution
+
+- $\mu$
+
+Mean of normal distribution
+
+- $\theta$
+
+Parameter of covariance function
+
+- $\sigma$
+
+Standar deviation of normal distributaion
+
+- $\alpha_{EI}$
+
+utility function when policy is Expected Improvement
+
+- $\Phi$
+
+CDF of standard Gaussian distribution
+
+- $\phi$
+
+PDF of standard Gaussian distribution
+
+- $\epsilon$
+
+Explorative term 
+
+## Subscribtion
+
+- $o$
+
+Oil
+
+- $wp$
+
+Produced Water
+
+- $wi$
+
+Injection Water
+
+- $EI$
+
+Expected Improvement
 
 \newpage
 
