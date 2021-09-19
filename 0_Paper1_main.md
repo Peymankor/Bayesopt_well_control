@@ -777,9 +777,9 @@ Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication
 
 In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D toy case was considered to illustrate the workflow better and expand the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
 
-We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where hundred(s) of geological realizations are considered to represent uncertainty. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic objective function model. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. The selection of the next point for evaluation in other population-based methods is based on random sampling, wherein BO, as a utility function, is defined, and the point with maximum is selected for a new evaluation. 
+We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where hundred(s) of geological realizations are considered to represent uncertainty in objective function. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic model of objective function. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. The selection of the next point for evaluation in other population-based methods is based on random sampling, wherein BO, as a utility function, is defined, and the point with maximum utility is selected for a new evaluation. 
 
-In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The problem size considered was a relative medium dimension problem. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem where it would be helpful in the BO performance when there are some inequality constraints (typical in placement problems). Finally, from the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
+In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The problem size considered was relatively medium dimension problem. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem where it would be useful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
 
 
 \newpage
@@ -792,11 +792,11 @@ This work received support from the Research Council of Norway and the companies
 
 # Glossary {#glossary .unnumbered}
 
-## Nomenclature
+**Nomenclature**
 
 - $p$
 
-price in $dollar/m^3$
+Price in $dollar/m^3$
 
 - $q$
 
@@ -827,11 +827,11 @@ $k$
 Covariance function
 
 
-## Greek Symbols
+**Greek Symbols**
 
 - $\mathcal{MN}$
 
-Multivariate Normal distribution
+Multivariate normal distribution
 
 - $\mathcal{N}$
 
@@ -847,7 +847,7 @@ Parameter of covariance function
 
 - $\sigma$
 
-Standar deviation of normal distributaion
+Standard deviation of normal distribution
 
 - $\alpha_{EI}$
 
@@ -865,7 +865,7 @@ PDF of standard Gaussian distribution
 
 Explorative term 
 
-## Subscribtion
+**Subscribtion**
 
 - $o$
 
