@@ -1,5 +1,5 @@
 ---
-title: "Bayesian Optimization: A New Sample Efficient Workflow for Reservoir Optimization under Uncertainty"
+title: "Draft Title: Bayesian Optimization: A New Sample Efficient Workflow for Reservoir Optimization under Uncertainty"
 author:
   - name: "Peyman Kor"
 #    email: "peyman.kor@uis.no"
@@ -25,7 +25,7 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-09-21"
+date: "2021-09-26"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -167,7 +167,7 @@ As mentioned above, Equation \@ref(eq:npvdet) lacks to capture the uncertainty i
 ```
 
 
-Where $p(\mathbf{G})$ is probability density function (PDF) of random variable, $\mathbf{G}$. However, thoroughout , we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its PDF ($p(\mathbf{G})$) to obtain an ensemble of $N_e$ realization, $\mathbf{G}_{re}$, $re=1,2,\cdots,N_e$. Therefore, approximation of $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$ can be written as:
+Where $p(\mathbf{G})$ is probability density function (PDF) of random variable, $\mathbf{G}$. However, thoroughout , we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its PDF ($p(\mathbf{G})$) to obtain an ensemble of $n_e$ realization, $\mathbf{G}_{re}$, $re=1,2,\cdots,n_e$. Therefore, approximation of $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$ can be written as:
 
 ```{=tex}
 \begin{equation}
@@ -178,9 +178,9 @@ Where $p(\mathbf{G})$ is probability density function (PDF) of random variable, 
 
 Where in Equation \@ref(eq:npvopt) contrary to Equation \@ref(eq:npvdet), there is not one, rather $n_e$ geological realizations, each of them written as $G_{re}$. In this work, the objective is to optimize the Equation \@ref(eq:npvopt), where it is simply approximation of expected value of NPV defined in \@ref(eq:npvdet) over all realizations.
 
-It is well defined in the literature that optimizing Equation \@ref(eq:npvopt) is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Not only because thousand(s) of PDE have to be solved in the flow-simulation in order to compute the $q_o, q_{wp}, q_{wi}$; the flow simulation must be enumerated over all realizations $n_e$ to compute $\overline{J}(u)$. Let's assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the bottom hole pressure of five injection wells and shut-in time of other five production wells, $D=10$. The geology team of the enterprise comes up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \~1hr. Then, simply having 100 realizations means that each forward computation of $\overline{J}(u)$ takes around \~100 hr. Considering that the enterprise has to decide in 6 month period (in the best case, it can be interpreted as 6 months CPU running time), which means that a total number of the available budget for running the forward model is$\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. The budget of only $50$ forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$, could be discretized into ten possible cases, then total available solutions for this optimization problem will be $\text {Number of all possible solutions} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\
+It is well defined in the literature that optimizing Equation \@ref(eq:npvopt) is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Not only because thousand(s) of PDE have to be solved simultaneously in the flow-simulation in order to compute the $q_o, q_{wp}, q_{wi}$; the flow simulation must be enumerated over all realizations $n_e$ to compute $\overline{J}(u)$. Let us assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the injection rate of five injection wells and bottom hole pressure (BHP) of other five production wells, $D=10$. The geology team of the enterprise comes up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \~1hr. Then, simply having 100 realizations means that each forward computation of $\overline{J}(u)$ takes around \~100 hr. Considering that the enterprise has to decide in six month period (in the best case, it can be interpreted as six months CPU running time), which means that the total number of the available budget for running the forward model is$\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. The budget of the only $50$ forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$, could be discretized into ten possible cases, then total available decision alternatives (solutions) for this optimization problem will be $\text {Number of all possible alternatives} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\
 
-The rest of this paper will be arguing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described above. Where the workflow needs to capture the optimum global point (area) while having a small forward evaluation budget.
+In the rest of this paper, we will be discussing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described at the beginning of the section. 
 
 \newpage
 
@@ -193,22 +193,22 @@ The rest of this paper will be arguing that the Bayesian Optimization workflow i
 
 ## Overall View
 
-Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is an inference from a finite number of function evaluations. This finite number of evaluations is done as initialization of the workflow and build a probabilistic model.
+Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is an inference from a finite number of function evaluations. This finite number of evaluations is done as initialization of the workflow and building a probabilistic model.
 
 After initializing and building a probabilistic model, a new query point is evaluated using the expensive objective function at each iteration. Then the new data $(\mathbf{u}^{new},\mathbf{J}(\mathbf{u}^{new}))$ is assimilated back to the probabilistic model to update the model. The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of exploring and exploiting space of decision.
 
-In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a control decision, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While, the capital letter, $\mathbf{U}$ is collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
+In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a control decision, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While the capital letter, $\mathbf{U}$ is a collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
 
 The workflow of BO can be divided into two steps:
 
 -   Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 -   Step 2: Deciding on next $\mathbf{u}^{next}$ and evaluate $\mathbf{J(u^{next})}$ based on probabilistic model and $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$
 
-After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational budget. First, we will explain Gaussian Process (GP) as a method for building a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
+After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational budget. First, we will explain Gaussian Process (GP) to build a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
 
 ## Gaussian Process
 
-In this work, we employ the widely used Gaussian process (GP) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GP is an attractive choice because it is computationally traceable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A GP can be seen as an extension of the Gaussian distribution to the functional space. Key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and Covariance defined as:
+In this work, we employ the widely used Gaussian process (GP) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GP is an attractive choice because it is computationally tractable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A GP can be seen as an extension of the Gaussian distribution to the functional space. The key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and Covariance defined as:
 
 ```{=tex}
 \begin{equation}
@@ -220,16 +220,16 @@ In this work, we employ the widely used Gaussian process (GP) as a probabilistic
 \end{equation}
 ```
 
-In \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . A GP is a distribution over function completely defined by its mean and covariance function as:
+In \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . The GP is a distribution over function completely defined by its mean and covariance function as:
 
 ```{=tex}
 \begin{equation}
-J(\mathbf{u}) \sim \mathcal{N}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
+J(\mathbf{u}) \sim \mathcal{MN}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
 \label{eq:mean_cov_gp}
 \end{equation}
 ```
 
-where $\mathcal{N}$ denotes a multivariate normal distribution.As discussed in [@shahriari2016], there are many choices for the covariance function; the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
+Where $\mathcal{MN}$ denotes a multivariate normal distribution. As discussed in [@shahriari2016], there are many choices for the covariance function; the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
 
 \begin{table}[H]
 
@@ -248,7 +248,7 @@ Power-Exponetial & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2 exp(-(\fr
 \end{tabu}
 \end{table}
 
-Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludian distance of $\mathbf{u}$, $\mathbf{u'}$. ( Note that $|h|^2=(\mathbf{u}-\mathbf{u'})^\intercal(\mathbf{u}-\mathbf{u'})$). In this work, the Matern covariance function with $\nu=\frac{5}{2}$ was employed. However, depending to any choice of covariance function, the parameters of covariance function needs to be estimated. These parameters can be denoted as $\theta$ as:
+Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludian distance of $\mathbf{u}$, $\mathbf{u'}$. ( Note that $|h|^2=(\mathbf{u}-\mathbf{u'})^\intercal(\mathbf{u}-\mathbf{u'})$). In this work, the Matern covariance function with $\nu=\frac{5}{2}$ was employed.  However, depending on any choice of covariance function, the covariance function parameters need to be estimated. These parameters can be denoted as $\theta$ as:
 
 ```{=tex}
 \begin{equation}
@@ -259,7 +259,7 @@ Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludia
 
 The parameter $\theta$ needs to be optimized, as it will be explained later. With this background, BO workflow is explained as follows.
 
-### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build probabilistic model inferred from $\mathcal{D}$
+### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 
 Assuming we start GP with a finite number of an initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the data-set $\mathcal{D}$ as:
 
@@ -274,7 +274,7 @@ Assuming we start GP with a finite number of an initial evaluation of $\mathbf{J
 \end{align}
 ```
 
-Now we consider the case of predicting the outputs for new inputs that are not in $\mathcal{D}$. Specifically, given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$, we want to predict the function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$. By definition of the GP, the joint distribution $p(\mathbf{J_U}, \mathbf{J_{U_*}})$ has the following form:
+Now we consider the case of predicting the outputs for new inputs that are not in $\mathcal{D}$. Specifically, we want to predict the function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$ given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$. By definition of the GP, the joint distribution $p(\mathbf{J_U}, \mathbf{J_{U_*}})$ has the following form:
 
 ```{=tex}
 \begin{equation}
@@ -333,11 +333,11 @@ p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}= & \:  \mathcal{MN}(\mathbf{J_{U
 \end{align}
 ```
 
-The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation.
+The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
 
 #### Parameter Estimation of Covariance Kernel
 
-As it shown in the \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
+As shown in Table \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
 
 ```{=tex}
 \begin{equation}
@@ -346,7 +346,7 @@ p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})= \int p(\mathbf{y}|\mathbf{J_U})p(\ma
 \end{equation}
 ```
 
-The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ in fact represent the probability of observing the data $y$given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. The $log$ of marginal likelihood then can be written as:
+The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. The $log$ of marginal likelihood then can be written as:
 
 ```{=tex}
 \begin{equation}
@@ -355,7 +355,7 @@ The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ in fact represent the prob
 \end{equation}
 ```
 
-Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log_like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
@@ -366,7 +366,7 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 
 However, since the objective $\mathcal{L}$ is not convex, local minima can be a problem, so we need to use multiple restarts.
 
-It is useful to note that the value $\theta^{\ast}$ could be estimated using only a "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in next step usually, we need probability distribution of $\mathbf{J}$ for each control value ($\mathbf{u}$), equation \@ref(eq:post-mean-cov) can be written as:
+It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for each control value ($\mathbf{u}$), equation \@ref(eq:post-mean-cov) can be written as:
 
 ```{=tex}
 \begin{align}
@@ -379,24 +379,24 @@ p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{
 \end{align}
 ```
 
-In \@ref(eq:post-mean-cov-single), we replaced the $\mathcal{MN}$ with $\mathcal{N}$ in \@ref(eq:post-mean-cov) as Equation \@ref(eq:post-mean-cov-single) shows the probability of $\mathbf{J}$ for *one* control variable, wherein Equation \@ref(eq:post-mean-cov) we have th probality of the $\mathbf{J}$, over a vector of the control variable, $\mathbf{U}$.
+In \@ref(eq:post-mean-cov-single), we replaced the $\mathcal{MN}$ with $\mathcal{N}$ in \@ref(eq:post-mean-cov) as Equation \@ref(eq:post-mean-cov-single) shows the probability of $\mathbf{J}$ for *one* control variable, wherein Equation \@ref(eq:post-mean-cov) we have th probability of the $\mathbf{J}$, over a vector of the control variable, $\mathbf{U}$.
 
 ### Step.2 Deciding on next $\mathbf{u}^{next}$ based on the probabilistic model
 
-The posterior of the probabilistic model given by Equation \@ref(eq:post-mean-cov) can quantify the uncertainty over the space of the unknown function, $f$. The question is, what is the next $\mathbf{u}^{next}$ to feed into the *expensive function*?. In other words, so far we have $\mathcal{D}$, but need to decide the next $\mathbf{u}^{next}$ so that going back to Step 1, our updated $\mathcal{D}$ be $\mathcal{D}=\mathcal{D} \: \cup[\mathbf{u^{next}},\mathbf{J(u^{next})}]$. One could select the next point arbitrarily, but that would be wasteful.
+The posterior of the probabilistic model given by Equation \@ref(eq:post-mean-cov-single) can quantify the uncertainty of $\mathbf{J}$ over the any new $\mathbf{u_*}$. The question is, what is the next $\mathbf{u}^{next}$ to feed into the *expensive function*?. In other words, so far we have $\mathcal{D}$, but need to decide the next $\mathbf{u}^{next}$ so that going back to Step 1, our updated $\mathcal{D}$ be $\mathcal{D}=\mathcal{D} \: \cup[\mathbf{u^{next}},\mathbf{J(u^{next})}]$. One could select the next point arbitrarily, but that would be wasteful.
 
-To answer this question, we define a utility function, and the next query point is the point that with maximum utility. The literature of BO has seen many utility functions (called acquisition function in the computer science community). These include the Improvement based policies (Probability of Improvement (PI), Expected Improvement(EI)), optimistic policies (Upper Confidence Bound (UCB)), or Information-based (like Thompson Sampling (TS)). The full review of these utility functions and their strength and weakness could be reviewed in [@shahriari2016].
+To answer this question, we define a utility function, and the next query point is the point with maximum utility. The literature of BO has seen many utility functions (called acquisition function in the computer science community). These include the Improvement based policies (Probability of Improvement (PI), Expected Improvement(EI)), optimistic policies (Upper Confidence Bound (UCB)), or Information-based (like Thompson Sampling (TS)). The full review of these utility functions and their strength and weakness could be reviewed in [@shahriari2016].
 
 In the Expected Improvement (EI) policy, the utility is defined as follows:
 
 ```{=tex}
 \begin{equation}
-utility(\mathbf{u_\ast};\theta^{\ast},\mathcal{D})=\alpha_{EI}(\mathbf{u_\ast};\theta^\ast,\mathcal{D})=\int_{y}^{}max(0,\mathbf{J_{u_*}}-f)p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast}) \,dy
+utility(\mathbf{u_\ast};\theta^{\ast},\mathcal{D})=\alpha_{EI}(\mathbf{u_\ast};\theta^\ast,\mathcal{D})=\int_{y}^{}max(0,\mathbf{J_{u_*}}-\mathbf{J})p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast}) \,dy
 \label{eq:utiint}
 \end{equation}
 ```
 
-The utility defined in Equation \@(ref:utiint) can be seen as the expected value of improvement in posterior of the model (Equation \@ref(eq:post-mean-cov)) compared to the *true function* at point $\mathbf{u_\ast}$. Note that the term $p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})$ inside the integral already has been defined at Equation \@ref(eq:post-mean-cov). However, we do not have access to the *expensive function*, $f$; therefore, we replace the $f$ with the best available solution found so far, $\mathbf{J}^+$. The $\mathbf{J^+}$ mathematically can be defined simply as below, then Equation \@ref(eq:utiint) can be written as Equation \@ref(eq:utiint2):
+The utility defined in Equation \@ref(eq:utiint) can be seen as the expected value of improvement in posterior of the model (Equation \@ref(eq:post-mean-cov-single)) compared to the *true function* at point $\mathbf{u_\ast}$. Note that the term $p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})$ inside the integral already has been defined at Equation \@ref(eq:post-mean-cov-single). However, we do not have access to the *expensive function*, $\mathbf{J}$; therefore, we replace the $\mathbf{J}$ with the best available solution found so far, $\mathbf{J}^+$. The $\mathbf{J^+}$ mathematically can be defined simply as below, then Equation \@ref(eq:utiint) can be written as Equation \@ref(eq:utiint2):
 
 ```{=tex}
 \begin{equation}
@@ -407,6 +407,7 @@ The utility defined in Equation \@(ref:utiint) can be seen as the expected value
 \label{eq:j-plus}
 \end{equation}
 ```
+
 ```{=tex}
 \begin{equation}
 \alpha_{EI}(\mathbf{u_\ast};\theta^\ast,\mathcal{D})=\int_{y}^{}max(0,\mathbf{J_{u_*}}-\mathbf{J^+})p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast}) \,dy
@@ -414,7 +415,7 @@ The utility defined in Equation \@(ref:utiint) can be seen as the expected value
 \end{equation}
 ```
 
-After applying some tedious integration by parts on the right side of \@ref(eq:utiint2), one can express the expected improvement in a closed form [@jones1998]. To achieve closed form, first, we need some parametrization and define the $\gamma(\mathbf{u_*})$ as below:
+After applying some tedious integration by parts on the right side of \@ref(eq:utiint2), one can express the expected improvement in a closed-form [@jones1998]. To achieve closed form, first, we need some parametrization and define the $\gamma(\mathbf{u_*})$ as below:
 
 ```{=tex}
 \begin{equation}
@@ -461,7 +462,7 @@ In this work, the utility defined in Equation \@ref(eq:utility-no-greed) was con
 \end{equation}
 ```
 
-The Equation in \@ref(eq:exp-easy) represents a need for internal optimization in each iteration of BO. However, worth noting that the optimization of Equation \@ref(eq:exp-easy) is not computationally difficult for two main reasons. First, the forward evaluation of the Equation \@ref(eq:exp-easy), $\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})$ is inexpensive. In other words, we have a simple analytical formaula for calculating the $\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})$, as it has been provided in Equation \@ref(eq:utility-no-greed). Secondly, the exact analytical expression of the Equation \@ref(eq:utility-no-greed) is available. Authors refer to [@rasmussen2006] for detail of mathematical formulation. Having the gradient of the function in addition to inexpensive forward function, make the gradient-based method a suitable optimization choice. In this work, the quasi-Newton family of gradient based method, BFGS is used for finding $\mathbf{u}_*^{next}$. Multi-start BFGS were performed to avoid local optima points [@nocedal2006; @byrd1995].
+Equation in \@ref(eq:exp-easy) represents a need for internal optimization in each iteration of BO. However, worth noting that the optimization of Equation \@ref(eq:exp-easy) is not computationally difficult for two main reasons. First, the forward evaluation of the Equation \@ref(eq:exp-easy), $\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})$ is inexpensive. In other words, we have a simple analytical formula for calculating the $\alpha_{EI}(\mathbf{u_*};\theta,\mathcal{D})$, as it has been provided in Equation \@ref(eq:utility-no-greed). Secondly, the exact analytical expression of the gradient of the Equation \@ref(eq:utility-no-greed) is available. Authors refer to [@rasmussen2006] for detail of mathematical formulation. Having the gradient of the function in addition to inexpensive forward function, make the gradient-based method a suitable optimization choice. In this work, the quasi-Newton family of gradient based method, BFGS is used for finding $\mathbf{u}_*^{next}$. Multi-start BFGS were performed to avoid local optima points [@nocedal2006; @byrd1995].
 
 \newpage
 
@@ -469,7 +470,7 @@ The Equation in \@ref(eq:exp-easy) represents a need for internal optimization i
 
 # Case I: 1-D Toy Problem
 
-In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the workflow steps, hence a better explanation of equations. Though, it can be seen from the 1-D problem that the workflow can easily extend to a higher dimensional problem. The *True function* to be optimized in this section has an analytical expression with the box constraints, can be shown as:
+In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the workflow steps, hence a better explanation of underlying mathematics. Though, it can be seen from the 1-D problem that the workflow can easily extend to a higher dimensional problem. The *True function* to be optimized in this section has an analytical expression with the box constraints, can be shown as:
 
 ```{=tex}
 \begin{equation}
@@ -503,7 +504,17 @@ However, it is worth mentioning that the exact analytical expression of the obje
 To form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$ as Equation \@ref(eq:init-data), a sample of five points, $\mathbf{U}=[0.05,0.2,0.5,0.6,0.95]$ was selected to  initialize the workflow. This $\mathbf{U}$ vector with their correspondent $\mathbf{J(U)}$, forms the 
 
 $$\mathcal{D}=[\mathbf{U},\mathbf{J_U}]=[[0.05,0.2,0.5,0.6,0.95];[0.38, 0.36, 0.77,0.44, 0.16]]$$ 
-In the upper plot of Figure \@ref(fig:exampleshow), green points in diamond shape show the $\mathcal{D}$. Then, we can find the $\theta^*$ through performing optimizing in Equation \@ref(eq:log-like-opt) (as it only needs $\mathcal{D})$. Having $\theta^*$, we can find the mean value of function $\mathbf{J(u^*)}$ through Equation \@ref(eq:post-mean-cov-single). This mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ have been depicted with a red line in Figure \@ref(fig:exampleshow). The blue lines in \@ref(fig:exampleshow) represents 100 samples of $\mathbf{J_{u_*}}$ from the gaussian distribution with mean and variance defined at \@ref(eq:post-mean-cov-single) at each $\mathbf{u^*}$. The grey area represents the 95% confidence interval. At this stage, we completed step 1 of the BO.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/initial-d-1} 
+
+}
+
+\caption{Plot of initial samples $\mathcal{D}$}(\#fig:initial-d)
+\end{figure}
+
+We depicted the $\mathcal{D}$ in Figure \@ref(fig:initial-d) with green points in diamond shape. Then, we can find the $\theta^*$ through performing optimizing in Equation \@ref(eq:log-like-opt) (as it only needs $\mathcal{D})$. Having $\theta^*$, we can find the mean value of function $\mathbf{J(u^*)}$ through Equation \@ref(eq:post-mean-cov-single). This mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ have been depicted with a red line in Figure \@ref(fig:exampleshow). The blue lines in \@ref(fig:exampleshow) represents 100 samples of $\mathbf{J_{u_*}}$ from the gaussian distribution with mean and variance defined at \@ref(eq:post-mean-cov-single) at each $\mathbf{u^*}$. The grey area represents the 95% confidence interval. At this stage, we completed step 1 of the BO.
 
 The first point to infer from the upper plot at Figure \@ref(fig:exampleshow) is that there is no uncertainty on the points in $\mathcal{D}$. The reason for this is (as was discussed in the previous section), here we consider "noise-free" observations. Also, worth mentioning that we have a wider grey area (more uncertainty) in the areas that are more distant from the observations, simply meaning uncertainty is less in points close to observation points. When it comes to "extrapolation", meaning in the areas outside of the range of observation points, the probabilistic model shows interesting behavior on those "extreme" area (say for example two points at $\mathbf{u^*=0}$ and $\mathbf{u^*=1}$ ), the mean curve tend to move toward the mean of all observation points , here it is $\text{average}\left(\mathbf{J(U)}\right)=0.42$. Suggesting the model shows the mean-reversion behavior when it comes to extrapolation.
 
@@ -529,7 +540,7 @@ Looking again to the lower figure at Figure \@ref(fig:exampleshow), the utility 
 \caption{Ite1 - Top: Gaussian posterior over the initial sample points; Lower: Utility function over the x values}(\#fig:exampleshow)
 \end{figure}
 
-If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(total iteration) = 5 + 2=7$.
+If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in Figure \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7\%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(\text{total iteration}) = 5 + 2=7$.
 
 \begin{figure}
 
@@ -538,7 +549,7 @@ If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back t
 \caption{Gaussian posterior of over the initial sample points}(\#fig:allinone)
 \end{figure}
 
-Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at \@ref(fig:allinone), we can see that the maximum of the utility function is at the iteration \# 3 is in order of $10^{-6}$ . That shows that after optimization, even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process, since querying points to be sampled from the expensive function has a negligible potential to improve our search in optimization.
+Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at Figure \@ref(fig:allinone), we can see that the maximum of the utility function is at the iteration \# 3 is in order of $10^{-6}$ . That shows that after optimization, even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process, since querying points to be sampled from the expensive function has a negligible potential to improve our search in optimization.
 
 \newpage
 
