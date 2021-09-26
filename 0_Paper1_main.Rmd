@@ -1,5 +1,5 @@
 ---
-title: "Bayesian Optimization: A New Sample Efficient Workflow for Reservoir Optimization under Uncertainty"
+title: "Draft Title: Bayesian Optimization: A New Sample Efficient Workflow for Reservoir Optimization under Uncertainty"
 author:
   - name: "Peyman Kor"
 #    email: "peyman.kor@uis.no"
