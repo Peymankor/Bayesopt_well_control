@@ -1,6 +1,5 @@
-# Field Scale
 
-## Synthetic 3D Reservoir Model
+# Case II: Field Scale Problem
 
 This section applies the BO workflow to a synthetic 3D reservoir model to optimize field production by controlling the water flooding scheme. A thorough introduction of the model and its geological description can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system. The 3D model has eight water injectors and four producers shown in Figure \@ref(fig:eggbase).  One hundred equiprobable geological realizations describe the highly permeable channels, three of which are illustrated on the left side of Figure \@ref(fig:combine).[@hong2017].
 

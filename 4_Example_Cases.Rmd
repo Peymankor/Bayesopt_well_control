@@ -1,7 +1,5 @@
 
-# Example Cases
-
-## 1-D Toy Problem
+# Case I: 1-D Toy Problem
 
 In this section, a 1-D toy problem is considered to illustrate the BO workflow discussed in the previous section. The 1-D problem was selected since it makes it easier to visualize all the workflow steps, hence a better explanation of equations. Though, it can be seen from the 1-D problem that the workflow can easily extend to a higher dimensional problem. The *True function* to be optimized in this section has an analytical expression with the box constraints, can be shown as:
 
