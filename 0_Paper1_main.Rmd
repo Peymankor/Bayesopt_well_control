@@ -19,8 +19,8 @@ footnote:
     text: "Corresponding Author, peyman.kor@uis.no"
 #  - code: 2
 #    text: "Equal contribution"
-abstract: |
- \doublespacing An underlying challenge in well-control optimization during field development is that flow simulation of a 3D; full physics grid-based model is computationally prohibitive. In a robust optimization (RO) setting, where flow simulation has to be repeated over a hundred(s) of geological realizations, conducting the RO becomes impractical in many real-world cases. In this work, to alleviate this computational burden, a new computationally efficient optimization method is presented. In this context, efficiency means that the workflow needs a minimum number of forward model evaluations (flow-simulation in the case of reservoir optimization) while still being able to capture the near-global optimum of the objective function. Moreover, the workflow is appropriate for cases where precise analytical expression of the objective function is nonexistent. Such situations typically arise when the objective function is computed as the result of solving a large number of PDE(s), such as in reservoir-flow simulation. In this workflow, referred to as 'Bayesian Optimization', the objective function for samples of decision variables is first computed using a proper design experiment. Then, a Gaussian Process (GP) is trained to mimic the surface of the objective function as a surrogate model. While balancing the exploration-exploitation dilemma, a new decision variable is selected from the surrogate model, and a flow simulation is run for this new point. Later, the output of the flow-simulation is assimilated back to the surrogate model which is updated given the new data point. This process continues sequentially until termination criteria are reached. To validate the workflow and get better insight into the details of optimization steps, we first optimize a 1D problem. Then, the workflow is implemented for a 3D synthetic reservoir model to perform robust optimization in a realistic field scenario. Finally, a comparison of the workflow with two other commonly used algorithms in the literature, namely Particle Swarm Optimization (PSO) and Genetic Algorithm (GA), is performed. The comparison shows that the workflow presented here will reach the same near-optimal solution achieved with GA and PSO, yet reduce computational time of the optimization 5X (times). We conclude that the method presented here significantly speeds up the optimization process leveraging a faster workflow for real-world 3D optimization tasks, potentially reducing CPU times by days or months, yet gives robust results that lead to a near-optimal solution. 
+abstract: | 
+  \doublespacing An underlying challenge in well-control (production) optimization is that full-physic flow simulation of a 3D; rich grid-based model is computationally prohibitive. In a robust optimization (RO) setting, where flow simulation has to be repeated over a hundred(s) of geological realizations, conducting the RO becomes impractical in many field-scale cases. In this work, to alleviate this computational burden, a new computationally efficient optimization workflow is presented. In this context, computational efficiency means that the workflow needs a minimum number of forward model (flow-simulation) evaluations while still being able to capture the near-global optimum of the pre-defined objective function. Moreover, the workflow can handle cases where precise analytical expression of the objective function is nonexistent. Such situations typically arise when the objective function requires the result of solving a large number of PDE(s), such as in reservoir-flow simulation. In this workflow, referred to as 'Bayesian Optimization', the objective function for samples of decision (control) variables is first computed using a proper design experiment. Then, given the samples, a Gaussian Process Regression (GPR) is trained to mimic the surface of the objective function as a surrogate model. While balancing the dilemma to select the next point between high mean, low uncertainty (exploitation) or low mean, high uncertainty (exploration), a new control variable is selected, and flow simulation is run for this new point. Later, the GPR is updated, given the output of the flow simulation. This process continues sequentially until termination criteria are reached. To validate the workflow and get better insight into the details of steps, we first optimize a 1D problem. Then, the workflow is implemented for a 3D synthetic reservoir model to perform robust optimization in a realistic field scenario. Finally, a comparison of the workflow with two other commonly used gradient-free algorithms in the literature, namely Particle Swarm Optimization (PSO) and Genetic Algorithm (GA), is performed. The comparison shows that the workflow presented here will reach the same near-optimal solution achieved with GA and PSO, yet reduce computational time of the optimization 5X (times). We conclude that the method presented here significantly speeds up the optimization process leveraging a faster workflow for real-world 3D optimization tasks, potentially reducing CPU times by days or months, yet giving robust results that lead to a near-optimal solution. 
 journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
@@ -63,38 +63,44 @@ knitr::opts_chunk$set(warning = F, message = F, echo = FALSE)
 
 ```
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '2_problem_statement.Rmd'}
+<!-- ```{r child = '1b_reproducibility_research.Rmd'} -->
 
-```
+<!-- ``` -->
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '3_Bayesian_Optimization_Workflow.Rmd'}
+<!-- ```{r child = '2_problem_statement.Rmd'} -->
 
-```
+<!-- ``` -->
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '4_Example_Cases.Rmd'}
+<!-- ```{r child = '3_Bayesian_Optimization_Workflow.Rmd'} -->
 
-```
+<!-- ``` -->
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '5_Field_Scale.Rmd'}
+<!-- ```{r child = '4_Example_Cases.Rmd'} -->
 
-```
+<!-- ``` -->
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '6_comparison_with_other.Rmd'}
+<!-- ```{r child = '5_Field_Scale.Rmd'} -->
 
-```
+<!-- ``` -->
 
-\newpage
+<!-- \newpage -->
 
-```{r child = '7_Conclusing_Remarks.Rmd'}
+<!-- ```{r child = '6_comparison_with_other.Rmd'} -->
 
-```
+<!-- ``` -->
+
+<!-- \newpage -->
+
+<!-- ```{r child = '7_Conclusing_Remarks.Rmd'} -->
+
+<!-- ``` -->
