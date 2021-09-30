@@ -1,6 +1,3 @@
----
-bibliography: references.bib
----
 
 # Bayesian Optimization Workflow
 
