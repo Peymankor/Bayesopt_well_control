@@ -3,22 +3,22 @@
 
 ## Overall View
 
-Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is an inference from a finite number of function evaluations. This finite number of evaluations is done as initialization of the workflow and building a probabilistic model.
+Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic the expensive objection function, $\overline{\mathbf{J}}(\mathbf{u})$ in Equation \@ref(eq:npvopt). The probabilistic model is an inference from a finite number of function evaluations. This finite number of function evaluations is done as initialization of the workflow and building a probabilistic model.
 
-After initializing and building a probabilistic model, a new query point is evaluated using the expensive objective function at each iteration. Then the new data $(\mathbf{u}^{new},\mathbf{J}(\mathbf{u}^{new}))$ is assimilated back to the probabilistic model to update the model. The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of exploring and exploiting space of decision.
+After initializing and building a probabilistic model, a new query point ($\mathbf{u}^{new}$) is evaluated using the expensive objective function. Then the new data $(\mathbf{u}^{new},\mathbf{J}(\mathbf{u}^{new}))$ is assimilated back to the probabilistic model to update the model. The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of exploring and exploiting space of decision.
 
-In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a control decision, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While the capital letter, $\mathbf{U}$ is a collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
+In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a decision (control) variable, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While the capital letter, $\mathbf{U}$ is a collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
 
 The workflow of BO can be divided into two steps:
 
 -   Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 -   Step 2: Deciding on next $\mathbf{u}^{next}$ and evaluate $\mathbf{J(u^{next})}$ based on probabilistic model and $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$
 
-After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational budget. First, we will explain Gaussian Process (GP) to build a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
+After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational resources. First, we will explain Gaussian Process Regression (GPR) to build a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
 
 ## Gaussian Process
 
-In this work, we employ the widely used Gaussian process (GP) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GP is an attractive choice because it is computationally tractable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A GP can be seen as an extension of the Gaussian distribution to the functional space. The key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and Covariance defined as:
+In this work, we employ the widely used Gaussian process Regression (GPR) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GPR is an attractive choice because it is computationally tractable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A GP can be seen as an extension of the Gaussian distribution to the functional space. The key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and covariance defined as:
 
 ```{=tex}
 \begin{equation}
@@ -30,11 +30,11 @@ In this work, we employ the widely used Gaussian process (GP) as a probabilistic
 \end{equation}
 ```
 
-In \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . The GP is a distribution over function completely defined by its mean and covariance function as:
+In Equation \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . The GPR is a distribution over function completely defined by its mean and covariance function as:
 
 ```{=tex}
 \begin{equation}
-J(\mathbf{u}) \sim \mathcal{MN}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
+\mathbf{J}(\mathbf{u}) \sim \mathcal{MN}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
 \label{eq:mean_cov_gp}
 \end{equation}
 ```
@@ -75,7 +75,7 @@ The parameter $\theta$ needs to be optimized, as it will be explained later. Wit
 
 ### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 
-Assuming we start GP with a finite number of an initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the data-set $\mathcal{D}$ as:
+Assuming we start GPR with a finite number of an initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the data-set $\mathcal{D}$ as:
 
 ```{=tex}
 \begin{align}
@@ -111,7 +111,7 @@ The *Gram* matrix, $\mathbf{K}_{U,U}$, is $\mathbf{N \times N}$ matrix, with eac
 
 ```{=tex}
 \begin{equation}
-\mathbf{K}_{U,U}=\kappa(\mathbf{U,U})=\left (
+\mathbf{K}_{U,U}=\kappa(\mathbf{u_i,u_j})=\left (
 \begin{array}{ccc}
 \begin{array}{l}
 \kappa(\mathbf{u_1},\mathbf{u_2})
@@ -147,7 +147,7 @@ p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}= & \:  \mathcal{MN}(\mathbf{J_{U
 \end{align}
 ```
 
-The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
+The term $p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}$ on left side of the Equation is a conditional probability of $\mathbf{J_{U_*}}$ given $\mathcal{D}$ (meaning the available data points), and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
 
 #### Parameter Estimation of Covariance Kernel
 
@@ -165,11 +165,11 @@ The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability
 ```{=tex}
 \begin{equation}
 \text{log} \: p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})=\mathcal{L}(\sigma_f^2,\ell)=-\frac{1}{2}(\mathbf{y}-m(\mathbf{U}))^{\intercal}\mathbf{K}_{U,U}^{-1}(\mathbf{y}-m(\mathbf{U}))-\frac{1}{2}\text{log}|\mathbf{K}_{U,U}|-\frac{N}{2}log(2\pi)
-\label{eq:log_like}
+\label{eq:log-like}
 \end{equation}
 ```
 
-Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log_like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
@@ -180,7 +180,7 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 
 However, since the objective $\mathcal{L}$ is not convex, local minima can be a problem, so we need to use multiple restarts.
 
-It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for each control value ($\mathbf{u}$), equation \@ref(eq:post-mean-cov) can be written as:
+It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for a single control variable ($\mathbf{u}$), Equation \@ref(eq:post-mean-cov) can be written as:
 
 ```{=tex}
 \begin{align}
