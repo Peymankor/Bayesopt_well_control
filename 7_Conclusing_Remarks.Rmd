@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Conclusion
 
 In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D problem case was considered to illustrate the workflow better and explain the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
@@ -109,5 +114,105 @@ Injection Water
 Expected Improvement
 
 \newpage
+
+
+# Appendix I {#app1 .unnumbered}
+
+Now, we can write analytical term of multivariate Gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
+
+
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}})= & \:\frac{\mathcal{N}_{n+1}\begin{pmatrix}
+\begin{bmatrix}
+\mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
+\end{bmatrix} \Bigg|
+0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
+\end{bmatrix} \\
+\end{pmatrix}}{\mathcal{N}_{n}\begin{pmatrix}\mathbf{J_{U}}\Bigg|
+0, \mathbf{K}_{U,U} \\
+\end{pmatrix}} \\
+& \:\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
+\end{bmatrix}^{-1}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
+& \:  
+  \end{split}
+\label{eq:mix-equ}
+\end{align}
+```
+
+
+Here, we substitute the inverse of covariance of matrix with following matrix: 
+
+```{=tex}
+\begin{equation}
+\begin{bmatrix}d &  b^\intercal \\
+b & A 
+\end{bmatrix}=\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
+\end{bmatrix}^{-1}
+\end{equation}
+```
+
+
+We can mutiply term inside the exponetial term
+
+
+```{=text}
+\begin{equation}
+\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}d &  b^\intercal \\
+b & A \end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
+\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}
+\end{equation}
+```
+
+$$\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}d &  b^\intercal \\
+b & A \end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
+\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}$$
+
+Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that is uncertain we need, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
+
+$$\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}\propto \exp 
+\begin{pmatrix} -\frac{1}{2d^{-1}} 
+\begin{bmatrix}\mathbf{J_{u_*}}+\frac{b^\intercal\mathbf{J_{U}}}{d}
+\end{bmatrix}^2
+\end{pmatrix}$$
+
+Which is the equation for normal density function, with means and variance defined as:
+
+$$p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\mathcal{N}_1(\mathbf{J_{u_*}}|\mathbf{\mu_{u_\ast}}, \sigma^2_{\mathbf{u_{\ast}}})$$
+
+$$\mathbf{\mu_{u_\ast}}=\frac{b^\intercal\mathbf{J_{U}}}{d}, \sigma^2_{\mathbf{u_{\ast}}}=d^{-1}$$
+
+
 
 # References {#references .unnumbered}
