@@ -19,13 +19,13 @@ footnote:
     text: "Corresponding Author, peyman.kor@uis.no"
 #  - code: 2
 #    text: "Equal contribution"
-abstract: |
- \doublespacing An underlying challenge in well-control optimization during field development is that flow simulation of a 3D; full physics grid-based model is computationally prohibitive. In a robust optimization (RO) setting, where flow simulation has to be repeated over a hundred(s) of geological realizations, conducting the RO becomes impractical in many real-world cases. In this work, to alleviate this computational burden, a new computationally efficient optimization method is presented. In this context, efficiency means that the workflow needs a minimum number of forward model evaluations (flow-simulation in the case of reservoir optimization) while still being able to capture the near-global optimum of the objective function. Moreover, the workflow is appropriate for cases where precise analytical expression of the objective function is nonexistent. Such situations typically arise when the objective function is computed as the result of solving a large number of PDE(s), such as in reservoir-flow simulation. In this workflow, referred to as 'Bayesian Optimization', the objective function for samples of decision variables is first computed using a proper design experiment. Then, a Gaussian Process (GP) is trained to mimic the surface of the objective function as a surrogate model. While balancing the exploration-exploitation dilemma, a new decision variable is selected from the surrogate model, and a flow simulation is run for this new point. Later, the output of the flow-simulation is assimilated back to the surrogate model which is updated given the new data point. This process continues sequentially until termination criteria are reached. To validate the workflow and get better insight into the details of optimization steps, we first optimize a 1D problem. Then, the workflow is implemented for a 3D synthetic reservoir model to perform robust optimization in a realistic field scenario. Finally, a comparison of the workflow with two other commonly used algorithms in the literature, namely Particle Swarm Optimization (PSO) and Genetic Algorithm (GA), is performed. The comparison shows that the workflow presented here will reach the same near-optimal solution achieved with GA and PSO, yet reduce computational time of the optimization 5X (times). We conclude that the method presented here significantly speeds up the optimization process leveraging a faster workflow for real-world 3D optimization tasks, potentially reducing CPU times by days or months, yet gives robust results that lead to a near-optimal solution. 
+abstract: | 
+  \doublespacing An underlying challenge in well-control (production) optimization is that full-physic flow simulation of a 3D; rich grid-based model is computationally prohibitive. In a robust optimization (RO) setting, where flow simulation has to be repeated over a hundred(s) of geological realizations, conducting the RO becomes impractical in many field-scale cases. In this work, to alleviate this computational burden, a new computationally efficient optimization workflow is presented. In this context, computational efficiency means that the workflow needs a minimum number of forward model (flow-simulation) evaluations while still being able to capture the near-global optimum of the pre-defined objective function. Moreover, the workflow can handle cases where precise analytical expression of the objective function is nonexistent. Such situations typically arise when the objective function requires the result of solving a large number of PDE(s), such as in reservoir-flow simulation. In this workflow, referred to as 'Bayesian Optimization', the objective function for samples of decision (control) variables is first computed using a proper design experiment. Then, given the samples, a Gaussian Process Regression (GPR) is trained to mimic the surface of the objective function as a surrogate model. While balancing the dilemma to select the next point between high mean, low uncertainty (exploitation) or low mean, high uncertainty (exploration), a new control variable is selected, and flow simulation is run for this new point. Later, the GPR is updated, given the output of the flow simulation. This process continues sequentially until termination criteria are reached. To validate the workflow and get better insight into the details of steps, we first optimize a 1D problem. Then, the workflow is implemented for a 3D synthetic reservoir model to perform robust optimization in a realistic field scenario. Finally, a comparison of the workflow with two other commonly used gradient-free algorithms in the literature, namely Particle Swarm Optimization (PSO) and Genetic Algorithm (GA), is performed. The comparison shows that the workflow presented here will reach the same near-optimal solution achieved with GA and PSO, yet reduce computational time of the optimization 5X (times). We conclude that the method presented here significantly speeds up the optimization process leveraging a faster workflow for real-world 3D optimization tasks, potentially reducing CPU times by days or months, yet giving robust results that lead to a near-optimal solution. 
 journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-09-26"
+date: "2021-10-03"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -59,26 +59,30 @@ editor_options:
 
 
 
+
+
+
 # Introduction:
 
 \doublespacing
 
-Well control optimization (also known as production optimization) can be defined as making the best decision for a set of control variables in continuous space, given a pre-defined objective function. The objective function generally relies on a reservoir simulator to evaluate the proposed well control decision for the period of the reservoir life cycle. On the other hand, the decision alternatives are usually well injection/production rates or bottom-hole pressure (BHPs) in continuous space. Given the objective function and alternatives, uncertainties are represented by a set of geological realizations (i.e., an ensemble). Known, as Robust Optimization (RO), within RO, the objective is to find a control vector to maximize the expected value of the objective function over geological uncertainty. In contrast, in the deterministic case, the source of uncertainty in the geological model is ignored. Well control optimization typically poses challenges as the objective function is non-linear and non-convex. Moreover, the optimization problem becomes computationally demanding in the RO setting, where many geological models must be considered to represent the uncertainty. This renders the optimization problem computationally expensive, if not prohibitive, in large-scale systems where (potentially) hundreds of wells are involved.
+Well-control optimization (also known as production optimization) can be defined as making the best decision for a set of control variables in continuous space, given a pre-defined objective function. The objective function generally relies on a reservoir simulator to evaluate the proposed control variable for the period of the reservoir life cycle[^1]. On the other hand, the decision alternatives are usually well injection/production rates or bottom-hole pressure (BHPs) in continuous space, subject to a set of constraints. Given the objective function and alternatives, uncertainties are represented by a set of geological realizations (i.e., an ensemble). Known, as Robust Optimization (RO), within RO, the objective is to find a control vector to maximize the expected value of the objective function over geological uncertainty. In contrast, in the deterministic case, the source of uncertainty in the geological model is ignored. Well-control optimization typically poses challenges as the objective function is non-linear and non-convex [@debrito2020]. Moreover, the optimization problem becomes computationally demanding in the RO setting, where many geological models must be considered to represent the uncertainty. This renders the optimization problem computationally expensive, if not prohibitive, in large-scale systems where (potentially) hundreds of wells are involved.
 
-Literature of well control optimization can be viewed from two angles. First,
-the focus is on the type of optimization algorithm used for this type of problem. Broadly speaking, the type of optimization algorithm could be divided into two categories, gradient-based and gradient-free.
+[^1]: In the case of Closed-loop Reservoir Management, we may not perform one optimization for the reservoir life-cycle. The optimization process is broken down into multiple steps, where data assimilation is performed between each cycle. Even in that case, the well-control optimization should be done from the start to the first stage of the data assimilation step. This cycle continues until the end of the field. Say the field has a life-cycle of 20 years; optimization can be done every five years.
 
-[@sarma2005] applied adjoint-gradient based optimization to waterflooding problem. [@vanessen2009] optimized hydrocarbon production under geological uncertainty (in RO setting), where an adjoint-based method is used for obtaining the gradient information. The adjoint-based procedure is more efficient because it uses gradients that are constructed efficiently from the underlying simulator. However, the adjoint-based method requires access to the source code of the reservoir simulator, which is seldom available for commercial simulators, and is computationally intensive. @chen2009 introduced the ensemble-based optimization method (EnOpt), in which the gradient is approximated by the covariance between the objective function values and the control variables. @do2013 analyzed the theoretical connections between EnOpt and other approximate gradient-based optimization methods. Having realized that it is unnecessary to approximate the ensemble mean to the sample mean as was done by @chen2009, @do2013 used the ensemble mean in their EnOpt formulation. @stordal2016 had a theoretical look at EnOpt formulation and showed that EnOpt is a special case of well-defined natural evolution strategy known as Gaussian Mutation. It is a special case from this perspective that EnOpt is Gaussian Mutation without the evolution of covariance matrix $(\sum)$ of multivariate Gaussian density.
+Literature of well-control optimization can be viewed from two angles. First, the focus is on the type (category) of the optimization algorithm. Broadly speaking, the type of optimization algorithm could be divided into two categories, gradient-based and gradient-free.
 
-On the other hand, gradient-free methods represent a useful alternative when the exact computation of gradient is not available or is too expensive to compute. The gradient-free methods can be divided into two major classes, stochastic and pattern search. Both of these classes are noninvasive with respect to the simulator, though they are usually less efficient and require a larger number of function evaluations than adjoint-gradient methods.
+@vanessen2009 optimized hydrocarbon production under geological uncertainty (in RO setting), where an adjoint-based method is used for obtaining the gradient information. The adjoint-based procedure is more efficient because it uses gradients that are constructed efficiently from the underlying simulator. However, the adjoint-based method requires access to the source code of the reservoir simulator, which is seldom available for commercial simulators, and is computationally intensive. @chen2009 introduced the ensemble-based optimization method (EnOpt), in which the gradient is approximated by the covariance between the objective function values and the control variables. @do2013 analyzed the theoretical connections between EnOpt and other approximate gradient-based optimization methods. Having realized that it is unnecessary to approximate the ensemble mean to the sample mean as was done by @chen2009, @do2013 used the ensemble mean in their EnOpt formulation. @stordal2016 had a theoretical look at EnOpt formulation and showed that EnOpt is a special case of well-defined natural evolution strategy known as Gaussian Mutation. It is a special case from this perspective that EnOpt is Gaussian Mutation without the evolution of covariance matrix $(\sum)$ of multivariate Gaussian density.
 
-Probably the first use of the gradient-free method for subsurface application, [@harding1998] applied genetic algorithm (GA) to production scheduling of linked oil and gas fields. A Comparison study was performed, and they showed the GA outperforms simulated annealing (SA) and sequential quadratic programming (SQP) techniques and a hybrid of the two. GA was utilized later by [@almeida2007] for the optimization of control valves in the intelligent wells. They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, [@lushpeev2018] applied Particle Swarm Optimization (PSO) to a real field case to find optimum injection mode for the mature field. Control variables were the change in injection rates of 3 injectors, and results of field experiments show the improvement in relative recovery after applying the modified solution of the optimization algorithm.
+On the other hand, gradient-free methods represent a useful alternative when the exact computation of gradient is not available or is too expensive to compute. The gradient-free methods can be divided into two major classes, stochastic and pattern search. Both of these classes do not need access to the source code of the simulator or approximation of the gradient. However, they are usually less efficient and require a larger number of function evaluations than adjoint-gradient methods.
 
-Generalized Pattern-search (GPS) methods [@torczon1997; @dennis] are another types of gradient-free techniques has been applied in well control optimization problem. The pattern-search method relies on polling; a stencil is centered at the current solution at any particular iteration. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the objective function, the stencil is moved to one of these new solutions. GPS, including its variant (Mesh Adaptive Direct Search), is usually considered a local search method. However due to its ability to parallelize, it has been well used in the literature of well control optimization. [@echeverríaciaurri2010; @asadollahi2014; @foroud2016; @nwachukwu2018]. To overcome the locality of the GPS methods, a hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of [@isebor2013; @debrito2020].
+Probably the first use of the gradient-free method for subsurface application, @harding1998 applied genetic algorithm (GA) to production scheduling of linked oil and gas fields. A Comparison study was performed, and they showed the GA outperforms simulated annealing (SA) and sequential quadratic programming (SQP) techniques and a hybrid of the two. GA was utilized later by @almeida2007 for the optimization of control valves in the intelligent wells. They found that significant profit was achieved in comparison to using conventional methods (no valve control). More recently, @lushpeev2018 applied Particle Swarm Optimization (PSO) to a real field case to find optimum injection mode for the mature field. Control variables were the change in injection rates of 3 injectors, and results of field experiments show the improvement in relative recovery after applying the modified solution of the optimization algorithm.[@torczon1997]
+
+Generalized Pattern-search (GPS) methods [@torczon1997] are another types of gradient-free techniques has been applied in well control optimization problem. The pattern-search method relies on polling; a stencil is centered at the current solution at any particular iteration. The stencil comprises a set of directions such that at least one is a descent direction. If some of the points in the stencil represent an improvement in the objective function, the stencil is moved to one of these new solutions. GPS, including its variant (Mesh Adaptive Direct Search), is usually considered a local search method. However due to its ability to parallelize, it has been well used in the literature of well control optimization. [@echeverríaciaurri2010; @asadollahi2014; @foroud2016; @nwachukwu2018]. To overcome the locality of the GPS methods, a hybrid of the PSO as global method and then using pattern search for local search in iterative (PSO-MADS) way as well proposed in the work of [@isebor2013; @debrito2020].
 
 ## Survey of surrogate-based papers in Onepetro database
 
-In the previous section, we reviewed commonly used optimization algorithms in well control optimization. Also, we highlighted two major categories for well control optimization. However, it should be noted that even with a more efficient optimization method like EnOpt, still performing full RO optimization with full physic reservoir simulators is computationally prohibitive [@hong2017]. we will discuss the detail of this computational burden more in next Section. In order to make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. These methods include capacitance-resistance models [@hong2017; @yousef2006; @zhao2015], deep-learning, machine learning surrogates [@kim2021; @nwachukwu2018; @kim2020; @chai2021] and reduced-physics simulations [@debrito2020; @nasir2021; @møyner2014]. These methods generally entail approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or a model-based on simplified flow physics. To get insight into how this line of research is evolving, we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with "one" of the following keywords in their abstract:
+In the previous section, we reviewed two major categories (gradient-based and gradient-free) for well control optimization. However, it should be noted that even with a more computationally efficient optimization method like EnOpt, still performing full RO optimization with full physic reservoir simulators is computationally prohibitive [@hong2017]. We will discuss the detail of this computational burden more in Section \@ref(problem-statement). In order to make RO feasible, two general approaches have been introduced. The first set of techniques targets the flow problem. These methods include capacitance-resistance models [@hong2017; @yousef2006; @zhao2015], deep-learning, machine learning surrogates [@kim2021; @nwachukwu2018; @kim2020; @chai2021] and reduced-physics simulations [@debrito2020; @nasir2021; @møyner2014]. These methods generally entail approximating the high-fidelity flow simulation model with a lower-fidelity or reduced order model, or a model-based on simplified flow physics. To get insight into how this line of research is evolving, we performed a small text mining task. Mining the more than 100000 peer-reviewed papers published in (www.onepetro.org), we count the number of the papers with "one" of the following keywords in their abstract:
 
 1.  "Proxy" + " Optimization" + "Reservoir"
 2.  "Surrogate" + "Optimization" + " Reservoir"
@@ -95,7 +99,7 @@ The period of 1995-2020 was considered. As Figure \@ref(fig:onepetroanalysis) re
 \caption{Counting the number of papers with the keyword in their abstract vs year}(\#fig:onepetroanalysis)
 \end{figure}
 
-In this work, we propose Bayesian Optimization (BO) as a workflow for well control optimization in Ro setting. We will show that BO, as a gradient-free method, has characteristics of the global optimization method in escaping local optima or saddle area. While, at the same time, the workflow overcomes the typical downside of gradient-free methods, which is need for many function evaluations. Due to utilizing the probabilistic model to mimic the expensive objective function, BO workflow is inherently efficient, meaning that a minimum number of function evaluations is needed to achieve a near-optimum solution. To validate this idea, we compared the BO with two other gradient-free, global optimization techniques (PSO, GA). The result shows that BO reaches similar (same) solutions while using only 20% of function evaluations, compared to the other two algorithms. We would like to refer to the results of the "OLYMPUS Optimization Benchmark Challenge" [@fonseca2020] where the gradient-free methods showed the best performance in achieving the highest NPV. However, participants mentioned the pain of these methods as they carry huge computational burden due to large function evaluation [@silva2020; @pinto2020; @chang2020]. In light of benchmark results, bringing the efficiency to the gradient-free optimization category is a significant contribution, presented in this work.
+In this work, we propose Bayesian Optimization (BO) as a workflow for well control optimization in Ro setting. We will show that BO, as a gradient-free method, has characteristics of the global optimization method in escaping local optima or saddle area. While, at the same time, the workflow overcomes the typical downside of gradient-free methods, which is need for many function evaluations. Due to utilizing the probabilistic model to mimic the expensive objective function, BO workflow is inherently efficient, meaning that a minimum number of function evaluations is needed to achieve a near-optimum solution. To validate this idea, we compared the BO with two other gradient-free, global optimization techniques (PSO, GA). The result shows that BO reaches similar (same) solutions while using only 20% of function evaluations, compared to the other two algorithms. We would like to refer to the results of the "OLYMPUS Optimization Benchmark Challenge" [@fonseca2020] where the gradient-free methods showed the best performance in achieving the highest NPV. However, participants mentioned the pain of these methods as they carry huge computational burden due to large function evaluation [@silva2020; @pinto2020; @chang2020]. In light of benchmark results, bringing the computational efficiency to the gradient-free optimization category is a significant contribution, presented in this work.
 
 In section 2 ("Problem Statement"), we will describe the underlying problem in well control optimization and the need for efficient optimization to deal with the enormous computational burden of optimization. In section 3 ("Bayesian Optimization Workflow"), we will lay out the mathematical background of the BO workflow. In section 4, "Case I: 1-D Toy Problem", BO workflow is tested on 1-D problem where we guide our audience with a step-by-step process about how to apply BO. In Section 5, "Case II: Field Scale Problem" BO is applied to a 3-D synthetic geological model for optimizing injection scheme in eight injectors. In section 6, "Comparison with other Alternatives", a comparison of the BO with two global optimization techniques, PSO and GA in field case is presented. The paper ends with "Conclusion" in section 7.
 
@@ -107,14 +111,14 @@ In section 2 ("Problem Statement"), we will describe the underlying problem in w
 
 <!-- Seperatley, in sake of utilization of recent advancemnet in the world of Information technology, couple of reaserach has been don eon the development of "Surrogate Reservoir Models" - [@mohaghegh2006] proposed the workflow for SRM model where Fuzzy Paatern Recognition (FPR) technology was dimensionality reduction, in both static and dynamic parameters of the reservir . Key Performance Indicator (KPI) was used to select the most important variable.- [@sampaio2009] tried on use of feed-forward neural networks as nonlinear proxies of reservoir response. A few set of rock and fluid properties were considere a input (porosity, permeability in "x" direction, permeability in "y" direction, and rock compressibility) where in developing the neural network model, only one hidden layer was used. flow proxy modeling to replace full simulation in history matching, and built the proxy with a single hidden layer artificial neural network (ANN). To predict the oil production from the SAGD rocess, (Fedutenko et al. 2014) [@fedutenko2014]employed the RBF Neural Network to predict the cumulative oil production over the time horizon of production (10 years) . <!--#  -->
 
+
 \newpage
 
 
 # Problem Statement
 
-In general, an optimization task can be defined as a search process for the maximum output value of a "well behaved" [^1] objective function $\mathbf{J}$. Can be defined as $\mathbf{J}: \chi \rightarrow \mathbb{R}$ where acceptable solutions $\chi$, has a dimension of $D$, $\chi \subseteq \mathbb{R}^D$ :
+In general, an optimization task can be defined as a search process for the maximum output value of a "well behaved" ^[In this context, it means the function is defined everywhere inside the input domain, It is single-valued and continuous.] objective function $\mathbf{J}$. Can be defined as $\mathbf{J}: \chi \rightarrow \mathbb{R}$ where acceptable solutions $\chi$ have a dimension of $D$, $\chi \subseteq \mathbb{R}^D$:
 
-[^1]: In this context, it means the function is defined everywhere inside the input domain, it is single-valued and continuous.
 
 ```{=tex}
 \begin{equation}
@@ -128,22 +132,8 @@ In general, an optimization task can be defined as a search process for the maxi
 \end{equation}
 ```
 
-In Figure \@ref(fig:optglobal) we can see some examples where the surface of $\mathbf{J}$ could be challenging to be optimized. The surfaces on the left side need careful attention to avoid getting stuck in local optima. Figures on the right side show presence of saddle area, where the gradient of function $\mathbf{J}$ is zero, in some cases in only one direction, possibly all directions. In this work, the focus is on the type of objective function $\mathbf{J}$, which is challenging to optimize because of the following three difficulties:
 
--   Analytic expression of $\mathbf{J}$ is explicitly unknown. This is a typical case in reservoir optimization problems where the Net Present Value (NPV) or Recovery Factor (RF) is computed through solving a vast number of partial differential equations through flow simulation. Thus, a precise analytical expression for the objective function is not available, avoiding the applicability of techniques that exploit the analytical expression of the objective function.
--   The surface of $\mathbf{J}$ is multi-modal. Meaning that $\mathbf{J}$ is non-convex in the domain of $\chi$ , and the optimization algorithm must visit all local optima to find the "global" one.
--   Most importantly, forward evaluation of $\mathbf{J}$ is computationally expensive. This point will be discussed more in detail below.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.7\linewidth]{img/globalopt} 
-
-}
-
-\caption{This plot may change, it does not show what exactly I want to say...}(\#fig:optglobal)
-\end{figure}
-
-In the examples of this paper, the goal is to maximize the Net-Present-Value (NPV), in USD. Thus, the primary objective function referred to as simply NPV in the rest of this paper. This objective function has been widely used in both well control and field development optimization studies. In a deterministic setting, the uncertainty in the geological parameters is disregarded and the optimization is performed based on a single geological model. Therefore, in the case of deterministic optimization, the objective function can be defined as:
+In the examples of this paper, the goal is to maximize the Net-Present-Value (NPV) in USD. Thus, the primary objective function is referred to as simply NPV in the rest of this paper. This objective function has been widely used in both well-control and field development optimization studies. In a deterministic setting, the uncertainty in the geological parameters is disregarded, and the optimization is performed based on a single geological model. Therefore, in the case of deterministic optimization, the objective function can be defined as:
 
 ```{=tex}
 \begin{equation}
@@ -154,38 +144,100 @@ In the examples of this paper, the goal is to maximize the Net-Present-Value (NP
 \end{equation}
 ```
 
-Where the first term in the double summation corresponds to the oil revenue; the second term is water-production cost and third term corresponds to the water-injection cost. Equation \@ref(eq:npvdet) is considered as objective function in the deterministic setting since only a single geological model is considered. The $G$ in the Equation \@ref(eq:npvdet) is "the geological model". The additional parameters in the Equation are as follows: $K$ is the total number of timesteps; $N_p$ is the total number of production wells subject to optimization; $N_{wi}$ is the total number of water-injection wells subject to optimization; $k$ is the timestep index; $j$ is the well-number index; $p_o$ is the revenue from oil production per unit volume (in USD/bbl); $p_{wp}$ is the water-production cost per unit volume (in USD/bbl); $p_{wi}$ is the water-injection cost per unit volume (in USD/bbl); $q_o$ is the oil-production rate (in B/D); $q_{wp}$ is the water-production rate (in B/D); $q_{wi}$ is the water-injection rate (in B/D); $\Delta t_k$ is the time interval for timestep $k$ (in days); $b$ is the discount rate (dimensionless); $t_k$ is the cumulative time for discounting; and D is the reference time for discounting ($D = 365$ days if b is expressed as a fraction per year and the cash flow is discounted daily). $\mathbf{u}$ in Equation \@ref(eq:npvdet) is the control vector (i.e., a vector of control variables) defined as $\mathbf{u} = [u_1, u_2, \cdots, u_N]^D$, where $D$ is the number of control variables (dimension of optimization problem).
+The first term in the double summation corresponds to the oil revenue; the second term is water-production cost, and the third term corresponds to the water injection cost. The Equation \@ref(eq:npvdet) is considered as the objective function for the deterministic setting since only a single geological model is considered. The $\mathbf{G}$ in Equation \@ref(eq:npvdet) is "the geological model". The additional parameters in the Equation are as follows: $K$ is the total number of timesteps; $N_p$ is the total number of production wells subject to optimization; $N_{wi}$ is the total number of water-injection wells subject to optimization; $k$ is the timestep index; $j$ is the well-number index; $p_o$ is the revenue from oil production per unit volume (in USD/bbl); $p_{wp}$ is the water-production cost per unit volume (in USD/bbl); $p_{wi}$ is the water-injection cost per unit volume (in USD/bbl); $q_o$ is the oil-production rate (in B/D); $q_{wp}$ is the water-production rate (in B/D); $q_{wi}$ is the water-injection rate (in B/D); $\Delta t_k$ is the time interval for timestep $k$ (in days); $b$ is the discount rate (dimensionless); $t_k$ is the cumulative time for discounting; and D is the reference time for discounting ($D = 365$ days, if b is expressed as a fraction per year and the cash flow, is discounted daily). $\mathbf{u}$ in Equation \@ref(eq:npvdet) is the control vector (i.e., a vector of control variables) defined as $\mathbf{u} = [u_1, u_2, \cdots, u_N]^D$, $D$ is the number of control variables (dimension of optimization problem).
 
-As mentioned above, Equation \@ref(eq:npvdet) lacks to capture the uncertainty in the geological model. In contrast, in a Robust Optimization (RO) setting, the objective is to optimize the expected value over all geological realizations (assumption here is decision maker is risk-neutral). Then, the gaol is to optimize the $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$, can be defined as:
+As mentioned above, Equation \@ref(eq:npvdet) lacks to capture the uncertainty in the geological model. In contrast, in a Robust Optimization (RO) setting, the objective is to optimize the expected value over all geological realizations (assumption here is decision-maker is risk-neutral). Then, the goal is to optimize the $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$, can be defined as:
 
 
 ```{=tex}
 \begin{equation}
-\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]=\int_{-\infty}^{+\infty}\mathbf{J}(\mathbf{u, G})p(\mathbf{G})dG
+\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]=\int_{\mathcal{Z}}\mathbf{J}(\mathbf{u, G})p(\mathbf{G})dG
 \label{eq:npvopt-exact}
 \end{equation}
 ```
 
 
-Where $p(\mathbf{G})$ is probability density function (PDF) of random variable, $\mathbf{G}$. However, thoroughout , we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its PDF ($p(\mathbf{G})$) to obtain an ensemble of $n_e$ realization, $\mathbf{G}_{re}$, $re=1,2,\cdots,n_e$. Therefore, approximation of $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$ can be written as:
+Where $p(\mathbf{G})$ is probability density function (PDF) of the random variable, $\mathbf{G}$, and $\mathcal{Z}$ is the domain of the values $\mathbf{G}$ can take^[Let us say permeability is the uncertain variable, then it only takes $z \in \mathcal{Z},z>0$]  . However, throughout , we assume that the uncertainty in $\mathbf{G}$ can be represented by sampling its PDF ($p(\mathbf{G})$) to obtain an ensemble of $n_e$ realization, $\mathbf{G}_{re}$, $re=1,2,\cdots,n_e$. Therefore, approximation of $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$ can be written as:
 
 ```{=tex}
 \begin{equation}
-\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]\approx\overline{J}(\mathbf{u})=\frac{\sum_{re=1}^{n_e} J(\mathbf{u,G_{re}})}{n_e}
+\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]\approx\overline{\mathbf{J}}(\mathbf{u})=\frac{\sum_{re=1}^{n_e} \mathbf{J}(\mathbf{u,G_{re}})}{n_e}
 \label{eq:npvopt}
 \end{equation}
 ```
 
-Where in Equation \@ref(eq:npvopt) contrary to Equation \@ref(eq:npvdet), there is not one, rather $n_e$ geological realizations, each of them written as $G_{re}$. In this work, the objective is to optimize the Equation \@ref(eq:npvopt), where it is simply approximation of expected value of NPV defined in \@ref(eq:npvdet) over all realizations.
+Where in Equation \@ref(eq:npvopt) contrary to Equation \@ref(eq:npvdet), there is not one, rather $n_e$ geological realizations, each of them written as $\mathbf{G_{re}}$. Also, note that we dropped the dependency of $\overline{\mathbf{J}}$ on $\mathbf{G}$ and wrote the objective function as  $\overline{\mathbf{J}}(\mathbf{u})$. This is because the $n_e$ number of $\mathbf{G_{re}}$ is fixed at the start, and in all optimization process, we use the same $\mathbf{G_{re}}$. In this work, the objective is to optimize $\overline{\mathbf{J}}(\mathbf{u})$ in Equation \@ref(eq:npvopt), where it is simply an approximation of the expected value of NPV defined in \@ref(eq:npvdet) over all realizations.^[In the rest of the paper, we use "Expected NPV" or $\overline{\mathbf{J}}(\mathbf{u})$ interchangeably, but we note that they are the same.] 
 
-It is well defined in the literature that optimizing Equation \@ref(eq:npvopt) is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Not only because thousand(s) of PDE have to be solved simultaneously in the flow-simulation in order to compute the $q_o, q_{wp}, q_{wi}$; the flow simulation must be enumerated over all realizations $n_e$ to compute $\overline{J}(u)$. Let us assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the injection rate of five injection wells and bottom hole pressure (BHP) of other five production wells, $D=10$. The geology team of the enterprise comes up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \~1hr. Then, simply having 100 realizations means that each forward computation of $\overline{J}(u)$ takes around \~100 hr. Considering that the enterprise has to decide in six month period (in the best case, it can be interpreted as six months CPU running time), which means that the total number of the available budget for running the forward model is$\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. The budget of the only $50$ forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$, could be discretized into ten possible cases, then total available decision alternatives (solutions) for this optimization problem will be $\text {Number of all possible alternatives} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\
+However, we would like to elaborate that optimization of $\overline{\mathbf{J}}(\mathbf{u})$ needs special treatment due to three main difficulties. Therefore, the optimization method should be able to handle them, to manage the optimization of Equation \@ref(eq:npvopt). The three difficulties are: 
 
-In the rest of this paper, we will be discussing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described at the beginning of the section. 
+-   Analytic expression of $\overline{\mathbf{J}}(\mathbf{u})$ is explicitly unknown. In order to compute, $\overline{\mathbf{J}}(\mathbf{u})$, we need to find $\mathbf{J}(\mathbf{u, G})$ in Equation \@ref(eq:npvdet). Here, inside Equation \@ref(eq:npvdet), dependency of $q_{o,j,k}(\mathbf{u, G}),q_{wp,j,k}(\mathbf{u, G}),q_{wi,j,k}(\mathbf{u, G})$ on $(\mathbf{u, G})$ is explicit. In other words, we do not have access^[There is indeed a function $f$, but in flow simulation, due to iterative solving of large PDE equations (mainly inside the commercial simulators), we can not track and write down the analytical expression of $f$. To put it simply, there is a $f$ available, but we do not have access to that.] to an analytical function $f$ so that we can write $q_{wi,j,k}(\mathbf{u, G})=f(\mathbf{u, G})$. The main implication of lack of access to the analytical expression of $f$ is that the objective function prohibit us from being able to use gradient-based (as we need $f$, in order calculate $\frac{\partial f}{\partial \mathbf{u}}$) methods. Alternatively, someone can resort to an approximation of $\frac{\partial f}{\partial \mathbf{u}}$ or $\frac{\partial \overline{\mathbf{J}}(\mathbf{u})}{\partial \mathbf{u}}$ in general, but that requires careful and consistent attention on how to approximate.   
+-   The surface of $\overline{\mathbf{J}}(\mathbf{u})$ is multi-modal. Meaning $\overline{\mathbf{J}}(\mathbf{u})$ is non-convex in the domain of $\chi$ , and the optimization algorithm must visit all local optima to find the "global" one.^[Someone may argue that in well-control optimization, although non-convex, the difference between local optima and global optima is low. Therefore even reaching local optima is enough. That may be true in some special cases, but from the theoretical point of view, the $\overline{\mathbf{J}}(\mathbf{u})$ does not meet Jensen's inequality ($\overline{\mathbf{J}}[\lambda \mathbf{\mathbf{u_1}}+(1-\lambda)\mathbf{u_2}]\leq \lambda\overline{\mathbf{J}}(\mathbf{\mathbf{u_1}}) + (1-\lambda)\overline{\mathbf{J}}(\mathbf{\mathbf{u_2}})$ for any $\mathbf{u_1}$,$\mathbf{u_2}$ and any $\lambda$ where $0<\lambda<1$). Therefore, the optimization is classified as non-convex optimization.]
+-   Most notably, forward evaluation of $\overline{\mathbf{J}}(\mathbf{u})$ is computationally expensive. This point will be discussed more in detail below.
+
+It is well defined in the literature that optimizing $\overline{\mathbf{J}}(\mathbf{u})$ is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Let us assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the injection rate of five injection wells and bottom hole pressure (BHP) of five other production wells($D=10$) for the next five years. It means we have to make a decision, where the decision alternatives have a dimension of ten, and each dimension is in continuous space. The geology team of the enterprise came up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D, a rich grid-based, it is not hard to imagine that flow-simulation of the reservoir model will take \~1hr, to compute $q_{o,j,k}(\mathbf{u, G}),q_{wp,j,k}(\mathbf{u, G}),q_{wi,j,k}(\mathbf{u, G})$. Then, simply having 100 realizations means that each forward computation of $\overline{\mathbf{J}}(\mathbf{u})$ takes around \~100 hr. Considering that the enterprise has to decide in a six-month period (in the best case, it can be interpreted as six months CPU running time), the total number of the available computational resource for running the forward model $\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. Having of the only $50$ forward model evaluations in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$ could be discretized into ten possible cases, then the total available decision alternatives (solutions) for this optimization problem will be: $\text {Number of all possible alternatives} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\
+
+In the rest of this paper, we will be discussing that the Bayesian Optimization workflow presented here is well suited to deal with the three difficulties described above. 
+
+<!-- It is well defined in the literature that optimizing Equation \@ref(eq:npvopt) is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Not only because thousand(s) of PDE have to be solved simultaneously in the flow-simulation in order to compute the $q_o, q_{wp}, q_{wi}$; the flow simulation must be enumerated over all realizations $n_e$ to compute $\overline{J}(u)$. Let us assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the injection rate of five injection wells and bottom hole pressure (BHP) of other five production wells, $D=10$. The geology team of the enterprise comes up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \~1hr. Then, simply having 100 realizations means that each forward computation of $\overline{J}(u)$ takes around \~100 hr. Considering that the enterprise has to decide in six month period (in the best case, it can be interpreted as six months CPU running time), which means that the total number of the available budget for running the forward model is$\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. The budget of the only $50$ forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$, could be discretized into ten possible cases, then total available decision alternatives (solutions) for this optimization problem will be $\text {Number of all possible alternatives} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\ -->
+
+<!-- In the rest of this paper, we will be discussing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described at the beginning of the section.  -->
+
+
+
+
+
+<!-- In Figure \@ref(fig:optglobal) we can see some examples where the surface of $\mathbf{J}$ could be challenging to be optimized. The surfaces on the left side need careful attention to avoid getting stuck in local optima. Figures on the right side show presence of saddle area, where the gradient of function $\mathbf{J}$ is zero, in some cases in only one direction, possibly all directions. In this work, the focus is on the type of objective function $\mathbf{J}$, which is challenging to optimize because of the following three difficulties: -->
+
+<!-- -   Analytic expression of $\mathbf{J}$ is explicitly unknown. This is a typical case in reservoir optimization problems where the Net Present Value (NPV) or Recovery Factor (RF) is computed through solving a vast number of partial differential equations through flow simulation. Thus, a precise analytical expression for the objective function is not available, avoiding the applicability of techniques that exploit the analytical expression of the objective function. -->
+<!-- -   The surface of $\mathbf{J}$ is multi-modal. Meaning that $\mathbf{J}$ is non-convex in the domain of $\chi$ , and the optimization algorithm must visit all local optima to find the "global" one. -->
+<!-- -   Most importantly, forward evaluation of $\mathbf{J}$ is computationally expensive. This point will be discussed more in detail below. -->
+
+
+
+<!-- ```{r optglobal, echo=FALSE, fig.cap="This plot may change, it does not show what exactly I want to say...", out.width="70%", fig.align='center'} -->
+<!-- knitr::include_graphics("img/globalopt.jpg") -->
+<!-- ``` -->
+
+<!-- In the examples of this paper, the goal is to maximize the Net-Present-Value (NPV), in USD. Thus, the primary objective function referred to as simply NPV in the rest of this paper. This objective function has been widely used in both well control and field development optimization studies. In a deterministic setting, the uncertainty in the geological parameters is disregarded and the optimization is performed based on a single geological model. Therefore, in the case of deterministic optimization, the objective function can be defined as: -->
+
+<!-- ```{=tex} -->
+<!-- \begin{equation} -->
+<!-- \mathbf{J}(\mathbf{u, G})= \sum_{k=1}^{K} \Bigg [\sum_{j=1}^{N_p}p_oq_{o,j,k}(\mathbf{u, G})  -->
+<!-- - \sum_{j=1}^{N_p}p_{wp}q_{wp,j,k}(\mathbf{u, G}) -  -->
+<!-- \sum_{j=1}^{N_{wi}}p_{wi}q_{wi,j,k}(\mathbf{u, G}) \Bigg]\frac{\Delta t_k}{(1+b)^{\frac{t_k}{D}}} -->
+<!-- \label{eq:npvdet} -->
+<!-- \end{equation} -->
+<!-- ``` -->
+
+<!-- Where the first term in the double summation corresponds to the oil revenue; the second term is water-production cost and third term corresponds to the water-injection cost. Equation \@ref(eq:npvdet) is considered as objective function in the deterministic setting since only a single geological model is considered. The $G$ in the Equation \@ref(eq:npvdet) is "the geological model". The additional parameters in the Equation are as follows: $K$ is the total number of timesteps; $N_p$ is the total number of production wells subject to optimization; $N_{wi}$ is the total number of water-injection wells subject to optimization; $k$ is the timestep index; $j$ is the well-number index; $p_o$ is the revenue from oil production per unit volume (in USD/bbl); $p_{wp}$ is the water-production cost per unit volume (in USD/bbl); $p_{wi}$ is the water-injection cost per unit volume (in USD/bbl); $q_o$ is the oil-production rate (in B/D); $q_{wp}$ is the water-production rate (in B/D); $q_{wi}$ is the water-injection rate (in B/D); $\Delta t_k$ is the time interval for timestep $k$ (in days); $b$ is the discount rate (dimensionless); $t_k$ is the cumulative time for discounting; and D is the reference time for discounting ($D = 365$ days if b is expressed as a fraction per year and the cash flow is discounted daily). $\mathbf{u}$ in Equation \@ref(eq:npvdet) is the control vector (i.e., a vector of control variables) defined as $\mathbf{u} = [u_1, u_2, \cdots, u_N]^D$, where $D$ is the number of control variables (dimension of optimization problem). -->
+
+<!-- As mentioned above, Equation \@ref(eq:npvdet) lacks to capture the uncertainty in the geological model. In contrast, in a Robust Optimization (RO) setting, the objective is to optimize the expected value over all geological realizations (assumption here is decision maker is risk-neutral). Then, the gaol is to optimize the $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$, can be defined as: -->
+
+
+<!-- ```{=tex} -->
+<!-- \begin{equation} -->
+<!-- \mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]=\int_{-\infty}^{+\infty}\mathbf{J}(\mathbf{u, G})p(\mathbf{G})dG -->
+<!-- \label{eq:npvopt-exact} -->
+<!-- \end{equation} -->
+<!-- ``` -->
+
+
+<!-- Where $p(\mathbf{G})$ is probability density function (PDF) of random variable, $\mathbf{G}$. However, thoroughout , we assume that the uncertainity in $\mathbf{G}$ can be represented by sampling its PDF ($p(\mathbf{G})$) to obtain an ensemble of $n_e$ realization, $\mathbf{G}_{re}$, $re=1,2,\cdots,n_e$. Therefore, approximation of $\mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]$ can be written as: -->
+
+<!-- ```{=tex} -->
+<!-- \begin{equation} -->
+<!-- \mathbb{E}_{\mathbf{G}}[\mathbf{J}(\mathbf{u},\mathbf{G})]\approx\overline{J}(\mathbf{u})=\frac{\sum_{re=1}^{n_e} J(\mathbf{u,G_{re}})}{n_e} -->
+<!-- \label{eq:npvopt} -->
+<!-- \end{equation} -->
+<!-- ``` -->
+
+<!-- Where in Equation \@ref(eq:npvopt) contrary to Equation \@ref(eq:npvdet), there is not one, rather $n_e$ geological realizations, each of them written as $G_{re}$. In this work, the objective is to optimize the Equation \@ref(eq:npvopt), where it is simply approximation of expected value of NPV defined in \@ref(eq:npvdet) over all realizations. -->
+
+<!-- It is well defined in the literature that optimizing Equation \@ref(eq:npvopt) is computationally prohibitive [@debrito2021; @nwachukwu2018; @hong2017]. Not only because thousand(s) of PDE have to be solved simultaneously in the flow-simulation in order to compute the $q_o, q_{wp}, q_{wi}$; the flow simulation must be enumerated over all realizations $n_e$ to compute $\overline{J}(u)$. Let us assume a simple case to illustrate the computational burden of this optimization problem. Assume that an E&P enterprise is in the process of finding the injection rate of five injection wells and bottom hole pressure (BHP) of other five production wells, $D=10$. The geology team of the enterprise comes up with 100 geological realizations of the model.($n_e=100$). Now, if we suppose that the reservoir model is 3D with a moderate number of grid cells, it is not hard to imagine that flow-simulation of a fine grid model will take \~1hr. Then, simply having 100 realizations means that each forward computation of $\overline{J}(u)$ takes around \~100 hr. Considering that the enterprise has to decide in six month period (in the best case, it can be interpreted as six months CPU running time), which means that the total number of the available budget for running the forward model is$\frac{6 \times 30 \times 24 }{100}= 43.2 \approx 50$ is around 50. The budget of the only $50$ forward model in ten-dimensional, non-linear, and non-convex optimization problem is relatively low. To put this in simple terms, if we say that each dimension of the control variable $\mathbf{u}$, could be discretized into ten possible cases, then total available decision alternatives (solutions) for this optimization problem will be $\text {Number of all possible alternatives} = 10^{10}$. As it is clear, finding the best solution from a pool of ten billion possible solutions with only 50 shots is a pretty much hard undertaking.\ -->
+
+<!-- In the rest of this paper, we will be discussing that the Bayesian Optimization workflow is well suited to deal with the three difficulties described at the beginning of the section.  -->
 
 \newpage
-
-
-
 
 
 
@@ -193,43 +245,76 @@ In the rest of this paper, we will be discussing that the Bayesian Optimization 
 
 ## Overall View
 
-Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic an expensive objection function. The probabilistic model is an inference from a finite number of function evaluations. This finite number of evaluations is done as initialization of the workflow and building a probabilistic model.
+Bayesian Optimization (BO) is an optimization method that builds a probabilistic model to mimic the expensive objection function, $\overline{\mathbf{J}}(\mathbf{u})$ in Equation \@ref(eq:npvopt). The probabilistic model is an inference from a finite number of function evaluations. This finite number of function evaluations is done as initialization of the workflow and building a probabilistic model.
 
-After initializing and building a probabilistic model, a new query point is evaluated using the expensive objective function at each iteration. Then the new data $(\mathbf{u}^{new},\mathbf{J}(\mathbf{u}^{new}))$ is assimilated back to the probabilistic model to update the model. The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of exploring and exploiting space of decision.
+After initializing and building a probabilistic model, a new query point ($\mathbf{u}^{new}$) is evaluated using the expensive objective function. Then the new data $(\mathbf{u}^{new},\mathbf{J}(\mathbf{u}^{new}))$ is assimilated back to the probabilistic model to update the model. The unique methodology of using a non-deterministic surrogate model makes Bayesian optimization (BO) an efficient global optimizer capable of exploring and exploiting space of decision.
 
-In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a control decision, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While the capital letter, $\mathbf{U}$ is a collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
+In the rest of this section, the objective function is shown with $\overline{\mathbf{J}}(\mathbf{u})$, consistent with the Equation \@ref(eq:npvopt). However, for convention, we drop the bar and write the $\overline{\mathbf{J}}(\mathbf{u})$ with $\mathbf{J}(\mathbf{u})$. Moreover, $\mathbf{u}$ is a decision (control) variable, with a dimension of $D$, $\mathbf{u}=[u_1,\cdots,u_D]$. While the capital letter, $\mathbf{U}$ is a collection of $\mathbf{N}$ points of $\mathbf{u}$, defined as: $\mathbf{U}= [\mathbf{u_1},\cdots,\mathbf{u_N}]$.
 
 The workflow of BO can be divided into two steps:
 
 -   Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 -   Step 2: Deciding on next $\mathbf{u}^{next}$ and evaluate $\mathbf{J(u^{next})}$ based on probabilistic model and $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$
 
-After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational budget. First, we will explain Gaussian Process (GP) to build a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
+After step 2, we come back to step 1 with the new $\mathcal{D}$, and we iterate this process until we are out of computational resources. First, we will explain Gaussian Process Regression (GPR) to build a probabilistic model as a background for the workflow. Then, both steps are explained in detail.
 
 ## Gaussian Process
 
-In this work, we employ the widely used Gaussian process (GP) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GP is an attractive choice because it is computationally tractable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A GP can be seen as an extension of the Gaussian distribution to the functional space. The key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and Covariance defined as:
+In this work, we employ the widely used Gaussian process Regression (GPR) as a probabilistic model. Known as a surrogate model (since it tries to mimic the real, expensive objective function), GPR is an attractive choice because it is computationally tractable with the capability to quantify the uncertainty of interest [@rasmussen2006; @murphy2022]. A Gaussian Process (GP) can be seen as an extension of the Gaussian distribution to the functional space. The key assumption in (GP) is that: the function values at a set of $M > 0$ inputs, $\mathbf{J} = [\mathbf{J({u_1})}, ...,\mathbf{J(u_M)}]$, is jointly Gaussian, with mean and covariance defined as:
 
 ```{=tex}
 \begin{equation}
   \begin{split}
 & \mathbb{E} \: [\mathbf{J(u)}]= m(\mathbf{u}) \\
-& \text{Cov} \: [\mathbf{J(u)}),J(\mathbf{J(u')}]= \kappa(\mathbf{u},\mathbf{u'})
+& \text{Cov} \: [\mathbf{J(u_i)},\mathbf{J(u_j)}]= \mathbf{K} 
   \end{split}
 \label{eq:mean-cov}
 \end{equation}
 ```
 
-In \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $\kappa(\mathbf{u},\mathbf{u'})$ is a covariance function (or kernel). $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$ . The GP is a distribution over function completely defined by its mean and covariance function as:
+
+In Equation \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $K_\mathbf{{ij}}$ is a covariance matrix (or kernel). The *Gram* matrix, $K_\mathbf{{ij}}$, is $\mathbf{N \times N}$ matrix, where at each elemnet $\mathbf{i,j}$, is defined by $\kappa(\mathbf{u},\mathbf{u'})$. It can be seen that, $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$.
+
+
+```{=tex}
+\begin{align}
+  \begin{split}
+K= & \:   K_\mathbf{{ij}}=\kappa(\mathbf{u_i},\mathbf{u_j}), \\
+ = & \:  \left (
+\begin{array}{ccc}
+\begin{array}{l}
+\kappa(\mathbf{u_1},\mathbf{u_2})
+\end{array}
+& \cdots & 
+\begin{array}{l}
+\kappa(\mathbf{u_1},\mathbf{u_N})
+\end{array} \\
+\vdots & \ddots & \vdots\\
+\begin{array}{l}
+\kappa(\mathbf{u_N},\mathbf{u_1})
+\end{array} &
+\cdots & 
+\begin{array}{l}
+\kappa(\mathbf{u_N},\mathbf{u_N})
+\end{array} 
+\end{array}
+\right )
+  \end{split}
+\label{eq:post-mean-cov-single-k}
+\end{align}
+```
+
+
+The GP is defined as distribution over any finite number of M point, completely defined by its mean vector and covariance matrix,
 
 ```{=tex}
 \begin{equation}
-J(\mathbf{u}) \sim \mathcal{MN}(m(\mathbf{u}), \kappa(\mathbf{u},\mathbf{u'}))
+[\mathbf{J(u_1)},\cdots,\mathbf{J(u_M)}] \sim \mathcal{N}_M(m(\mathbf{u}), \mathbf{K}))
 \label{eq:mean_cov_gp}
 \end{equation}
 ```
 
-Where $\mathcal{MN}$ denotes a multivariate normal distribution. As discussed in [@shahriari2016], there are many choices for the covariance function; the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
+Where $\mathcal{N}_M$ denotes a multivariate normal distribution. As discussed in [@shahriari2016], there are many choices for the covariance function; the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
 
 \begin{table}[H]
 
@@ -261,7 +346,7 @@ The parameter $\theta$ needs to be optimized, as it will be explained later. Wit
 
 ### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 
-Assuming we start GP with a finite number of an initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the data-set $\mathcal{D}$ as:
+Assuming we start GPR with a finite number of an initial evaluation of $\mathbf{J(u)}$ on the points in $\mathbf{U}$, we can define the data-set $\mathcal{D}$ as:
 
 ```{=tex}
 \begin{align}
@@ -274,15 +359,93 @@ Assuming we start GP with a finite number of an initial evaluation of $\mathbf{J
 \end{align}
 ```
 
-Now we consider the case of predicting the outputs for new inputs that are not in $\mathcal{D}$. Specifically, we want to predict the function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$ given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$. By definition of the GP, the joint distribution $p(\mathbf{J_U}, \mathbf{J_{U_*}})$ has the following form:
+Now we consider the case of predicting the outputs for new inputs that are not in $\mathcal{D}$. Specifically, we want to predict probability density function of function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$ given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$. 
+
+Here, to have smoother text, first we derive eqution for the case of finding PDF for one function output, say we want to find PDF function $\mathbf{J_{u}}$ at point $\mathbf{u_*}$, given the $\mathcal{D}$. We want find $p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D}})$. So, using the $N$ point evaluation of function $\mathbf{J(u)}$ given with $\mathbf{J_U}$, we can write as (through rule of probability) :
 
 ```{=tex}
 \begin{equation}
-\begin{bmatrix}  {\bf {J_U}}  \\  {\mathbf{J_{U_*}}} \end{bmatrix} \sim \mathcal{N} \begin{pmatrix} \begin{bmatrix}  {m(\mathbf{U})}  \\  {m(\mathbf{U_*})} \end{bmatrix},\begin{bmatrix} {{\bf K}_{U,U}}  & {{\bf
-K}_{U,U_*}}  \\  {{\bf \mathbf{K}^\intercal}_{U,U_*}} & {{\bf K}_{U_*,U_*} } \end{bmatrix}\end{pmatrix}
-\label{eq:gp-model-mat}
+p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\mathbf{J_U})}
+\label{eq:cond-pronb}
 \end{equation}
 ```
+
+```{=text}
+\begin{equation}
+
+\end{equation}
+```
+
+<!-- $$p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\mathbf{J_U})}$$ -->
+
+Where since per defintion of Gaussian process, any combinition of $\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}$, has mutivariate gaussian distribution we can write:
+
+```{=tex}
+\begin{equation}
+p(\mathbf{J_{u_*}},\mathbf{J_U})=\mathcal{N}_{n+1}\begin{pmatrix}
+\begin{bmatrix}
+\mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
+\end{bmatrix} \Bigg|
+0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
+\end{bmatrix} \\
+\end{pmatrix}
+\label{eq:joint-prob}
+\end{equation}
+```
+
+<!-- $$p(\mathbf{J_{u_*}},\mathbf{J_U})=\mathcal{N}_{n+1}\begin{pmatrix} -->
+<!-- \begin{bmatrix} -->
+<!-- \mathbf{J_{u_*}} \\ \mathbf{J_{U}}   -->
+<!-- \end{bmatrix} \Bigg| -->
+<!-- 0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\ -->
+<!-- \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} -->
+<!-- \end{bmatrix} \\ -->
+<!-- \end{pmatrix}$$ -->
+
+
+Note that $\mathbf{\kappa}_{u_\ast,u_\ast}$ simply means $\mathbf{\kappa}({u_\ast,u_\ast})=\sigma^2_{f}$. Same for ${p(\mathbf{J_{U}})}$, we can write . Inserting Equation 5 and 6 into, :
+
+```{=tex}
+\begin{equation}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\frac{\mathcal{N}_{n+1}\begin{pmatrix}
+\begin{bmatrix}
+\mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
+\end{bmatrix} \Bigg|
+0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
+\end{bmatrix} \\
+\end{pmatrix}}{\mathcal{N}_{n}\begin{pmatrix}\mathbf{J_{U}}\Bigg|
+0, \mathbf{K}_{U,U} \\
+\end{pmatrix}}
+\label{eq:cond-prob-long}
+\end{equation}
+```
+<!-- $$p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\frac{\mathcal{N}_{n+1}\begin{pmatrix} -->
+<!-- \begin{bmatrix} -->
+<!-- \mathbf{J_{u_*}} \\ \mathbf{J_{U}}   -->
+<!-- \end{bmatrix} \Bigg| -->
+<!-- 0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\ -->
+<!-- \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} -->
+<!-- \end{bmatrix} \\ -->
+<!-- \end{pmatrix}}{\mathcal{N}_{n}\begin{pmatrix}\mathbf{J_{U}}\Bigg| -->
+<!-- 0, \mathbf{K}_{U,U} \\ -->
+<!-- \end{pmatrix}}$$ -->
+
+
+
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
+\mathbf{\mu_{u_\ast}}= & \:  m(\mathbf{u_\ast}) +\mathbf{K}^\intercal_{U,u_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
+\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
+  \end{split}
+\label{eq:post-mean-cov-single}
+\end{align}
+```
+
+In \@ref(eq:post-mean-cov-single), we replaced the $\mathcal{MN}$ with $\mathcal{N}$ in \@ref(eq:post-mean-cov) as Equation \@ref(eq:post-mean-cov-single) shows the probability of $\mathbf{J}$ for *one* control variable, wherein Equation \@ref(eq:post-mean-cov) we have th probability of the $\mathbf{J}$, over a vector of the control variable, $\mathbf{U}$.
 
 Where, $m(\mathbf{U})$ is prior knowledge about mean value of $\mathbf{J_U}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can assume the prior mean function to be zero: $m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:
 
@@ -293,47 +456,8 @@ m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}
 \end{equation}
 ```
 
-The *Gram* matrix, $\mathbf{K}_{U,U}$, is $\mathbf{N \times N}$ matrix, with each element is covariance of $\mathbf{u}$ and $\mathbf{u'}$:
 
-```{=tex}
-\begin{equation}
-\mathbf{K}_{U,U}=\kappa(\mathbf{U,U})=\left (
-\begin{array}{ccc}
-\begin{array}{l}
-\kappa(\mathbf{u_1},\mathbf{u_2})
-\end{array}
-& \cdots & 
-\begin{array}{l}
-\kappa(\mathbf{u_1},\mathbf{u_N})
-\end{array} \\
-\vdots & \ddots & \vdots\\
-\begin{array}{l}
-\kappa(\mathbf{u_N},\mathbf{u_1})
-\end{array} &
-\cdots & 
-\begin{array}{l}
-\kappa(\mathbf{u_N},\mathbf{u_N})
-\end{array} 
-\end{array}
-\right )
-\label{eq:kernel_struct}
-\end{equation}
-```
-
-By the standard rules for conditioning multivariate Gaussian distribution, we can drive the posterior (conditional distribution of $\mathbf{J_{U_*}}$ given the $\mathcal{D}$) in closed form as follows:
-
-```{=tex}
-\begin{align}
-  \begin{split}
-p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}= & \:  \mathcal{MN}(\mathbf{J_{U_*}| \mathbf{\mu_*},\textstyle \sum_{\ast}}) \\
-{\mathbf{\mu_\ast}}= & \:  m(\mathbf{U_\ast}) +\mathbf{K}^\intercal_{U,U_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
-\textstyle \sum_{\ast}=& \:  \normalsize{\mathbf{K}_{U_\ast,U_\ast}-\mathbf{K}^\intercal_{U,U_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,U_\ast}}
-  \end{split}
-\label{eq:post-mean-cov}
-\end{align}
-```
-
-The conditional probability of the $\mathbf{J_{U_*}}$ Equation \@ref(eq:post-mean-cov) is conditioned on $\mathcal{D}$ meaning the available data points to be inferred, and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
+The term $p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}$ on left side of the Equation is a conditional probability of $\mathbf{J_{U_*}}$ given $\mathcal{D}$ (meaning the available data points), and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
 
 #### Parameter Estimation of Covariance Kernel
 
@@ -351,11 +475,11 @@ The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability
 ```{=tex}
 \begin{equation}
 \text{log} \: p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})=\mathcal{L}(\sigma_f^2,\ell)=-\frac{1}{2}(\mathbf{y}-m(\mathbf{U}))^{\intercal}\mathbf{K}_{U,U}^{-1}(\mathbf{y}-m(\mathbf{U}))-\frac{1}{2}\text{log}|\mathbf{K}_{U,U}|-\frac{N}{2}log(2\pi)
-\label{eq:log_like}
+\label{eq:log-like}
 \end{equation}
 ```
 
-Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log_like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
@@ -366,20 +490,8 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 
 However, since the objective $\mathcal{L}$ is not convex, local minima can be a problem, so we need to use multiple restarts.
 
-It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for each control value ($\mathbf{u}$), equation \@ref(eq:post-mean-cov) can be written as:
+It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for a single control variable ($\mathbf{u}$), Equation \@ref(eq:post-mean-cov) can be written as:
 
-```{=tex}
-\begin{align}
-  \begin{split}
-p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
-\mathbf{\mu_{u_\ast}}= & \:  m(\mathbf{u_\ast}) +\mathbf{K}^\intercal_{U,u_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
-\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
-  \end{split}
-\label{eq:post-mean-cov-single}
-\end{align}
-```
-
-In \@ref(eq:post-mean-cov-single), we replaced the $\mathcal{MN}$ with $\mathcal{N}$ in \@ref(eq:post-mean-cov) as Equation \@ref(eq:post-mean-cov-single) shows the probability of $\mathbf{J}$ for *one* control variable, wherein Equation \@ref(eq:post-mean-cov) we have th probability of the $\mathbf{J}$, over a vector of the control variable, $\mathbf{U}$.
 
 ### Step.2 Deciding on next $\mathbf{u}^{next}$ based on the probabilistic model
 
@@ -452,6 +564,7 @@ _*})) + \sigma_{\mathbf{u_{\ast}}} \phi(\gamma(\mathbf{u_*}))
 \label{eq:utility-no-greed}
 \end{equation}
 ```
+
 
 In this work, the utility defined in Equation \@ref(eq:utility-no-greed) was considered. The data $\mathcal{D}$ was normalized to the scale of $[0,1]$. Given that scaling, $\epsilon=0.1$ was used in this work. At the end, the answer to the question of the next query is the point where the utility is maximum, can be defined as:
 
@@ -555,9 +668,12 @@ Before applying the same workflow at the field scale, the 1-D example presented 
 
 
 
+
+
+
 # Case II: Field Scale Problem
 
-This section applies the BO workflow to a synthetic 3D reservoir model to optimize field production by controlling the water flooding scheme. A thorough introduction of the model and its geological description can be found in [@jansen2014] . Known as "Egg Model" it has a geology of channelized depositional system. The 3D model has eight water injectors and four producers shown in Figure \@ref(fig:eggbase).  One hundred equiprobable geological realizations describe the highly permeable channels, three of which are illustrated on the left side of Figure \@ref(fig:combine).[@hong2017].
+This section applies the BO workflow to a synthetic 3D reservoir model to optimize field production by controlling the water flooding scheme. The synthetic 3D model, known as the "Egg Model", has a geology of channelized depositional system. One hundred equiprobable geological realizations describe the highly permeable channels, three of which are illustrated on the left side of Figure \@ref(fig:combine).[@hong2017]. The 3D model has eight water injectors and four producers have shown in Figure \@ref(fig:eggbase). A thorough introduction of the model and its geological description can be found in [@jansen2014].
 
 \begin{figure}
 
@@ -568,7 +684,7 @@ This section applies the BO workflow to a synthetic 3D reservoir model to optimi
 \caption{Well locations in Egg model, blue ones are injection, the red producers}(\#fig:eggbase)
 \end{figure}
 
-Relative permeabilities and the associated fractional flow curve of the model have shown on the right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has a life-cycle of 10 years, as suggested in [@jansen2014]. Here, the injection rate to be maintained over the reservoir's life cycle will be optimized. Thus, given eight injection wells, the optimization workflow has eight dimensions. In other words, given the objective function and uncertainty in the geological model, what is the optimum injection rate for eight injector wells for the whole ten-year period of reservoir production. However, the optimization is not unbounded, and water injection per well can be adjusted from 5 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
+Relative permeabilities and the associated fractional flow curve of the reservoir model have shown on the right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has a life-cycle of 10 years, as suggested in [@jansen2014]. Here, the injection rate to be maintained over the reservoir's life cycle will be optimized. Thus, given eight injection wells, the optimization workflow has eight dimensions. In other words, given the objective function and uncertainty in the geological model, what is the optimum injection rate for eight injector wells for the whole ten-year period of reservoir production. However, the optimization is not unbounded, and water injection per well can be adjusted from 5 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
 \begin{figure}
 
@@ -581,7 +697,7 @@ Relative permeabilities and the associated fractional flow curve of the model ha
 
 ### Well Control Optimization
 
-Reviewing the equations raised in section 3, here we assume that the uncertainty in $\mathbf{G}$ can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations, $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, approximating the expectation of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
+Reviewing the equations raised in Section \@ref(problem-statement), here we assume that the uncertainty in $\mathbf{G}$ can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations, $\mathbf{G}_i$, $i=1,2,\cdots,n_e$. Then, approximating the expectation of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
 
 ```{=tex}
 \begin{equation}
@@ -589,8 +705,7 @@ Reviewing the equations raised in section 3, here we assume that the uncertainty
 \label{eq:npvoptrep}
 \end{equation}
 ```
-
-$\mathbf{u}$ is 1d vector with a dimension of eight, where each element contains injection rate for each injection well, therefore the control vector, to be optimized in this case, is defined as:
+$\mathbf{u}$ is 1-d vector with a dimension of eight, where each element contains injection rate for each injection well, therefore the control vector, to be optimized in this case, is defined as:
 
 ```{=tex}
 \begin{equation}
@@ -598,12 +713,9 @@ $\mathbf{u}$ is 1d vector with a dimension of eight, where each element contains
 \label{eq:cont-vec}
 \end{equation}
 ```
+As Equation \@ref(eq:npvoptrep) suggests, the $\mathbf{\overline{J}(u)}$ needs some parameters to be defined. These economical parameters, oil price ($P_o$), water production cost ($p_{wp}$), and water injection cost ($P_{wi}$) in a unit of $\$/m^3$ have been provided in Table \@ref(tab:npvparam). The cash flow is discounted daily and the discount factor is available in Table \@ref(tab:npvparam). We want to note that in this work, to avoid further computational burden in the optimization process, ten realizations of the "Egg model" have been considered, therefore $n_e=10$ in Equation \@ref(eq:npvoptrep).
 
-As the \@ref(eq:npvoptrep) suggests, the $\mathbf{\overline{J}(u)}$ need some parameters to be defined. These economical parameters, oil price ($P_o$), water production cost ($p_{wp}$), and water injection cost ($P_{wi}$) in unit of $\$/m^3$ has been provided in the Table \@ref(tab:npvparam). The cash flow is discounted daily and the discount factor is available in the \@ref(tab:npvparam). We want to note that in this work, to avoid further computational burden in the optimization process, ten realizations of the Egg model have been considered, therefore $n_e=10$ in Equation \@ref(eq:npvoptrep).
-
-The calculation procedure for $\mathbf{\overline{J}(u)}$ is as follows: first we decide on the $\mathbf{u}$ and write that in the *DATA* file of reservoir simulator. Then we run the file in the numerical reservoir simulators given that the production life of the reservoir is ten years. We repeat the simulation for all geological realizations $\mathbf{G}_i$, $i=1,2,\cdots,N_e$. Then, we have oil production, water production and water injection as output of simulator. Then, we can insert $q_o$, $q_{wp}$, $q_{wi}$ and values in Table \@ref(tab:npvparam) into eqaution \@ref(eq:npvoptrep) to get $\mathbf{\overline{J}(u)}$.
-
-
+The calculation procedure for $\mathbf{\overline{J}(u)}$ is as follows: first we decide on the $\mathbf{u}$ and write that in the *DATA* file as input to the reservoir simulator. Then we run the file in the numerical reservoir simulators ([@rasmussen2021]) given that the production life of the reservoir is ten years. We repeat the simulation for all geological realizations $\mathbf{G}_i$, $i=1,2,\cdots,n_e$. Then, we have oil production, water production, and water injection as the output of simulator. Then, we can insert $q_o$, $q_{wp}$, $q_{wi}$ and values in Table \@ref(tab:npvparam) into Equation \@ref(eq:npvoptrep) to get $\mathbf{\overline{J}(u)}$.
 
 
 
@@ -628,8 +740,7 @@ P\_wi & 12.5 & n\_e & 10\\
 
 ### BO Workflow
 
-
-As discussed, the BO workflow's starting point is to randomly sample the initial data pairs $\mathcal{D}$, which is used to build the probabilistic model (GP model) of the response surface to the input variables. In this work, forty samples from the Latin Hyper Cube Sampling (LHS) method were drawn. Note that we draw forty samples of $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ can only take a value between 5 to 100 (constraints). The LHS is preferred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of $\mathbf{\overline{J}(u)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u)}$ found from random sampling has been shown with a blue line. Setting the specific seed number (since LHS is in itself is random process), we get the maximum $NPV$ achieved here is $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth mentioning that random sampling like the LHS is not helpful to consistently approach the global optimum point, as the solution does not improve with additional sampling. There is a need for an efficient workflow to find the optimum point while using a few as possible sampling from real function.
+As discussed, the BO workflow's starting point is to randomly sample the initial data pairs $\mathcal{D}$. This $\mathcal{D}$ is used to build the probabilistic model (GP model) of the response surface to the input variables. In this work, forty samples from the Latin Hyper Cube Sampling (LHS) method were drawn. Note that we draw forty samples $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ can only take a value between 5 to 100 (constraints). The LHS is preferred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) show the results of $\mathbf{\overline{J}(u)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u)}$ found from random sampling has been shown with a blue line. Setting the specific seed number (since LHS is in itself is random process), we get the maximum $NPV$ achieved here is $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth mentioning that random sampling like the LHS is not helpful to consistently approach the global optimum point, as the solution does not improve with additional sampling. There is a need for an efficient workflow to find the optimum point while using a few as possible sampling from real function.
 
 \begin{figure}
 
@@ -640,7 +751,7 @@ As discussed, the BO workflow's starting point is to randomly sample the initial
 \caption{Expected NPV as result of forty sampling from LHS}(\#fig:lhssampling)
 \end{figure}
 
-Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:init-data), we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, due being the space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) to get the idea of the plot of the probabilistic model conditioned to the initial point looks like (at 1D case). For the mathematical expression of the posterior model, it can be referred to Equation \@eq(ref:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. And this process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$, then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential sampling resulted from the BO workflow. Readers are refereed to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty, which is helpful for further sampling. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running 10 geological realizations using flow simulation) we reach the new record Expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
+Having the initial data found through LHS, $\mathcal{D}$ in Equation \@ref(eq:init-data), we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, because the input space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) (1-D Problem) to get the idea of the plot of the probabilistic model conditioned to the initial point. For the mathematical expression of the posterior model, it can be referred to Equation \@eq(ref:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. And this process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$, then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential iteration resulted from the BO workflow. Readers are refereed to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty, which is helpful for further iteration. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running ten geological realizations using flow simulation) we reach the new record Expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
 
 \begin{figure}
 
@@ -662,9 +773,11 @@ As we explained in 1-D Toy Problem, the plot of the utility of the next point $\
 \caption{Maximum utility at each iteration, after running L-BFGS-B to find the u with max utility, $\alpha_{EI}^*$}(\#fig:utilitycurve)
 \end{figure}
 
-Given that the BO inherently has stochastic nature (from this perspective, having different initialization in LHS sampling will affect the final solution), BO is repeated with three different initializations.Ideally, these repetitions need to be conducted 100 or 1000 times to get a better overview of the algorithm's stability to different initialization. Though, because of the computational burden, in this work only three repetitions were performed. Figure \@ref(fig:difinit) shows results of three repetitions (top, middle, bottom), where each blue points in the plot has it's own specific seed number for random generation at LHS process. Then, given that initialization $\mathcal{D}$, sequential finding of $\mathbf{u}^{next}$ is performed, shown in the red points. Like the previous case, in each repetition, forty samples are drawn from LHS, the ten were taken through iterations in BO, leaving $\mathcal{D}$ with fifty pairs of $\mathbf{u},\mathbf{J(u)}$ . At each row of Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\mathbf{\overline{J}(u)}$ in both random sampling phase (LHS) and (BO) phase. As it can be noted from Figure \@ref(fig:difinit), at each repetition, the BO will improve the solution with a small sample evaluation of the $\overline{J}(u)$. Therefore, improvement following the BO phase is independent of the initial design, and reasonably we can conclude that randomness in initialization will not degrade the performance of workflow. 
+Given that the BO has stochastic nature (from this perspective, having different initialization in LHS sampling will affect the final solution), BO is repeated with three different initializations. Ideally, these repetitions need to be conducted 100 or 1000 times to understand the algorithm's stability to different initialization. However, because of the computational burden, in this work, only three repetitions were performed. Figure \@ref(fig:difinit) shows results of three repetitions (top, middle, bottom), where each blue points in the plot has its own specific seed number for random generation at LHS process. Then, given that initialization $\mathcal{D}$, the sequential finding of $\mathbf{u}^{next}$ is performed, shown in the red points. Like the previous case, in each repetition, forty samples are drawn from LHS, the ten were taken through iterations in BO, leaving $\mathcal{D}$ with fifty pairs of $\mathbf{u},\mathbf{J(u)}$ . At each row of Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\mathbf{\overline{J}(u)}$ in both random sampling phase (LHS) and (BO) phase. As it can be noted from Figure \@ref(fig:difinit), at each repetition, the BO will improve the solution with a small sample evaluation of the $\overline{J}(u)$. Therefore, improvement following the BO phase is independent of the initial design, and reasonably we can conclude that randomness in initialization will not degrade the performance of workflow.
 
-Nevertheless, the bigger question is whether, given a different initial design, does the algorithm converges the vicinity of a global optima? What is meant here is that if having different initialization will lead completely different final solution, that hints that the algorithm has a "local" search, in contrast, if the solutions lead to one specific close $\mathbf{u}$, that represents that algorithm have a "global" view on the surface of the objective function. In the case of "global" optimization having different initialization should lead to a similar final solution. In that case, the algorithm will not get stuck in the local optimum point. This is common practice in gradient-based optimization, where the algorithm is powerful in local optimization and in order to avoid being stuck in local extreme points, "multi-start" runs are performed to search the global point in the objective function.
+Nevertheless, the bigger question is whether, given a different initial design, does the algorithm converges the vicinity of a global optimum? What is meant here is that if having different initialization will lead completely different final solution, that hints that the algorithm has a "local" search. In contrast, if the solutions lead to one specific close $\mathbf{u}$, that represents that algorithm has a "global" view on the surface of the objective function. In the case of "global" optimization having different initialization should lead to a similar final solution. In that case, the algorithm will not get stuck in the local optimum point. 
+
+<!-- This is common practice in gradient-based optimization, where the algorithm is powerful in local optimization and in order to avoid being stuck in local extreme points, "multi-start" runs are performed to search the global point in the objective function. -->
 
 \begin{figure}
 
@@ -675,7 +788,7 @@ Nevertheless, the bigger question is whether, given a different initial design, 
 \caption{BayesOpt workflow applied to Syntetic 3D model, in three different initialization}(\#fig:difinit)
 \end{figure}
 
-The left side of Figure \@ref(fig:diffu) shows the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition. Where the $\mathbf{u}^{best}$ is the vector of 8 dimension, each value shows the optimum injection rate for the ten years life cycle of the field, in $m^3/D$. We want to note that the y axis was plotted from the range of 5 to 100. The reason for this is to show that in this optimization problem, injection rate for each well can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking in left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetitions at each well, does not differ significantly from each other. With a small exception of (injection \#2), it seems all the final solutions converge to the same solution. This feature that can be loosely said as "robustness" of optimization workflow to initial design is beneficial, from this sense that we do not need to restart the optimization with different initialization since they all will converge to a similar solution. From this perspective, authors can hint that BO workflow can be considered as "global" optimization method, as it shows the workflow avoids stuck in local extreme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows the mean injection rate (mean of three repetitions) and error bar at each injection wells. The bottom of the error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition, also the plots recommend that in the case of repeating the optimization with more than three times (like 10 or 100), it can lead to lower variation in the final solution.
+The left side of Figure \@ref(fig:diffu) shows the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition. Where the $\mathbf{u}^{best}$ is a vector of 8 dimensions, each value shows the optimum injection rate for the ten-year life cycle of the field, in $m^3/D$. We want to note that the y axis was plotted from the range of 5 to 100. This range is consistent with the constrain of the optimization problem, where the injection rate for each well can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking in the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetitions at each well, does not differ significantly. With a small exception of (injection \#2), it seems all the final solutions converge to the same solution. This feature that can be loosely said as "robustness" of optimization workflow to initial design is beneficial. We do not need to restart the optimization with different initialization since they all will converge to a similar solution. From this perspective, authors can hint that BO workflow can be considered a "global" optimization method. It shows that the workflow avoids being stuck in local extreme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows the mean injection rate (mean of three repetitions) and error bar at each injection wells. The bottom of the error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition. Also, the plots recommend that repeating the optimization more than three times (like 10 or 100) can lead to lower variation in the final solution.
 
 \begin{figure}
 
@@ -686,14 +799,15 @@ The left side of Figure \@ref(fig:diffu) shows the effect of initialization on t
 \caption{Left: final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells}(\#fig:diffu)
 \end{figure}
 
-
 \newpage
 
 
 \newpage
 
+# Comparison with other Optimization Alternatives
 
-In this section, the aim is to compare the performance of the BO workflow with  other available optimization algorithms commonly used for reservoir optimization under uncertainty. The literature of production optimization enjoys wide varieties of the workflow and algorithm applied to field development. Broadly speaking those can be divided into two categories adjoint-gradient and derivative-free. Adjoint methods, such as those described in [@forouzanfar2014; @li2012; @volkov2018] can provide a computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.[@debrito2021] - Therefore, in this work, two well-known  Derivative-free optimization (DFO) methods, extensively used reservoir optimization, named Genetic Algorithm (GA) [@chai2021; @holland1992] and Particle Swarm Optimization (PSO) [@eberhart1995; @jesmani2016] have been considered. This section provides a brief overview of each method, but interested readers are referred to the original papers.[@eberhart1995; @holland1992]
+In this section, the aim is to compare the performance of the BO workflow with  other available optimization algorithms commonly used for production optimization under uncertainty. The literature of production optimization enjoys a wide variety of workflows and algorithms. Broadly speaking those can be divided into two categories gradient-based and gradient-free. Gradient-based methods, such as those described in [@forouzanfar2014; @li2012; @volkov2018] can provide a computational advantage in terms of efficiency. They are, however, local methods, and it is known that broad (global) searches can be advantageous in field development optimization methods.[@debrito2021] - Therefore, in this work, two well-known gradient-free optimization   
+methods, extensively used for production optimization, named Genetic Algorithm (GA) [@chai2021; @holland1992] and Particle Swarm Optimization (PSO) [@eberhart1995; @jesmani2016] have been considered. This section provides a brief overview of each method, but interested readers are referred to the original papers.[@eberhart1995; @holland1992]
 
 ## Particle Swarm Optimization (PSO)
 
@@ -706,7 +820,7 @@ V^{t+1}_{ij} = \omega V^{t}_{ij} + c_{1}r_{1}^{t}(pbest_{ij}-X_{ij}^t) + c_2r_2^
 \end{equation}
 ```
 
-where $i=1,2,..., P$ and $j =1,2,...,n$. Equation \@ref(eq:pso) explains three different contributions to a particle's movement in an iteration. In the first term, the parameter $\omega$ is the inertia weight constant. In the second term, The parameter $c_1$ is a positive constant and it is an individual-cognition parameter, and it weighs the importance of the particle's own previous experiences. The other parameter second term is $r_1^t$, is a random value parameter with [0,1] range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, $gbestj$. Its format is just like the second term, the one regarding the individual learning. Thus, the difference $(gbest_j - X^t_{ij})$ acts as an attraction for the particles to the best point until found at some t iteration. Similarly, $c_2$ is a social learning parameter, and it weighs the importance of the global learning of the swarm. And $r_2$ plays exactly the same role as $r_1$. Where Equation \@ref(eq:psoup) updates the particle's positions. [@almeida2019]
+where $i=1,2,..., P$ and $j =1,2,...,n$. Equation \@ref(eq:pso) explains three different contributions to a particle's movement in an iteration. In the first term, the parameter $\omega$ is the inertia weight constant. In the second term, the parameter $c_1$ is a positive constant and it is an individual-cognition parameter, and it weighs the importance of the particle's own previous experiences. The other parameter in the second term is $r_1^t$, is a random value parameter with [0,1] range. The third term is the social learning one. Because of it, all particles in the swarm are able to share the information of the best point achieved regardless of which particle had found it, for example, $gbestj$. Its format is just like the second term, the one regarding individual learning. Thus, the difference $(gbest_j - X^t_{ij})$ acts as an attraction for the particles to the best point until found at some t iteration. Similarly, $c_2$ is a social learning parameter, and it weighs the importance of the global learning of the swarm. $r_2$ plays exactly the same role as $r_1$. Where Equation \@ref(eq:psoup) updates the particle's positions. [@almeida2019]
 
 ```{=tex}
 \begin{equation}
@@ -717,13 +831,13 @@ X_{ij}^{t+1} = X_{ij}^{t} + V_{ij}^{t+1}
 
 ## Genetic Algorithm (GA)
 
-Genetic algorithm is a stochastic search algorithms that use evolutionary strategies inspired by the basic principles of biological evolution. First developed by John Holland [@holland1975] and his collaborators in the 1960s and 1970s, later have been applied for optimization and search problems @goldberg1988; @mitchell1998. The evolution process is as follows: GA starts with the generating an initial random population of size $P$, so for step $k = 0$ we may write ${\theta_1^{(0)}; \theta_2^{(0)},\cdots, \theta_p^{(0)}}$, (step 1). The fitness of each member of the population at any step $k$, $f(\theta_i^{(k)})$, is computed, and probabilities $p_i^{(k)}$ are assigned to each individual in the population, usually proportional to their fitness, (step 2). The reproducing population is formed **selection** by drawing with replacement a sample where each individual has a probability of surviving equal to $p_i^{(k)}$, (step 3). A new population ${\theta_1^{(k+1)}; \theta_2^{(k+1)},\cdots, \theta_p^{(k+1)}}$ is formed from the reproducing population using crossover and mutation operators, step (4). Then, set $k = k + 1$ and the algorithm returns to the fitness evaluation step, (back to step 2). When convergence criteria are met, evolution stops, and algorithm delivers as the optimum [@scrucca2013].
+Genetic algorithm is a stochastic search algorithm that uses evolutionary strategies inspired by the basic principles of biological evolution. First developed by John Holland [@holland1975] and his collaborators in the 1960s and 1970s, later applied for optimization and search problems @goldberg1988; @mitchell1998. The evolution process is as follows: GA starts with generating an initial random population of size $P$, so for step $k = 0$ we may write ${\theta_1^{(0)}; \theta_2^{(0)},\cdots, \theta_p^{(0)}}$, (step 1). The fitness of each member of the population at any step $k$, $f(\theta_i^{(k)})$, is computed, and probabilities $p_i^{(k)}$ are assigned to each individual in the population, usually proportional to their fitness, (step 2). The reproducing population is formed **selection** by drawing with replacement a sample where each individual has a probability of surviving equal to $p_i^{(k)}$, (step 3). A new population ${\theta_1^{(k+1)}; \theta_2^{(k+1)},\cdots, \theta_p^{(k+1)}}$ is formed from the reproducing population using crossover and mutation operators, step (4). Then, set $k = k + 1$ and the algorithm returns to the fitness evaluation step, (back to step 2). When convergence criteria are met, evolution stops, and the algorithm delivers as the optimum [@scrucca2013].
 
 
 
-## Comparison in Fixed Reservoir Simulation Budget (N=50)
+## Comparison with Fixed Number of Running Reservoir Simulator (N=50)
 
-In the first part of the comparison, we compare the BO with PSO and GA in fixed $\overline{J}(u)$ evaluation. It means that the optimization process could continue, until they use $\overline{J}(u)=50$ function evaluations. It is worth mentioning that in fact $\overline{J}(u)=50$ is equal to $500$ reservoir simulations, due to the number of realization, $n_e=10$ and ten computation per each $\overline{J}(u)$. Another point is parameters of PSO and GA. These two methods need parameters to be defined by the user. In GA, these parameters are: Population Size, probability of crossover between pairs of chromosomes, probability of mutation in a parent chromosome, The number of best fitness individuals to survive at each generation. For PSO, the algorithm parameters are as follows: the swarm's size, the local exploration constant, and the global exploration constant.
+In the first part of the comparison, we compare the BO with PSO and GA in fixed $\overline{J}(u)$ evaluation. It means that the optimization process could continue, until they use $\overline{J}(u)=50$ function evaluations. In fact $\overline{J}(u)=50$ is equal to $500$ reservoir simulations, due to the number of realization, $n_e=10$ and ten computation per each $\overline{J}(u)$. These two methods need parameters to be defined by the user. In GA, these parameters are: Population Size, probability of crossover between pairs of chromosomes, probability of mutation in a parent chromosome, The number of best fitness individuals to survive at each generation. For PSO, the algorithm parameters are the swarm's size, the local exploration constant, and the global exploration constant.
 
 \begin{table}
 
@@ -748,7 +862,9 @@ parameters & value\\
 \end{tabu}
 \end{table}
 
-In Figure \@ref(fig:comp-fixbud) results of comparison has shown. As all three algorithms are stochastic (meaning they depend on initial random samples), the comparison has been repeated three times. We want to note that in Figure \@ref(fig:comp-fixbud) the $y$ axis is "Max NPV Reached", meaning that in each generation of GA and PSO algorithm, "Max" of the each generation has been shown. Moreover, the Figure shows that in BO method, number of $\overline{J}(u)$ grows as $n_{initial} + n_{iteration}$, which in this case in $n_{initial}=40$ and $n_{iteration}=10$, summing up to $50$. Whereas, in PSO and GA, number of $\overline{J}(u)$ grows as $n_{\text{popsize}}\times iteation$. As Figure \@ref(fig:comp-fixbud) shows, in all repetition, the BO outperforms the other two algorithms by reaching higher NPV at a fixed simulation budget. Part of performance could be attributed how algorithms use the forward model. In BO, after initial sampling, the algorithm sequentially queries a "one" from the expensive function, while GA and PSO need another sample size $n_p$ each iteration.
+## Comparison with Number of Running Reservoir Simulator (N=50) for BO, (N=250) for PSO and GA
+
+In Figure \@ref(fig:comp-fixbud) results of comparison has shown. Since all three algorithms are stochastic (meaning they depend on initial random samples), the comparison has been repeated three times. We want to note that in Figure \@ref(fig:comp-fixbud) the $y$ axis is "Max E(NPV) Reached", meaning that in each generation of GA and PSO algorithm, "Max" of the each generation has been shown. Moreover, the Figure shows that in BO method, number of $\overline{J}(u)$ grows as $n_{initial} + n_{iteration}$, which in this work $n_{initial}=40$ and $n_{iteration}=10$, summing up to $50$. Whereas, in PSO and GA, number of $\overline{J}(u)$ grows as $n_{\text{popsize}}\times iteation$. As Figure \@ref(fig:comp-fixbud) shows, the BO outperforms the other two algorithms in all repetition by reaching a higher NPV at a fixed simulation budget. Part of performance could be attributed how algorithms use the forward model. In BO, after initial sampling, the algorithm sequentially queries a "one" from the expensive function, while GA and PSO need another sample size $n_p$ for each iteration.
 
 \begin{figure}
 
@@ -759,7 +875,7 @@ In Figure \@ref(fig:comp-fixbud) results of comparison has shown. As all three a
 \caption{Comparison of GA, PSO and BayesOpt performance at fixed function evaluation budget}(\#fig:comp-fixbud)
 \end{figure}
 
-In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{J}(u)$ evaluations to 250, while keeping the results of BO to the 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and then their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of \@ref(tab:comp-tab) is mean value of each optimization method. (In three repetitions, the maximum achieved NPV is a\<b\<c, b was selected). As the \@ref(tab:comp-tab) shows, the difference between the NPV value of BayesOpt is almost negligible compared to PSO and GA, while the max NPV in BO was achieved in 50 $\overline{J}(u)$ while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
+In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{J}(u)$ evaluations to 250, while keeping the results of BO to 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of \@ref(tab:comp-tab) is the mean value of each optimization method. (In three repetitions, the maximum achieved Expected NPV is a\<b\<c, b was selected). As the \@ref(tab:comp-tab) shows, the difference between the expected NPV value of BO is almost negligible compared to PSO and GA, while the max expected NPV in BO was achieved in 50 $\overline{J}(u)$ evaluations while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
 
 \begin{figure}
 
@@ -793,13 +909,18 @@ Comparing the Final Solution $u$ of the Opt algorithms...(the Median Replication
 \newpage
 
 
+
+
+
+
+
 # Conclusion
 
-In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D toy case was considered to illustrate the workflow better and expand the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
+In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D problem case was considered to illustrate the workflow better and explain the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
 
-We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where hundred(s) of geological realizations are considered to represent uncertainty in objective function. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic model of objective function. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. The selection of the next point for evaluation in other population-based methods is based on random sampling, wherein BO, as a utility function, is defined, and the point with maximum utility is selected for a new evaluation. 
+We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where a hundred(s) of geological realizations represent uncertainty in the objective function. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic model of objective function. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. Utilizing the probabilistic model and having a consistent policy to select the next point leads BO to need expensive forward evaluation a few times less than GA and PSO.
 
-In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The problem size considered was relatively medium dimension problem. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem where it would be useful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
+In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The field cases problem considered was a relatively medium dimension size.  However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem.  It would be helpful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
 
 
 \newpage
@@ -904,5 +1025,105 @@ Injection Water
 Expected Improvement
 
 \newpage
+
+
+# Appendix I {#app1 .unnumbered}
+
+Now, we can write analytical term of multivariate Gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
+
+
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}})= & \:\frac{\mathcal{N}_{n+1}\begin{pmatrix}
+\begin{bmatrix}
+\mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
+\end{bmatrix} \Bigg|
+0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
+\end{bmatrix} \\
+\end{pmatrix}}{\mathcal{N}_{n}\begin{pmatrix}\mathbf{J_{U}}\Bigg|
+0, \mathbf{K}_{U,U} \\
+\end{pmatrix}} \\
+& \:\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
+\end{bmatrix}^{-1}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
+& \:  
+  \end{split}
+\label{eq:mix-equ}
+\end{align}
+```
+
+
+Here, we substitute the inverse of covariance of matrix with following matrix: 
+
+```{=tex}
+\begin{equation}
+\begin{bmatrix}d &  b^\intercal \\
+b & A 
+\end{bmatrix}=\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
+\end{bmatrix}^{-1}
+\end{equation}
+```
+
+
+We can mutiply term inside the exponetial term
+
+
+```{=text}
+\begin{equation}
+\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}d &  b^\intercal \\
+b & A \end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
+\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}
+\end{equation}
+```
+
+$$\propto \exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
+\end{bmatrix}
+\begin{bmatrix}d &  b^\intercal \\
+b & A \end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
+\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}$$
+
+Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that is uncertain we need, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
+
+$$\exp 
+\begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\end{bmatrix}
+\end{pmatrix}\propto \exp 
+\begin{pmatrix} -\frac{1}{2d^{-1}} 
+\begin{bmatrix}\mathbf{J_{u_*}}+\frac{b^\intercal\mathbf{J_{U}}}{d}
+\end{bmatrix}^2
+\end{pmatrix}$$
+
+Which is the equation for normal density function, with means and variance defined as:
+
+$$p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\mathcal{N}_1(\mathbf{J_{u_*}}|\mathbf{\mu_{u_\ast}}, \sigma^2_{\mathbf{u_{\ast}}})$$
+
+$$\mathbf{\mu_{u_\ast}}=\frac{b^\intercal\mathbf{J_{U}}}{d}, \sigma^2_{\mathbf{u_{\ast}}}=d^{-1}$$
+
+
 
 # References {#references .unnumbered}
