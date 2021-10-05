@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 
 # Bayesian Optimization Workflow
 
@@ -23,21 +28,22 @@ In this work, we employ the widely used Gaussian process Regression (GPR) as a p
 ```{=tex}
 \begin{equation}
   \begin{split}
-& \mathbb{E} \: [\mathbf{J(u)}]= m(\mathbf{u}) \\
-& \text{Cov} \: [\mathbf{J(u_i)},\mathbf{J(u_j)}]= \mathbf{K} 
+&\mathbb{E} \: [\mathbf{J(u_i)}]= m(\mathbf{u_i})=  [m(\mathbf{u_1}),\cdots,m(\mathbf{u_M})] \\
+& \text{Cov} \: [\mathbf{J(u_i)},\mathbf{J(u_j)}]= \mathbf{K} \\
+& \mathbf{i,j}=1,\cdots,\mathbf{M}
   \end{split}
 \label{eq:mean-cov}
 \end{equation}
 ```
 
 
-In Equation \@ref(eq:mean-cov), $m(\mathbf{u})$ is a mean function and $K_\mathbf{{ij}}$ is a covariance matrix (or kernel). The *Gram* matrix, $K_\mathbf{{ij}}$, is $\mathbf{N \times N}$ matrix, where at each elemnet $\mathbf{i,j}$, is defined by $\kappa(\mathbf{u},\mathbf{u'})$. It can be seen that, $\kappa(\mathbf{u},\mathbf{u'})$ specifies the similarity between two values of a function evaluated on $\mathbf{u}$, and $\mathbf{u'}$.
+In Equation \@ref(eq:mean-cov), $m(\mathbf{u_i})$ is a mean function and $\mathbf{K}$ is a covariance matrix. The *Gram* matrix, $\mathbf{K}$, is ${M \times M}$ matrix, where at each element $\mathbf{i,j}$, its is defined by covariance function, $\kappa(\mathbf{u_i},\mathbf{u_j})$. It can be seen that, $\kappa(\mathbf{u_i},\mathbf{u_j})$ specifies the similarity between two values of a function evaluated on $\mathbf{u_i}$, and $\mathbf{u_j}$.
 
 
 ```{=tex}
 \begin{align}
   \begin{split}
-K= & \:   K_\mathbf{{ij}}=\kappa(\mathbf{u_i},\mathbf{u_j}), \\
+\mathbf{K}: \: & \:   \mathbf{K}_\mathbf{{ij}}=\kappa(\mathbf{u_i},\mathbf{u_j}), \\
  = & \:  \left (
 \begin{array}{ccc}
 \begin{array}{l}
@@ -45,7 +51,7 @@ K= & \:   K_\mathbf{{ij}}=\kappa(\mathbf{u_i},\mathbf{u_j}), \\
 \end{array}
 & \cdots & 
 \begin{array}{l}
-\kappa(\mathbf{u_1},\mathbf{u_N})
+\kappa(\mathbf{u_1},\mathbf{u_M})
 \end{array} \\
 \vdots & \ddots & \vdots\\
 \begin{array}{l}
@@ -53,7 +59,7 @@ K= & \:   K_\mathbf{{ij}}=\kappa(\mathbf{u_i},\mathbf{u_j}), \\
 \end{array} &
 \cdots & 
 \begin{array}{l}
-\kappa(\mathbf{u_N},\mathbf{u_N})
+\kappa(\mathbf{u_N},\mathbf{u_M})
 \end{array} 
 \end{array}
 \right )
@@ -67,12 +73,12 @@ The GP is defined as distribution over any finite number of M point, completely 
 
 ```{=tex}
 \begin{equation}
-[\mathbf{J(u_1)},\cdots,\mathbf{J(u_M)}] \sim \mathcal{N}_M(m(\mathbf{u}), \mathbf{K}))
+[\mathbf{J(u_1)},\cdots,\mathbf{J(u_M)}] \sim \mathcal{N}_M(m(\mathbf{u_i}), \mathbf{K}))
 \label{eq:mean_cov_gp}
 \end{equation}
 ```
 
-Where $\mathcal{N}_M$ denotes a multivariate normal distribution. As discussed in [@shahriari2016], there are many choices for the covariance function; the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
+For $i=1,\cdots,M$. Where $\mathcal{N}_M$ denotes a Multivariate Normal Distribution (MVN), with dimension of $M$. As discussed in [@shahriari2016], there are many choices for the covariance function; $\kappa(\mathbf{u_i},\mathbf{u_j})$, the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
 
 ```{r cov-tab, echo=FALSE, message=FALSE, error=FALSE, eval=TRUE, fig.align='center'}
 library(tidyverse)
@@ -95,7 +101,7 @@ kbl(df, booktabs = T,escape = FALSE, format = "latex", caption=" Several types o
   kable_styling(position = "center", latex_options = "HOLD_position", full_width = T)
 ```
 
-Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludian distance of $\mathbf{u}$, $\mathbf{u'}$. ( Note that $|h|^2=(\mathbf{u}-\mathbf{u'})^\intercal(\mathbf{u}-\mathbf{u'})$). In this work, the Matern covariance function with $\nu=\frac{5}{2}$ was employed.  However, depending on any choice of covariance function, the covariance function parameters need to be estimated. These parameters can be denoted as $\theta$ as:
+Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludian distance of $\mathbf{u_i}$, $\mathbf{u_j}$. ( Note that $|h|^2=(\mathbf{u_i}-\mathbf{u_j})^\intercal(\mathbf{u_i}-\mathbf{u_j})$). In this work, the Matern covariance function with $\nu=\frac{5}{2}$ was employed.  However, depending on any choice of covariance function, the covariance function parameters need to be estimated. These parameters can be denoted as $\theta$ as:
 
 ```{=tex}
 \begin{equation}
@@ -104,7 +110,7 @@ Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludia
 \end{equation}
 ```
 
-The parameter $\theta$ needs to be optimized, as it will be explained later. With this background, BO workflow is explained as follows.
+The parameter $\theta$ needs to be optimized, as it will be explained later section \@ref(hyper-param). With this background, BO workflow is explained as follows.
 
 ### Step 1: Choose some initial design points $\mathcal{D}=\{{\mathbf{U},\mathbf{J(U)}}\}$ to build a probabilistic model inferred from $\mathcal{D}$
 
@@ -121,14 +127,16 @@ Assuming we start GPR with a finite number of an initial evaluation of $\mathbf{
 \end{align}
 ```
 
-Now we consider the case of predicting the outputs for new inputs that are not in $\mathcal{D}$. Specifically, we want to predict probability density function of function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$ given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$. 
+Now we consider the case of predicting the outputs for a new inputs that are not in $\mathcal{D}$. Lets say we want find $\mathbf{J(u)}$ at $\mathbf{u_*}$(looking at $\mathcal{D}$, we can say  $\mathbf{u_{N+1}}=\mathbf{u_*}$). In mathematical term, we want to find PDF function $\mathbf{J(u)}$ at point $\mathbf{u_*}$, given the $\mathbf{J_U}$, can be defined as $p(\mathbf{J_{u_*}}|\mathbf{J_U})$. Through the rule of probability, we can write as:
 
-Here, to have smoother text, first we derive eqution for the case of finding PDF for one function output, say we want to find PDF function $\mathbf{J_{u}}$ at point $\mathbf{u_*}$, given the $\mathcal{D}$. We want find $p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D}})$. So, using the $N$ point evaluation of function $\mathbf{J(u)}$ given with $\mathbf{J_U}$, we can write as (through rule of probability) :
+
+<!-- Specifically, we want to predict probability density function of function outputs $\mathbf{J_{U_*}} = [\mathbf{J(u_1)},\cdots, \mathbf{J(u_{N_*})}]$ given a test set (prediction set) set $\mathbf{U_*}$ of size $\mathbf{N_* \times D}$.  -->
+
 
 ```{=tex}
 \begin{equation}
 p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\mathbf{J_U})}
-\label{eq:cond-pronb}
+\label{eq:cond-prob}
 \end{equation}
 ```
 
@@ -138,17 +146,16 @@ p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\math
 \end{equation}
 ```
 
-<!-- $$p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\mathbf{J_U})}$$ -->
 
-Where since per defintion of Gaussian process, any combinition of $\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}$, has mutivariate gaussian distribution we can write:
+Where since per definition of Gaussian Process, any combination of $\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}$, is MVN, we can write numerator of above Equation as:
 
 ```{=tex}
 \begin{equation}
-p(\mathbf{J_{u_*}},\mathbf{J_U})=\mathcal{N}_{n+1}\begin{pmatrix}
+p(\mathbf{J_{u_*}},\mathbf{J_U}|\theta^*)=\mathcal{N}_{N+1}\begin{pmatrix}
 \begin{bmatrix}
 \mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
 \end{bmatrix} \Bigg|
-0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\begin{bmatrix} m(\mathbf{u_*}) \\ m(\mathbf{U})   \end{bmatrix},\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
 \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
 \end{bmatrix} \\
 \end{pmatrix}
@@ -156,29 +163,20 @@ p(\mathbf{J_{u_*}},\mathbf{J_U})=\mathcal{N}_{n+1}\begin{pmatrix}
 \end{equation}
 ```
 
-<!-- $$p(\mathbf{J_{u_*}},\mathbf{J_U})=\mathcal{N}_{n+1}\begin{pmatrix} -->
-<!-- \begin{bmatrix} -->
-<!-- \mathbf{J_{u_*}} \\ \mathbf{J_{U}}   -->
-<!-- \end{bmatrix} \Bigg| -->
-<!-- 0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\ -->
-<!-- \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} -->
-<!-- \end{bmatrix} \\ -->
-<!-- \end{pmatrix}$$ -->
 
-
-Note that $\mathbf{\kappa}_{u_\ast,u_\ast}$ simply means $\mathbf{\kappa}({u_\ast,u_\ast})=\sigma^2_{f}$. Same for ${p(\mathbf{J_{U}})}$, we can write . Inserting Equation 5 and 6 into, :
+Note that in left side of above Equation, we introdced the term $\theta^*$. $p(\mathbf{J_{u_*}},\mathbf{J_U}|\theta^*)$ means that the term on right side of equation is dependentnd on $\theta^*$ value, implicit in covarinca matrices. $\theta^*$ is defined as "optimial hyper-parameter" of covariance function, where the procedure to estimate is showed in the next section. $\mathbf{\kappa}_{u_\ast,u_\ast}$ simply means $\mathbf{\kappa}({u_\ast,u_\ast})=\sigma^2_{f}$, also  $\mathbf{K}_{U,u_\ast}$ is $N\times1$, $\mathbf{K}_{U,U}$ is $N\times N$ matrices. In same way, we can write MVN for ${p(\mathbf{J_{U}})}$. Inserting Equation \@ref(eq:joint-prob) into Equation \@ref(eq:cond-prob) we have:
 
 ```{=tex}
 \begin{equation}
-p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\frac{\mathcal{N}_{n+1}\begin{pmatrix}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^*)=\frac{\mathcal{N}_{n+1}\begin{pmatrix}
 \begin{bmatrix}
 \mathbf{J_{u_*}} \\ \mathbf{J_{U}}  
 \end{bmatrix} \Bigg|
-0,\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\begin{bmatrix} m(\mathbf{u_*}) \\ m(\mathbf{U})   \end{bmatrix},\begin{bmatrix} \mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
 \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U}
 \end{bmatrix} \\
 \end{pmatrix}}{\mathcal{N}_{n}\begin{pmatrix}\mathbf{J_{U}}\Bigg|
-0, \mathbf{K}_{U,U} \\
+m(\mathbf{U}), \mathbf{K}_{U,U} \\
 \end{pmatrix}}
 \label{eq:cond-prob-long}
 \end{equation}
@@ -194,12 +192,12 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\frac{\mathcal{N}_{n+1}\begin{pmatrix}
 <!-- 0, \mathbf{K}_{U,U} \\ -->
 <!-- \end{pmatrix}}$$ -->
 
-
+Now, we can see that both numerator and denominator of \@ref(eq:cond-prob-long) can be written in exponetial term (per definition of MVN). Then, after some tedious manipulation (provided in Appendix I), the final conditional pobability has a closed form as:
 
 ```{=tex}
 \begin{align}
   \begin{split}
-p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
 \mathbf{\mu_{u_\ast}}= & \:  m(\mathbf{u_\ast}) +\mathbf{K}^\intercal_{U,u_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
 \textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
   \end{split}
@@ -207,21 +205,11 @@ p(\mathbf{J_{u_*}}|\mathbf{\mathcal{D},\theta^\ast})= & \:  \mathcal{N}(\mathbf{
 \end{align}
 ```
 
-In \@ref(eq:post-mean-cov-single), we replaced the $\mathcal{MN}$ with $\mathcal{N}$ in \@ref(eq:post-mean-cov) as Equation \@ref(eq:post-mean-cov-single) shows the probability of $\mathbf{J}$ for *one* control variable, wherein Equation \@ref(eq:post-mean-cov) we have th probability of the $\mathbf{J}$, over a vector of the control variable, $\mathbf{U}$.
+In \@ref(eq:post-mean-cov-single), we see that PDF of function at point $\mathbf{u_*}$ has univariate normal distribution with the defined mean and variance.^[The $m(.)$ function that appears in mean term of Equation \@ref(eq:post-mean-cov-single),  is prior knowledge about mean value of $\mathbf{J(u)}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can normalize the dataset and assume the prior mean function to be zero: $m(\mathbf{u_*})=m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:$m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}$, well known to Ordinary Krigging (OK) in Geostatistics community.]
 
-Where, $m(\mathbf{U})$ is prior knowledge about mean value of $\mathbf{J_U}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can assume the prior mean function to be zero: $m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:
+To compute the right side of Equation \@ref(eq:post-mean-cov-single), we have all the components defined, except the the "optimum hyper-parameter", $\theta^*$. The next section we will explain the procedure find $\theta^*$. 
 
-```{=tex}
-\begin{equation}
-m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}
-\label{eq:linear-mean}
-\end{equation}
-```
-
-
-The term $p(\mathbf{J_{U_*}}|\mathbf{\mathcal{D},\theta)}$ on left side of the Equation is a conditional probability of $\mathbf{J_{U_*}}$ given $\mathcal{D}$ (meaning the available data points), and $\theta$ which is parameters of covariance function, as shown in Equation \@ref(eq:cova-theta).
-
-#### Parameter Estimation of Covariance Kernel
+#### Hyper-parameter Estimation of Covariance Funnction{#hyper-param}
 
 As shown in Table \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
 
