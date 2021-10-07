@@ -243,7 +243,7 @@ However, since the objective $\mathcal{L}$ is not convex, local minima can be a 
 It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for a single control variable ($\mathbf{u}$), Equation \@ref(eq:post-mean-cov) can be written as:
 
 
-### Step.2 Deciding on next $\mathbf{u}^{next}$ based on the probabilistic model
+### Step.2 Deciding on next $\mathbf{u}^{next}$ based on the probabilistic model{#nextpoint}
 
 The posterior of the probabilistic model given by Equation \@ref(eq:post-mean-cov-single) can quantify the uncertainty of $\mathbf{J}$ over the any new $\mathbf{u_*}$. The question is, what is the next $\mathbf{u}^{next}$ to feed into the *expensive function*?. In other words, so far we have $\mathcal{D}$, but need to decide the next $\mathbf{u}^{next}$ so that going back to Step 1, our updated $\mathcal{D}$ be $\mathcal{D}=\mathcal{D} \: \cup[\mathbf{u^{next}},\mathbf{J(u^{next})}]$. One could select the next point arbitrarily, but that would be wasteful.
 
