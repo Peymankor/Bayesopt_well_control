@@ -118,8 +118,9 @@ Expected Improvement
 
 # Appendix I {#app1 .unnumbered}
 
-Now, we can write analytical term of multivariate Gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
+Here, first we start to derive the case when mean function $m(\mathbf{u})$ is considered as equal to zero, $m(\mathbf{u})=0$. Then, we generalize the resulting equations to the case of fixed, deterministic mean function.
 
+Now, we can write analytical term of multivariate gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
 
 ```{=tex}
 \begin{align}
@@ -144,7 +145,7 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}})= & \:\frac{\mathcal{N}_{n+1}\begin{pmatrix}
 +\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
 & \:  
   \end{split}
-\label{eq:mix-equ}
+\label{eq:mix-equ-app}
 \end{align}
 ```
 
@@ -153,51 +154,46 @@ Here, we substitute the inverse of covariance of matrix with following matrix:
 
 ```{=tex}
 \begin{equation}
-\begin{bmatrix}d &  b^\intercal \\
-b & A 
+\begin{bmatrix}d &  b \\
+b^\intercal & A 
 \end{bmatrix}=\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
 \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
 \end{bmatrix}^{-1}
+\label{eq:substitute}
 \end{equation}
 ```
 
 
 We can mutiply term inside the exponetial term
 
-
-```{=text}
-\begin{equation}
-\propto \exp 
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}}) & \propto \exp 
 \begin{pmatrix} -\frac{1}{2} 
 \begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
 \end{bmatrix}
-\begin{bmatrix}d &  b^\intercal \\
-b & A \end{bmatrix}
-+\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
-\exp 
-\begin{pmatrix} -\frac{1}{2} 
-\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
+\begin{bmatrix}d &  b \\
+b^\intercal & A \end{bmatrix}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\end{bmatrix}
++\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \: \\
+& \:\propto \exp \begin{pmatrix} -\frac{1}{2} 
+\begin{bmatrix}(\mathbf{J_{u_*}}d+\mathbf{J_{U}}b^\intercal)\mathbf{J_{u_*}} +(\mathbf{J_{u_*}}b+\mathbf{J_{U}}A)\mathbf{J_{U}} 
 \end{bmatrix}
 \end{pmatrix}
-\end{equation}
+ \\
+& \:  
+  \end{split}
+\label{eq:exp-term-app}
+\end{align}
 ```
 
-$$\propto \exp 
-\begin{pmatrix} -\frac{1}{2} 
-\begin{bmatrix}\mathbf{J_{u_*}} & \mathbf{J_{U}}
-\end{bmatrix}
-\begin{bmatrix}d &  b^\intercal \\
-b & A \end{bmatrix}
-+\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix}= 
-\exp 
-\begin{pmatrix} -\frac{1}{2} 
-\begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
-\end{bmatrix}
-\end{pmatrix}$$
 
 Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that is uncertain we need, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
 
-$$\exp 
+
+```{=tex}
+\begin{equation}
+\exp 
 \begin{pmatrix} -\frac{1}{2} 
 \begin{bmatrix}d(\mathbf{J_{u_*}})^2+2b^\intercal\mathbf{J_{U}}\mathbf{J_{u_*}}+const
 \end{bmatrix}
@@ -205,14 +201,108 @@ $$\exp
 \begin{pmatrix} -\frac{1}{2d^{-1}} 
 \begin{bmatrix}\mathbf{J_{u_*}}+\frac{b^\intercal\mathbf{J_{U}}}{d}
 \end{bmatrix}^2
-\end{pmatrix}$$
+\end{pmatrix}
+\label{eq:mix-equ-app3}
+\end{equation}
+```
+
 
 Which is the equation for normal density function, with means and variance defined as:
 
-$$p(\mathbf{J_{u_*}}|\mathbf{J_{U}})=\mathcal{N}_1(\mathbf{J_{u_*}}|\mathbf{\mu_{u_\ast}}, \sigma^2_{\mathbf{u_{\ast}}})$$
 
-$$\mathbf{\mu_{u_\ast}}=\frac{b^\intercal\mathbf{J_{U}}}{d}, \sigma^2_{\mathbf{u_{\ast}}}=d^{-1}$$
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
+\mathbf{\mu_{u_\ast}}= & \:\frac{b^\intercal\mathbf{J_{U}}}{d} \\
+\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:d^{-1}
+  \end{split}
+\label{eq:post-mean-cov-single-zero-orig}
+\end{align}
+```
+
+However, we should say that in the above euqation the matrix $d$ and $b^\intercal$ should be specified. Per definition of matrix and it's inverse:
+
+```{=tex}
+\begin{equation}
+\begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
+\mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
+\end{bmatrix}\begin{bmatrix}d &  b \\
+b^\intercal & A 
+\end{bmatrix}=\begin{bmatrix}1 &  0 \\
+0 & \mathbf{I} 
+\end{bmatrix}
+\label{eq:inv-def}
+\end{equation}
+```
 
 
+
+```{=tex}
+\begin{subequations}
+ \begin{align}
+  \label{eq:eq1}
+  \mathbf{\kappa}_{u_\ast,u_\ast}d+\mathbf{K}_{U,u_\ast}b^\intercal=1\\
+  \label{eq:eq2}
+  \mathbf{\kappa}_{u_\ast,u_\ast}b+\mathbf{K}_{U,u_\ast}A=0\\
+  \label{eq:eq3}
+  \mathbf{K}^\intercal_{U,u_\ast}d+\mathbf{K}_{U,U}b^\intercal=0\\
+  \label{eq:eq4}
+  \mathbf{K}^\intercal_{U,u_\ast}b+\mathbf{K}_{U,U}A=\mathbf{I}
+ \end{align}
+\label{eq:main1}
+\end{subequations}
+```
+
+We can find the $b^\intercal$ through Equation \@ref(eq:eq3)
+
+```{=tex}
+\begin{equation}
+b^\intercal=-\frac{\mathbf{K}^\intercal_{U,u_\ast}d}{\mathbf{K}_{U,U}}
+\label{eq:find-bt}
+\end{equation}
+```
+
+replacing the $b^\intercal$ in \@ref(eq:eq1) we can define the $d$ as:
+
+
+```{=tex}
+\begin{align}
+\begin{aligned}
+\mathbf{\kappa}_{u_\ast,u_\ast}d-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}d=1 \\
+d=\frac{1}{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
+\label{eq:find-d}
+\end{aligned}
+\end{align}
+```
+
+Then , Equation \@ref(eq:post-mean-cov-single-zero-orig) can be defined with equivalent term of  $b^\intercal$ and $d$: 
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
+\mathbf{\mu_{u_\ast}}= & \:\frac{b^\intercal\mathbf{J_{U}}}{d}= \mathbf{K}^\intercal_{U,u_\ast}{\mathbf{K}^{-1}_{U,U}}\mathbf{J_{U}} \\
+\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:d^{-1}=  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
+  \end{split}
+\label{eq:post-mean-cov-single-zero-proof}
+\end{align}
+```
+
+In the case of using a fixed (deterministic) mean function $m(\mathbf{u})$, we simply apply the above zero mean GP to the difference between the observations and the fixed mean function, where equation for variance keeps unchanged:
+
+```{=tex}
+\begin{align}
+  \begin{split}
+p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_{u_*}}| \mathbf{\mu_{u_\ast}}, \mathbf{\sigma^2_{u_{\ast}}}) \\
+\mathbf{\mu_{u_\ast}}= & \:  m(\mathbf{u_\ast}) +\mathbf{K}^\intercal_{U,u_*} \mathbf{K}^{-1}_{U,U}(\mathbf{J_U}-m(\mathbf{U})) \\
+\textstyle \sigma^2_{\mathbf{u_{\ast}}}=& \:  \normalsize{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathbf{K}_{U,U}^{-1}\mathbf{K}_{U,u_\ast}}
+  \end{split}
+\label{eq:post-mean-cov-single-app}
+\end{align}
+```
+
+Which is identical to Equation \@ref(eq:post-mean-cov-single).
+
+\newpage
 
 # References {#references .unnumbered}
