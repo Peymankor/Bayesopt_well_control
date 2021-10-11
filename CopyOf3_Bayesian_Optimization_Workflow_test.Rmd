@@ -147,7 +147,7 @@ p(\mathbf{J_{u_*}}|\mathbf{J_U})=\frac{p(\mathbf{J_{u_*}},\mathbf{J_U})}{p(\math
 ```
 
 
-Where since per definition of Gaussian Process, any combination of $\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}$, is MVN, we can write numerator of above Equation as:
+Where per definition of Gaussian Process, any combination of $\mathbf{J(u_1)},\cdots,\mathbf{J(u_N)}$, is MVN, we can write numerator of above Equation as:
 
 ```{=tex}
 \begin{equation}
@@ -192,7 +192,7 @@ m(\mathbf{U}), \mathbf{K}_{U,U} \\
 <!-- 0, \mathbf{K}_{U,U} \\ -->
 <!-- \end{pmatrix}}$$ -->
 
-Now, we can see that both numerator and denominator of \@ref(eq:cond-prob-long) can be written in exponetial term (per definition of MVN). Then, after some tedious manipulation (provided in Appendix I), the final conditional pobability has a closed form as:
+Now, we can see that both numerator and denominator of \@ref(eq:cond-prob-long) can be written in exponential term (per definition of MVN). Then, after some tedious manipulation (provided in Appendix I), the final conditional probability has a closed form as:
 
 ```{=tex}
 \begin{align}
@@ -216,11 +216,11 @@ As shown in Table \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\
 ```{=tex}
 \begin{equation}
 p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})= \int p(\mathbf{y}|\mathbf{J_U})p(\mathbf{J_U}|\mathbf{\theta})d\mathbf{J}
-\label{eq:marg_like_int}
+\label{eq:marg-like-int}
 \end{equation}
 ```
 
-The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. The $log$ of marginal likelihood then can be written as:
+The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. Given that in this work, $p(\mathbf{y}|\mathbf{J_U})=1$^[Since here we are considering a "noise-free" observation], then right side of Equation \@ref(eq:marg-like-int) is simply $\mathcal{N}(m(\mathbf{U}),\mathbf{K}_{U,U})$, then taking $log$ of can be written as:
 
 ```{=tex}
 \begin{equation}
@@ -240,7 +240,7 @@ Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This obj
 
 However, since the objective $\mathcal{L}$ is not convex, local minima can be a problem, so we need to use multiple restarts.
 
-It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore Equation \@ref(eq:post-mean-cov) can be written using the "optimized" value of $\theta$. Moreover, given that in the next step usually, we need probability distribution of $\mathbf{J}$ for a single control variable ($\mathbf{u}$), Equation \@ref(eq:post-mean-cov) can be written as:
+It is useful to note that the value $\theta^{\ast}$ could be estimated using only "initial data", $\mathcal{D}=[\mathbf{U},\mathbf{J_U}]$. Therefore, Equation \@ref(eq:post-mean-cov-single) has been written using the "optimized" value of $\theta$. 
 
 
 ### Step.2 Deciding on next $\mathbf{u}^{next}$ based on the probabilistic model{#nextpoint}
