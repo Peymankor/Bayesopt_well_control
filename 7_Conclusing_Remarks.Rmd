@@ -1,22 +1,21 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+
 # Conclusion
 
 In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D problem case was considered to illustrate the workflow better and explain the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
 
 We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where a hundred(s) of geological realizations represent uncertainty in the objective function. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic model of objective function. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. Utilizing the probabilistic model and having a consistent policy to select the next point leads BO to need expensive forward evaluation a few times less than GA and PSO.
 
-In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The field cases problem considered was a relatively medium dimension size.  However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem.  It would be helpful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
-
+In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The field cases problem considered was a relatively medium dimension size. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem. It would be helpful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
 
 \newpage
 
-# Acknowledgements
+# Acknowledgements {#ack .unnumbered}
 
-This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (<http://digires.no>). We acknowledge the access to Eclipse licenses granted by Schlumberger.
+This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (<http://digires.no>).
+
+# Note on Reproducibility of Research {#rep .unnumbered}
+
+The code, data, and executable link of this manuscript are available to reproduce this paper. The paper has been written in Rmarkdown format [@xie2018], and the reader can find all elements in the Github repo: (<https://github.com/Peymankor/Bayesopt_well_control>). However, the repo will stay "private," We will change its access to "public" as soon as the manuscript is accepted for publication.
 
 \newpage
 
@@ -24,31 +23,31 @@ This work received support from the Research Council of Norway and the companies
 
 **Nomenclature**
 
-- $p$
+-   $p$
 
 Price in $dollar/m^3$
 
-- $q$
+-   $q$
 
 Volume in $m^3/D$
 
-- $N_p$
+-   $N_p$
 
 Number of production wells
 
-- $N_{wi}$
+-   $N_{wi}$
 
 Number of injection wells
 
-- $\mathbf{u}$
+-   $\mathbf{u}$
 
 Control variable (decision to make)
 
-- $\mathbf{U}$
+-   $\mathbf{U}$
 
 Vector of control variables
 
-- $m$
+-   $m$
 
 Mean function
 
@@ -56,69 +55,67 @@ $k$
 
 Covariance function
 
-
 **Greek Symbols**
 
-- $\mathcal{MN}$
+-   $\mathcal{MN}$
 
 Multivariate normal distribution
 
-- $\mathcal{N}$
+-   $\mathcal{N}$
 
 Normal distribution
 
-- $\mu$
+-   $\mu$
 
 Mean of normal distribution
 
-- $\theta$
+-   $\theta$
 
 Parameter of covariance function
 
-- $\sigma$
+-   $\sigma$
 
 Standard deviation of normal distribution
 
-- $\alpha_{EI}$
+-   $\alpha_{EI}$
 
 utility function when policy is Expected Improvement
 
-- $\Phi$
+-   $\Phi$
 
 CDF of standard Gaussian distribution
 
-- $\phi$
+-   $\phi$
 
 PDF of standard Gaussian distribution
 
-- $\epsilon$
+-   $\epsilon$
 
-Explorative term 
+Explorative term
 
-**Subscribtion**
+**Subscription**
 
-- $o$
+-   $o$
 
 Oil
 
-- $wp$
+-   $wp$
 
 Produced Water
 
-- $wi$
+-   $wi$
 
 Injection Water
 
-- $EI$
+-   $EI$
 
 Expected Improvement
 
 \newpage
 
-
 # Appendix I {#app1 .unnumbered}
 
-Here, first we start to derive the case when mean function $m(\mathbf{u})$ is considered as equal to zero, $m(\mathbf{u})=0$. Then, we generalize the resulting equations to the case of fixed, deterministic mean function.
+Here, we first start to derive the case when mean function $m(\mathbf{u})$ is considered as equal to zero, $m(\mathbf{u})=0$. Then, we generalize the resulting equations to the case of fixed, deterministic mean function.
 
 Now, we can write analytical term of multivariate gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
 
@@ -142,15 +139,14 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}})= & \:\frac{\mathcal{N}_{n+1}\begin{pmatrix}
 \begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
 \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
 \end{bmatrix}^{-1}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\end{bmatrix}
-+\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
+-\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
 & \:  
   \end{split}
 \label{eq:mix-equ-app}
 \end{align}
 ```
 
-
-Here, we substitute the inverse of covariance of matrix with following matrix: 
+Here, we substitute the inverse of covariance of matrix with following matrix:
 
 ```{=tex}
 \begin{equation}
@@ -162,9 +158,7 @@ b^\intercal & A
 \label{eq:substitute}
 \end{equation}
 ```
-
-
-We can mutiply term inside the exponetial term
+We can multiply term inside the exponential term:
 
 ```{=tex}
 \begin{align}
@@ -187,9 +181,7 @@ b^\intercal & A \end{bmatrix}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\e
 \end{align}
 ```
 
-
-Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that is uncertain we need, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
-
+Now, we will multiply only the terms that is related to $\mathbf{J_{u_*}}$ (inside the exponential term), as that is the variable of interest, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
 
 ```{=tex}
 \begin{equation}
@@ -206,9 +198,7 @@ Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that 
 \end{equation}
 ```
 
-
-Which is the equation for normal density function, with means and variance defined as:
-
+Where the resulting equation is proportional to normal density function, with mean and variance can be defined as:
 
 ```{=tex}
 \begin{align}
@@ -221,7 +211,9 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \end{align}
 ```
 
-However, we should say that in the above euqation the matrix $d$ and $b^\intercal$ should be specified. Per definition of matrix and it's inverse:
+However, we should say that in the above equation still $d$ and $b^\intercal$ are undefined. Now, we find the analytical expression for those terms. 
+
+Per definition of matrix and it's inverse:
 
 ```{=tex}
 \begin{equation}
@@ -236,7 +228,7 @@ b^\intercal & A
 \end{equation}
 ```
 
-
+And then, writing element-by-element equivalent equations:
 
 ```{=tex}
 \begin{subequations}
@@ -263,8 +255,7 @@ b^\intercal=-\frac{\mathbf{K}^\intercal_{U,u_\ast}d}{\mathbf{K}_{U,U}}
 \end{equation}
 ```
 
-replacing the $b^\intercal$ in \@ref(eq:eq1) we can define the $d$ as:
-
+Replacing the $b^\intercal$ in Equation  \@ref(eq:eq1) we can define the $d$ as:
 
 ```{=tex}
 \begin{align}
@@ -275,8 +266,8 @@ d=\frac{1}{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathb
 \end{aligned}
 \end{align}
 ```
+Then, Equation \@ref(eq:post-mean-cov-single-zero-orig) can be defined with equivalent term of $b^\intercal$ and $d$:
 
-Then , Equation \@ref(eq:post-mean-cov-single-zero-orig) can be defined with equivalent term of  $b^\intercal$ and $d$: 
 ```{=tex}
 \begin{align}
   \begin{split}
@@ -300,7 +291,6 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \label{eq:post-mean-cov-single-app}
 \end{align}
 ```
-
 Which is identical to Equation \@ref(eq:post-mean-cov-single).
 
 \newpage
