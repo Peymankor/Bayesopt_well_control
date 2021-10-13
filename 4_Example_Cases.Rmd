@@ -72,7 +72,7 @@ library(ParBayesianOptimization)
 
 ```
 
-```{r onedplot, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Plot of 1-D equation with blue dash line representing the global optimum", warning=FALSE, out.width="90%"}
+```{r onedplot, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Plot of the 1-D equation, with blue dash line representing the global optimum", warning=FALSE, out.width="90%"}
 
 x_domain <- seq(0,1,0.01)
 y_domain <- one_d_fun(x_domain)
@@ -328,7 +328,7 @@ utility_cal_plot_ind <- function(predict_list, x_predict,obs_data,eps,x_next) {
 
 ```
 
-```{r exampleshow, fig.retina=2, warning=FALSE, fig.cap="Ite1 - Top: Gaussian posterior over the initial sample points; Lower: Utility function over the x values", out.width="100%", fig.align='left', echo=FALSE, out.height="75%"}
+```{r exampleshow, fig.retina=2, warning=FALSE, fig.cap="Ite1 - Top: mean, CI, and 100 realizations at each $\\mathbf{u_*}$ values; Lower: Utility function over the $\\mathbf{u_*}$ values", out.width="100%", fig.align='left', echo=FALSE, out.height="75%"}
 
 set.seed(123)
 x <- c(0.05,0.2,0.5,0.6,0.95)
@@ -348,7 +348,7 @@ posterior_1 /
 
 If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in Figure \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7\%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case, after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(\text{total iteration}) = 5 + 2=7$.
 
-```{r allinone, echo=FALSE, fig.align='left', fig.cap="Gaussian posterior of over the initial sample points", fig.retina=2, message=FALSE, warning=FALSE, out.height="90%", out.width="90%"}
+```{r allinone, echo=FALSE, fig.align='left', fig.cap="Left: mean, CI, and 100 realizations at each $\\mathbf{u_*}$ -  Right: Utility function at each $\\mathbf{u_*}$. From the top, iterations #1,2,3", fig.retina=2, message=FALSE, warning=FALSE, out.height="90%", out.width="90%"}
 set.seed(123)
 
 x <- c(0.05,0.15,0.2,0.5,0.6,0.95)
