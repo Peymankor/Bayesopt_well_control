@@ -1,3 +1,4 @@
+
 # Problem Statement
 
 In general, an optimization task can be defined as a search process for the maximum output value of a "well behaved" ^[In this context, it means the function is defined everywhere inside the input domain, It is single-valued and continuous.] objective function $\mathbf{J}$. Can be defined as $\mathbf{J}: \chi \rightarrow \mathbb{R}$ where acceptable solutions $\chi$ have a dimension of $D$, $\chi \subseteq \mathbb{R}^D$:
