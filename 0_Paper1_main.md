@@ -25,7 +25,7 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-10-10"
+date: "2021-10-13"
 bibliography: [references.bib]
 linenumbers: true
 numbersections: true
@@ -39,6 +39,7 @@ output:
     keep_md: true
 number_sections: true
 fig_caption: yes
+urlcolor: blue
 #   rticles::elsevier_article: default
 #   word_document: default
 # output:
@@ -56,9 +57,6 @@ editor_options:
 
 
 \newpage
-
-
-
 
 
 
@@ -96,7 +94,7 @@ The period of 1995-2020 was considered. As Figure \@ref(fig:onepetroanalysis) re
 
 }
 
-\caption{Counting the number of papers with the keyword in their abstract vs year}(\#fig:onepetroanalysis)
+\caption{Counting the number of papers with the keyword in their abstract vs. year}(\#fig:onepetroanalysis)
 \end{figure}
 
 In this work, we propose Bayesian Optimization (BO) as a workflow for well control optimization in Ro setting. We will show that BO, as a gradient-free method, has characteristics of the global optimization method in escaping local optima or saddle area. While, at the same time, the workflow overcomes the typical downside of gradient-free methods, which is need for many function evaluations. Due to utilizing the probabilistic model to mimic the expensive objective function, BO workflow is inherently efficient, meaning that a minimum number of function evaluations is needed to achieve a near-optimum solution. To validate this idea, we compared the BO with two other gradient-free, global optimization techniques (PSO, GA). The result shows that BO reaches similar (same) solutions while using only 20% of function evaluations, compared to the other two algorithms. We would like to refer to the results of the "OLYMPUS Optimization Benchmark Challenge" [@fonseca2020] where the gradient-free methods showed the best performance in achieving the highest NPV. However, participants mentioned the pain of these methods as they carry huge computational burden due to large function evaluation [@silva2020; @pinto2020; @chang2020]. In light of benchmark results, bringing the computational efficiency to the gradient-free optimization category is a significant contribution, presented in this work.
@@ -113,6 +111,7 @@ In section 2 ("Problem Statement"), we will describe the underlying problem in w
 
 
 \newpage
+
 
 
 # Problem Statement
@@ -443,13 +442,13 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \end{align}
 ```
 
-In \@ref(eq:post-mean-cov-single), we see that PDF of function at point $\mathbf{u_*}$ has univariate normal distribution with the defined mean and variance.^[The $m(.)$ function that appears in mean term of Equation \@ref(eq:post-mean-cov-single),  is prior knowledge about mean value of $\mathbf{J(u)}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can normalize the dataset and assume the prior mean function to be zero: $m(\mathbf{u_*})=m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:$m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}$, well known to Ordinary Krigging (OK) in Geostatistics community.]
+In Equation \@ref(eq:post-mean-cov-single), we see that PDF of function at point $\mathbf{u_*}$ has a univariate normal distribution with the defined mean and variance.^[The $m(.)$ function that appears in mean term of Equation \@ref(eq:post-mean-cov-single),  is prior knowledge about mean value of $\mathbf{J(u)}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can normalize the dataset and assume the prior mean function to be zero: $m(\mathbf{u_*})=m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:$m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}$, well known to Ordinary Krigging (OK) in Geostatistics community.]
 
-To compute the right side of Equation \@ref(eq:post-mean-cov-single), we have all the components defined, except the the "optimum hyper-parameter", $\theta^*$. The next section we will explain the procedure find $\theta^*$. 
+To compute the right side of Equation \@ref(eq:post-mean-cov-single), we have all the components defined, except the the "optimum hyper-parameter", $\theta^*$. The next section we will explain the procedure to find $\theta^*$. 
 
 #### Hyper-parameter Estimation of Covariance Funnction{#hyper-param}
 
-As shown in Table \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
+As shown in Table \@ref(tab:cov-tab), the Matern covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
 
 ```{=tex}
 \begin{equation}
@@ -458,7 +457,7 @@ p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})= \int p(\mathbf{y}|\mathbf{J_U})p(\ma
 \end{equation}
 ```
 
-The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. Given that in this work, $p(\mathbf{y}|\mathbf{J_U})=1$^[Since here we are considering a "noise-free" observation], then right side of Equation \@ref(eq:marg-like-int) is simply $\mathcal{N}(m(\mathbf{U}),\mathbf{K}_{U,U})$, then taking $log$ of can be written as:
+The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. Given that in this work, $p(\mathbf{y}|\mathbf{J_U})=1$^[Since here we are considering a "noise-free" observation], then right side of Equation \@ref(eq:marg-like-int) is simply $\mathcal{N}(m(\mathbf{U}),\mathbf{K}_{U,U})$, then taking $log$ of it can be written as:
 
 ```{=tex}
 \begin{equation}
@@ -467,7 +466,7 @@ The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability
 \end{equation}
 ```
 
-Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of Equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
@@ -597,7 +596,7 @@ Since the analytical expression of function is available through Equation \@ref(
 
 }
 
-\caption{Plot of 1-D equation with blue dash line representing the global optimum}(\#fig:onedplot)
+\caption{Plot of the 1-D equation, with blue dash line representing the global optimum}(\#fig:onedplot)
 \end{figure}
 
 However, it is worth mentioning that the exact analytical expression of the objective function, the right side of Equation \@ref(fig:onedplot),  in many real-world problems is not available (black-box optimization). What is available is a *samples* of $\mathbf{u}$ and $\mathbf{J(u)}$, represented as $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. Therefore, in the 1-D example, in order to mimic the real-world case, we sample a few points to form our $\mathcal{D}$. We know the analytical expression of the objective function and global optimum of the objective function in hindsight^[This is not the case in real-world cases, we never know the global optimum of objective function before optimization.], just in the case we want to compare the performance of BO workflow.
@@ -638,7 +637,7 @@ Looking again to the lower plot at Figure \@ref(fig:exampleshow), the utility ha
 
 \includegraphics[width=1\linewidth,height=0.75\textheight]{0_Paper1_main_files/figure-latex/exampleshow-1} \hfill{}
 
-\caption{Ite1 - Top: Gaussian posterior over the initial sample points; Lower: Utility function over the x values}(\#fig:exampleshow)
+\caption{Ite1 - Top: mean, CI, and 100 realizations at each $\mathbf{u_*}$ values; Lower: Utility function over the $\mathbf{u_*}$ values}(\#fig:exampleshow)
 \end{figure}
 
 If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in Figure \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7\%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case, after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(\text{total iteration}) = 5 + 2=7$.
@@ -647,7 +646,7 @@ If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back t
 
 \includegraphics[width=0.9\linewidth,height=0.9\textheight]{0_Paper1_main_files/figure-latex/allinone-1} \hfill{}
 
-\caption{Gaussian posterior of over the initial sample points}(\#fig:allinone)
+\caption{Left: mean, CI, and 100 realizations at each $\mathbf{u_*}$ -  Right: Utility function at each $\mathbf{u_*}$. From the top, iterations #1,2,3}(\#fig:allinone)
 \end{figure}
 
 Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at the third iteration (plot) at Figure \@ref(fig:allinone), we can see that the maximum of the utility function is in order of $10^{-6}$ . That shows that even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process since the querying point from the expensive function has a negligible potential to improve our search in optimization.
@@ -677,7 +676,7 @@ Relative permeabilities and the associated fractional flow curve of the reservoi
 
 }
 
-\caption{Well locations in Egg model, blue ones are injection, the red producers, Jansen et al., 2014}(\#fig:eggbase)
+\caption{Well locations in the  Egg model, blue ones are injection, the red producers. Jansen et al., 2014}(\#fig:eggbase)
 \end{figure}
 ## Well-Control Optimization
 
@@ -745,7 +744,7 @@ Having the initial data ($\mathcal{D}$) found through LHS, we can build the prob
 
 }
 
-\caption{Blue points represnts the sample from LHS, red points represents the samples from the BayesOpt Workflow}(\#fig:lhsbayesop)
+\caption{Blue points represent the sample from LHS; red points represent the samples from the BO workflow.}(\#fig:lhsbayesop)
 \end{figure}
 
 As we explained in 1-D Toy Problem, the plot of the utility of the next point $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ at each iteration could provide some useful information about the optimization process. The Figure \@ref(fig:utilitycurve) plots the $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$, Equation \@ref(eq:exp-easy) along the ten iterations in this work. In fact, the notation $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ means the optimum of the $\alpha_{EI}(\mathbf{u_*};\mathcal{D},\theta^*)$ after running multi-start (1000)- L-BFGS-B. Now, we can see that in the Figure, $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is decreasing going toward zero. It can be inferred from this trend that, we are going out of the *good* $\mathbf{u}^{next}$ values to be fed into the expensive function, as they are low in utility. Perhaps it can be interpreted that we are in the vicinity of global optima, if we see after several iterations still $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is less than $10^-6$.
@@ -756,7 +755,7 @@ As we explained in 1-D Toy Problem, the plot of the utility of the next point $\
 
 }
 
-\caption{Maximum utility at each iteration, after running L-BFGS-B to find the u with max utility, $\alpha_{EI}^*$}(\#fig:utilitycurve)
+\caption{Maximum utility at each iteration, after running L-BFGS-B to find $\mathbf{u_*}$ with max utility, $\alpha_{EI}^*$}(\#fig:utilitycurve)
 \end{figure}
 
 Given that the BO has stochastic nature (meaning that having different initialization in LHS sampling will affect the final solution), BO is repeated with three different initializations. Ideally, these repetitions need to be conducted 100 or 1000 times to understand the algorithm's stability to different initialization. However, because of the computational burden, in this work, only three repetitions were performed. Figure \@ref(fig:difinit) shows results of three repetitions (top, middle, bottom), where each blue points in the plot has its own specific seed number for random generation at LHS process. Then, given that initialization $\mathcal{D}$, the sequential finding of $\mathbf{u}^{next}$ is performed, shown in the red points. Like the previous case, in each repetition, forty samples are drawn from LHS, the ten were taken through iterations in BO, leaving $\mathcal{D}$ with fifty pairs of $\mathbf{u},\mathbf{J(u)}$ . At each row of Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\mathbf{\overline{J}(u)}$ in both random sampling phase (LHS) and (BO) phase. As it can be noted from Figure \@ref(fig:difinit), at each repetition, the BO will improve the solution with a small sample evaluation of the $\mathbf{\overline{J}(u)}$. Therefore, improvement following the BO phase is independent of the initial design, and reasonably we can conclude that randomness in initialization will not degrade the performance of workflow.
@@ -771,7 +770,7 @@ Nevertheless, the bigger question is whether, given a different initial design, 
 
 }
 
-\caption{BayesOpt workflow applied to Syntetic 3D model, in three different initialization}(\#fig:difinit)
+\caption{BO workflow applied to the synthetic 3D model in three different initialization}(\#fig:difinit)
 \end{figure}
 
 The left side of Figure \@ref(fig:diffu) shows the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition. Where the $\mathbf{u}^{best}$ is a vector of 8 dimensions, each value shows the optimum injection rate for the ten-year life cycle of the field, in $m^3/D$. We want to note that the y axis was plotted from the range of 5 to 100. This range is consistent with the constrain of the optimization problem, where the injection rate for each well can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking in the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetitions at each well, does not differ significantly. With a small exception of (injection \#2), it seems all the final solutions converge to the same solution. This feature that can be loosely said as "robustness" of optimization workflow to initial design is beneficial. We do not need to restart the optimization with different initialization since they all will converge to a similar solution. From this perspective, authors can hint that BO workflow can be considered a "global" optimization method. It shows that the workflow avoids being stuck in local extreme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows the mean injection rate (mean of three repetitions) and error bar at each injection wells. The bottom of the error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition. Also, the plots recommend that repeating the optimization more than three times (like 10 or 100) can lead to lower variation in the final solution.
@@ -782,7 +781,7 @@ The left side of Figure \@ref(fig:diffu) shows the effect of initialization on t
 
 }
 
-\caption{Left: final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells}(\#fig:diffu)
+\caption{Left: Final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells.}(\#fig:diffu)
 \end{figure}
 
 \newpage
@@ -820,6 +819,7 @@ Genetic algorithm is another optimization algorithm that uses evolutionary strat
 
 
 
+
 ## Comparison with Fixed Number of Running Reservoir Simulator (N=50)
 
 In the first part of the comparison, we compare the BO with PSO and GA in a fixed number of $\overline{\mathbf{J}}(\mathbf{u})$ evaluations. It means that the optimization process could continue, until they use $\overline{\mathbf{J}}(\mathbf{u})=50$ function evaluations. In fact $\overline{\mathbf{J}}(\mathbf{u})=50$ is equal to $500$ reservoir simulations, due to the number of realization, $n_e=10$. These two methods need parameters to be defined by the user. In GA, these parameters are: population Size, probability of crossover between pairs of chromosomes, probability of mutation in a parent chromosome, the number of best fitness individuals to survive at each generation. For PSO, the algorithm parameters are the swarm's size, the local exploration constant, and the global exploration constant.
@@ -828,7 +828,7 @@ In Figure \@ref(fig:comp-fixbud) results of comparison has shown. Since all thre
 
 \begin{table}
 
-\caption{(\#tab:unnamed-chunk-14)Parameters of GA and PSO Methods}
+\caption{(\#tab:unnamed-chunk-15)Parameters of GA and PSO methods}
 \centering
 \begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
 \toprule
@@ -858,10 +858,10 @@ parameters & value\\
 
 }
 
-\caption{Comparison of GA, PSO and BayesOpt performance at fixed function evaluation budget}(\#fig:comp-fixbud)
+\caption{Comparison of GA, PSO and BO performance at function evaluation ($\mathbf{\overline{J}(u)}$) budget is 250.}(\#fig:comp-fixbud)
 \end{figure}
 
-In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{\mathbf{J}}(\mathbf{u})$ evaluations to 250, while keeping the results of BO to 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of \@ref(tab:comp-tab) is the mean value of each optimization method. (In three repetitions, the maximum achieved Expected NPV is a\<b\<c, b was selected). As the \@ref(tab:comp-tab) shows, the difference between the expected NPV value of BO is almost negligible compared to PSO and GA, while the max expected NPV in BO was achieved in 50 $\overline{J}(u)$ evaluations while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
+In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{\mathbf{J}}(\mathbf{u})$ evaluations to 250, while keeping the results of BO to 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In Table \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of Table \@ref(tab:comp-tab) is the median value of each optimization method. (In three repetitions, the maximum achieved Expected NPV is a\<b\<c, b was selected). As Table \@ref(tab:comp-tab) shows, the difference between the expected NPV value of BO is almost negligible compared to PSO and GA, while the max expected NPV in BO was achieved in 50 $\mathbf{\overline{J}(u)}$ evaluations while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
 
 \begin{figure}
 
@@ -869,12 +869,12 @@ In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fi
 
 }
 
-\caption{Comparison of GA PSO and BayesOpt performance at fixed function evaluation budget}(\#fig:comp-freebud)
+\caption{Comparison of GA, PSO and BO performance at: GA and PSO has 250 function evaluation ($\mathbf{\overline{J}(u)}$) budget, BO has 50.}(\#fig:comp-freebud)
 \end{figure}
 
 \begin{table}
 
-\caption{(\#tab:comp-tab)Summary table for comparison of GA/PSO and BO}
+\caption{(\#tab:comp-tab)Summary table for comparison of GA, PSO and BO}
 \centering
 \begin{tabu} to \linewidth {>{\centering}X>{\centering}X>{}c}
 \toprule
@@ -925,24 +925,23 @@ Genetic Alghorithm Optimization & 36.429 & \cellcolor{blue}{250}\\
 
 
 
-
-
-
-
 # Conclusion
 
 In this work, we presented Bayesian Optimization (BO) workflow for robust production optimization. First, a 1-D problem case was considered to illustrate the workflow better and explain the workflow's detail. Then, the workflow was tested for production optimization of the 3-D synthetic reservoir model.
 
 We conclude that the BO has a high potential for the problem where the objective function is expensive to evaluate. This is often the case in production optimization, where a hundred(s) of geological realizations represent uncertainty in the objective function. Compared with other commonly used methods like PSO or GA, BO tries to build a probabilistic model of objective function. This probabilistic model is used to think strategically and pick the next point for evaluation sequentially. Utilizing the probabilistic model and having a consistent policy to select the next point leads BO to need expensive forward evaluation a few times less than GA and PSO.
 
-In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The field cases problem considered was a relatively medium dimension size.  However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem.  It would be helpful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
-
+In this work, the main goal was to provide evidence of the applicability of BO for robust optimization. The field cases problem considered was a relatively medium dimension size. However, given the potential benefits of workflow presented in this work, we would like to encourage researchers to apply the BO to the high-dimensional optimization problem. Future work could explore the use of BO for joint optimization of well location and well control. The joint problem will naturally lead to a high-dimensional problem. It would be helpful to see BO performance when there are some inequality constraints (typical in placement problems) as well. Finally, on the theory side, the BO with a non-myopic policy in sequential data gathering will also lead to more efficiency in the performance of BO is worth having a look at.
 
 \newpage
 
-# Acknowledgements
+# Acknowledgements {#ack .unnumbered}
 
-This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (<http://digires.no>). We acknowledge the access to Eclipse licenses granted by Schlumberger.
+This work received support from the Research Council of Norway and the companies AkerBP, Wintershall--DEA, Vår Energy, Petrobras, Equinor, Lundin, and Neptune Energy, through the Petromaks--2 DIGIRES project (280473) (<http://digires.no>).
+
+# Note on Reproducibility of Research {#rep .unnumbered}
+
+The code, data, and executable link of this manuscript are available to reproduce this paper. The paper has been written in Rmarkdown format [@xie2018], and the reader can find all elements in the Github repo: (<https://github.com/Peymankor/Bayesopt_well_control>). However, the repo will stay "private," We will change its access to "public" as soon as the manuscript is accepted for publication.
 
 \newpage
 
@@ -950,31 +949,31 @@ This work received support from the Research Council of Norway and the companies
 
 **Nomenclature**
 
-- $p$
+-   $p$
 
 Price in $dollar/m^3$
 
-- $q$
+-   $q$
 
 Volume in $m^3/D$
 
-- $N_p$
+-   $N_p$
 
 Number of production wells
 
-- $N_{wi}$
+-   $N_{wi}$
 
 Number of injection wells
 
-- $\mathbf{u}$
+-   $\mathbf{u}$
 
 Control variable (decision to make)
 
-- $\mathbf{U}$
+-   $\mathbf{U}$
 
 Vector of control variables
 
-- $m$
+-   $m$
 
 Mean function
 
@@ -982,69 +981,67 @@ $k$
 
 Covariance function
 
-
 **Greek Symbols**
 
-- $\mathcal{MN}$
+-   $\mathcal{MN}$
 
 Multivariate normal distribution
 
-- $\mathcal{N}$
+-   $\mathcal{N}$
 
 Normal distribution
 
-- $\mu$
+-   $\mu$
 
 Mean of normal distribution
 
-- $\theta$
+-   $\theta$
 
 Parameter of covariance function
 
-- $\sigma$
+-   $\sigma$
 
 Standard deviation of normal distribution
 
-- $\alpha_{EI}$
+-   $\alpha_{EI}$
 
 utility function when policy is Expected Improvement
 
-- $\Phi$
+-   $\Phi$
 
 CDF of standard Gaussian distribution
 
-- $\phi$
+-   $\phi$
 
 PDF of standard Gaussian distribution
 
-- $\epsilon$
+-   $\epsilon$
 
-Explorative term 
+Explorative term
 
-**Subscribtion**
+**Subscription**
 
-- $o$
+-   $o$
 
 Oil
 
-- $wp$
+-   $wp$
 
 Produced Water
 
-- $wi$
+-   $wi$
 
 Injection Water
 
-- $EI$
+-   $EI$
 
 Expected Improvement
 
 \newpage
 
-
 # Appendix I {#app1 .unnumbered}
 
-Here, first we start to derive the case when mean function $m(\mathbf{u})$ is considered as equal to zero, $m(\mathbf{u})=0$. Then, we generalize the resulting equations to the case of fixed, deterministic mean function.
+Here, we first start to derive the case when mean function $m(\mathbf{u})$ is considered as equal to zero, $m(\mathbf{u})=0$. Then, we generalize the resulting equations to the case of fixed, deterministic mean function.
 
 Now, we can write analytical term of multivariate gaussian distribution for both $\mathcal{N}_{n+1}$, $\mathcal{N}_{n}$:
 
@@ -1068,15 +1065,14 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}})= & \:\frac{\mathcal{N}_{n+1}\begin{pmatrix}
 \begin{bmatrix}\mathbf{\kappa}_{u_\ast,u_\ast} &  \mathbf{K}_{U,u_\ast} \\
 \mathbf{K}^\intercal_{U,u_\ast} & \mathbf{K}_{U,U} 
 \end{bmatrix}^{-1}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\end{bmatrix}
-+\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
+-\mathbf{J_{U}^\intercal}\mathbf{K}_{U,U}^{-1}\mathbf{J_{U}}\end{pmatrix} \\
 & \:  
   \end{split}
 \label{eq:mix-equ-app}
 \end{align}
 ```
 
-
-Here, we substitute the inverse of covariance of matrix with following matrix: 
+Here, we substitute the inverse of covariance of matrix with following matrix:
 
 ```{=tex}
 \begin{equation}
@@ -1088,9 +1084,7 @@ b^\intercal & A
 \label{eq:substitute}
 \end{equation}
 ```
-
-
-We can mutiply term inside the exponetial term
+We can multiply term inside the exponential term:
 
 ```{=tex}
 \begin{align}
@@ -1113,9 +1107,7 @@ b^\intercal & A \end{bmatrix}\begin{bmatrix}\mathbf{J_{u_*}} \\ \mathbf{J_{U}}\e
 \end{align}
 ```
 
-
-Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that is uncertain we need, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
-
+Now, we will multiply only the terms that is related to $\mathbf{J_{u_*}}$ (inside the exponential term), as that is the variable of interest, rest of term was replaced by "const" term. Taking the $d$ value out of the bracket term, now we can find :
 
 ```{=tex}
 \begin{equation}
@@ -1132,9 +1124,7 @@ Note that we multiplied only terms at is related to $\mathbf{J_{u_*}}$, as that 
 \end{equation}
 ```
 
-
-Which is the equation for normal density function, with means and variance defined as:
-
+Where the resulting equation is proportional to normal density function, with mean and variance can be defined as:
 
 ```{=tex}
 \begin{align}
@@ -1147,7 +1137,9 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \end{align}
 ```
 
-However, we should say that in the above euqation the matrix $d$ and $b^\intercal$ should be specified. Per definition of matrix and it's inverse:
+However, we should say that in the above equation still $d$ and $b^\intercal$ are undefined. Now, we find the analytical expression for those terms. 
+
+Per definition of matrix and it's inverse:
 
 ```{=tex}
 \begin{equation}
@@ -1162,7 +1154,7 @@ b^\intercal & A
 \end{equation}
 ```
 
-
+And then, writing element-by-element equivalent equations:
 
 ```{=tex}
 \begin{subequations}
@@ -1189,8 +1181,7 @@ b^\intercal=-\frac{\mathbf{K}^\intercal_{U,u_\ast}d}{\mathbf{K}_{U,U}}
 \end{equation}
 ```
 
-replacing the $b^\intercal$ in \@ref(eq:eq1) we can define the $d$ as:
-
+Replacing the $b^\intercal$ in Equation  \@ref(eq:eq1) we can define the $d$ as:
 
 ```{=tex}
 \begin{align}
@@ -1201,8 +1192,8 @@ d=\frac{1}{\mathbf{\kappa}_{u_\ast,u_\ast}-\mathbf{K}^\intercal_{U,u_\ast}\mathb
 \end{aligned}
 \end{align}
 ```
+Then, Equation \@ref(eq:post-mean-cov-single-zero-orig) can be defined with equivalent term of $b^\intercal$ and $d$:
 
-Then , Equation \@ref(eq:post-mean-cov-single-zero-orig) can be defined with equivalent term of  $b^\intercal$ and $d$: 
 ```{=tex}
 \begin{align}
   \begin{split}
@@ -1226,7 +1217,6 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \label{eq:post-mean-cov-single-app}
 \end{align}
 ```
-
 Which is identical to Equation \@ref(eq:post-mean-cov-single).
 
 \newpage
