@@ -72,7 +72,7 @@ for (i in seq(41,50)) {
 }
 
 #######################BO_50 ############################
-ss_50 <- bo_123_50$scoreSummary
+#ss_50 <- bo_123_50$scoreSummary
 #ss <- bo_123$scoreSummary
 
 #plot(bo_123_50)
@@ -149,6 +149,46 @@ comp_data_frame <- tibble(NPV_max= NPV_max_data,
 #  ylab("-Max NPV Reached")
 
 ```
+```{r, include=FALSE, echo=FALSE}
+
+pso_extract <- function(pso_data) {
+test <- pso_data$stats$f
+vector1 <- numeric()
+vector2 <- integer()
+for (i in 1:10) {
+  res <- -test[[i]]
+  vector1 <- c(vector1, res)
+  vector2 <- c(vector2, rep(i,20))
+}
+
+pso_12345_best <- tibble(vector1, vector2)
+pso_12345_best_10_vect <- pso_12345_best%>% group_by(vector2) %>% 
+  arrange(desc(vector1)) %>% 
+  slice(1)
+
+newvect <-   as.numeric(pso_12345_best_10_vect[1,1])
+for (i in 2:10) {
+  dd <- max(newvect)
+  if (pso_12345_best_10_vect[i,1]>=dd){
+    newvect <- c(newvect, as.numeric(pso_12345_best_10_vect[i,1]))
+  }
+  else {
+    newvect <- c(newvect,dd)
+  }
+}
+
+return(newvect)
+  
+}
+
+repeat_1 <- rep(pso_extract(pso_12345),each=25)
+repeat_2 <- rep(pso_extract(pso_1234),each=25)
+repeat_3 <- rep(pso_extract(pso_123),each=25)
+
+pso_new_sol <- c(repeat_1,repeat_2,repeat_3)
+
+comp_data_frame[901:1650,1] <- pso_new_sol 
+```
 
 ## Comparison with Fixed Number of Running Reservoir Simulator (N=50)
 
@@ -163,7 +203,7 @@ pso_param <- data.frame(parameters = c("Size of the swarm", "Local exploration c
 
 param_table <- rbind(pso_param, ga_param)
   
-kbl(param_table, booktabs = T, caption = "Parameters of GA and PSO Methods")%>%
+kbl(param_table, booktabs = T, caption = "Parameters of GA and PSO methods")%>%
   #kable_paper("striped", full_width = F) %>%
   pack_rows("PSO", 1, 3) %>%
   pack_rows("GA", 4, 7) %>% 
@@ -174,7 +214,7 @@ kbl(param_table, booktabs = T, caption = "Parameters of GA and PSO Methods")%>%
 ## Comparison with Number of Running Reservoir Simulator (N=50) for BO, (N=250) for PSO and GA
 
 
-```{r comp-fixbud,echo=FALSE, fig.retina=2, fig.align='center', out.width="90%", fig.cap="Comparison of GA, PSO and BayesOpt performance at fixed function evaluation budget"}
+```{r comp-fixbud,echo=FALSE, fig.retina=2, fig.align='center', out.width="90%", fig.cap="Comparison of GA, PSO and BO performance at function evaluation ($\\mathbf{\\overline{J}(u)}$) budget is 250."}
 comp_data_frame_50sample <- comp_data_frame %>% 
   group_by(method) %>% 
   filter(Reservoir_Simulation<51 & Reservoir_Simulation>0)
@@ -187,13 +227,13 @@ ggplot(comp_data_frame_50sample, aes(Reservoir_Simulation, NPV_max, group=method
   facet_grid(cols = vars(see_number)) +
   labs(x = TeX("Number of Required, $ \\bar{J}(u)$ Evaluation")) +
   #xlab("Required #of Reservoir Simulation (forward modeling)") +
-  ylab("Max NPV Reached") +
+  ylab("Max ENPV Reached") +
   theme(panel.spacing = unit(3, "lines"))
 ```
 
-In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{\mathbf{J}}(\mathbf{u})$ evaluations to 250, while keeping the results of BO to 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of \@ref(tab:comp-tab) is the mean value of each optimization method. (In three repetitions, the maximum achieved Expected NPV is a\<b\<c, b was selected). As the \@ref(tab:comp-tab) shows, the difference between the expected NPV value of BO is almost negligible compared to PSO and GA, while the max expected NPV in BO was achieved in 50 $\overline{J}(u)$ evaluations while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
+In this work, we did not suffice the comparison to only Figure \@ref(fig:comp-fixbud). In Figure \@ref(fig:comp-freebud) we further allowed the number of $\overline{\mathbf{J}}(\mathbf{u})$ evaluations to 250, while keeping the results of BO to 50. Meaning that PSO and GA algorithm will enjoy another 8 iterations ($25\times8=200$) and their results, will be compared with BO. Figure \@ref(fig:comp-freebud) does not convey a single message about the performance of these methods. In Table \@ref(tab:comp-tab) median value of three algorithms was compared. The value in the second column of Table \@ref(tab:comp-tab) is the median value of each optimization method. (In three repetitions, the maximum achieved Expected NPV is a\<b\<c, b was selected). As Table \@ref(tab:comp-tab) shows, the difference between the expected NPV value of BO is almost negligible compared to PSO and GA, while the max expected NPV in BO was achieved in 50 $\mathbf{\overline{J}(u)}$ evaluations while the other two in 250. In this work and optimization setting of the 3D, synthetic reservoir model, BO reaches the same optimal solution, while having computational complexity of 5X (times) less.
 
-```{r comp-freebud, echo=FALSE, fig.retina=2, fig.align='center',out.width="90%", fig.cap="Comparison of GA PSO and BayesOpt performance at fixed function evaluation budget"}
+```{r comp-freebud, echo=FALSE, fig.retina=2, fig.align='center',out.width="90%", fig.cap="Comparison of GA, PSO and BO performance at: GA and PSO has 250 function evaluation ($\\mathbf{\\overline{J}(u)}$) budget, BO has 50."}
 ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, group=method)) +
   geom_point(aes(shape=method, color=method), size=2)+
   scale_shape_manual(values=c(16, 5, 0))+
@@ -201,7 +241,7 @@ ggplot(comp_data_frame, aes(Reservoir_Simulation, NPV_max, group=method)) +
   theme(legend.position="top") +
   facet_grid(cols = vars(see_number)) +
   labs(x = TeX("Number of Required, $ \\bar{J}(u)$ Evaluation")) +
-  ylab("Max NPV Reached") +
+  ylab("Max ENPV Reached") +
   theme(panel.spacing = unit(3, "lines"))
 ```
 
@@ -221,7 +261,7 @@ tibbel_analyze <- tibble(methods= c("Bayesian Optimization", "Particle Swarm Opt
 
 colnames(tibbel_analyze) <- c("Optimization Method","Maximum Achieved NPV (median)", "$\\bar{m}_1$")
 
-tibbel_analyze %>%  kableExtra::kable(format = "latex", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"$\\overline{J}(u)$ Evaluations"), caption = "Summary table for comparison of GA/PSO and BO") %>% 
+tibbel_analyze %>%  kableExtra::kable(format = "latex", escape = FALSE, booktabs =TRUE,align = "c", digits = 3, col.names = c("Optimization Method", "Maximum Achieved NPV (median)" ,"$\\overline{J}(u)$ Evaluations"), caption = "Summary table for comparison of GA, PSO and BO") %>% 
     kable_styling(full_width = T) %>% 
   column_spec(3, background = "blue")
 
