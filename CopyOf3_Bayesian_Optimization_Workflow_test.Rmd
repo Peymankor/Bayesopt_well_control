@@ -205,13 +205,13 @@ p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)= & \:  \mathcal{N}_{1}(\mathbf{J_
 \end{align}
 ```
 
-In \@ref(eq:post-mean-cov-single), we see that PDF of function at point $\mathbf{u_*}$ has univariate normal distribution with the defined mean and variance.^[The $m(.)$ function that appears in mean term of Equation \@ref(eq:post-mean-cov-single),  is prior knowledge about mean value of $\mathbf{J(u)}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can normalize the dataset and assume the prior mean function to be zero: $m(\mathbf{u_*})=m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:$m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}$, well known to Ordinary Krigging (OK) in Geostatistics community.]
+In Equation \@ref(eq:post-mean-cov-single), we see that PDF of function at point $\mathbf{u_*}$ has a univariate normal distribution with the defined mean and variance.^[The $m(.)$ function that appears in mean term of Equation \@ref(eq:post-mean-cov-single),  is prior knowledge about mean value of $\mathbf{J(u)}$, defined as $m(\mathbf{U})=[m(\mathbf{u_1}),\cdots,m(\mathbf{u_N})]$. For simplicity someone can normalize the dataset and assume the prior mean function to be zero: $m(\mathbf{u_*})=m(\mathbf{U}) = 0$. This assumption is not restrictive because as more training points are observed the prior is updated and becomes more informative. In this work, we considered the case where the mean function could have a linear trend in the form of:$m(\mathbf{u}) = \sum_{j=1}^p \beta_j \mathbf{u}$, well known to Ordinary Krigging (OK) in Geostatistics community.]
 
-To compute the right side of Equation \@ref(eq:post-mean-cov-single), we have all the components defined, except the the "optimum hyper-parameter", $\theta^*$. The next section we will explain the procedure find $\theta^*$. 
+To compute the right side of Equation \@ref(eq:post-mean-cov-single), we have all the components defined, except the the "optimum hyper-parameter", $\theta^*$. The next section we will explain the procedure to find $\theta^*$. 
 
 #### Hyper-parameter Estimation of Covariance Funnction{#hyper-param}
 
-As shown in Table \@ref(tab:cov-tab), the Matern Covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
+As shown in Table \@ref(tab:cov-tab), the Matern covariance function with $\nu=\frac{5}{2}$ has two parameters to be estimated, namely $\sigma^2_f$ and $\ell$. GP is fit to the data by optimizing the evidence-the marginal probability of the data given the model with respect to the marginalized kernel parameters. Known as the empirical Bayes approach, we will maximize the marginal likelihood:
 
 ```{=tex}
 \begin{equation}
@@ -220,7 +220,7 @@ p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})= \int p(\mathbf{y}|\mathbf{J_U})p(\ma
 \end{equation}
 ```
 
-The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. Given that in this work, $p(\mathbf{y}|\mathbf{J_U})=1$^[Since here we are considering a "noise-free" observation], then right side of Equation \@ref(eq:marg-like-int) is simply $\mathcal{N}(m(\mathbf{U}),\mathbf{K}_{U,U})$, then taking $log$ of can be written as:
+The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability of observing the data $y$ given on the model, $\mathbf{J_U,\mathbf{\theta}}$. The reason it is called the marginal likelihood, rather than just likelihood, is because we have marginalized out the latent Gaussian vector $\mathbf{J_U}$. Given that in this work, $p(\mathbf{y}|\mathbf{J_U})=1$^[Since here we are considering a "noise-free" observation], then right side of Equation \@ref(eq:marg-like-int) is simply $\mathcal{N}(m(\mathbf{U}),\mathbf{K}_{U,U})$, then taking $log$ of it can be written as:
 
 ```{=tex}
 \begin{equation}
@@ -229,7 +229,7 @@ The term $p(\mathbf{y}|\mathbf{J_U,\mathbf{\theta}})$ represents the probability
 \end{equation}
 ```
 
-Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
+Where the dependence of the $\mathbf{K}_{U,U}$ on $\theta$ is implicit. This objective function (the right side of Equation \@ref(eq:log-like)) consists of a model fit and a complexity penalty term that results in an automatic Occam's razor for realizable functions (Rasmussen and Ghahramani, 2001). By optimizing the evidence with respect to the kernel hyperparameters, we effectively learn the structure of the space of functional relationships between the inputs and the targets. The gradient-based optimizer is performed in order to:
 
 ```{=tex}
 \begin{equation}
