@@ -9,7 +9,7 @@ Relative permeabilities and the associated fractional flow curve of the reservoi
 knitr::include_graphics(c("img/combine.jpg"))
 ```
 
-```{r eggbase, echo=FALSE, fig.align='center', out.width="300px", fig.retina=2, fig.cap="Well locations in Egg model, blue ones are injection, the red producers, Jansen et al., 2014", cache=TRUE}
+```{r eggbase, echo=FALSE, fig.align='center', out.width="300px", fig.retina=2, fig.cap="Well locations in the  Egg model, blue ones are injection, the red producers. Jansen et al., 2014", cache=TRUE}
 knitr::include_graphics("img/egg_base.jpg")
 ```
 ## Well-Control Optimization
@@ -89,7 +89,7 @@ bo_123$scoreSummary[1:40,] %>%
 
 Having the initial data ($\mathcal{D}$) found through LHS, we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section, we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, because the input space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) (in 1-D Toy Problem section) to get the idea of the plot of the probabilistic model conditioned to the $\mathcal{D}$. For the mathematical expression of the posterior model, it can be referred to Equation \@ref(eq:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. This process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$. Then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential iteration resulted from the BO workflow. Readers are referred to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty ("We learn") which is helpful for further iteration. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running ten geological realizations using flow simulation) we reach the new record expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
 
-```{r lhsbayesop, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Blue points represnts the sample from LHS, red points represents the samples from the BayesOpt Workflow"}
+```{r lhsbayesop, echo=FALSE, fig.retina=2, fig.align='center', fig.cap="Blue points represent the sample from LHS; red points represent the samples from the BO workflow."}
 opt_type <- c(rep("LHS Sampling",40),rep("Bayesian Opt",10))
 
 bo_123$scoreSummary[1:50,] %>% 
@@ -114,7 +114,7 @@ bo_123$scoreSummary[1:50,] %>%
 
 As we explained in 1-D Toy Problem, the plot of the utility of the next point $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ at each iteration could provide some useful information about the optimization process. The Figure \@ref(fig:utilitycurve) plots the $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$, Equation \@ref(eq:exp-easy) along the ten iterations in this work. In fact, the notation $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ means the optimum of the $\alpha_{EI}(\mathbf{u_*};\mathcal{D},\theta^*)$ after running multi-start (1000)- L-BFGS-B. Now, we can see that in the Figure, $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is decreasing going toward zero. It can be inferred from this trend that, we are going out of the *good* $\mathbf{u}^{next}$ values to be fed into the expensive function, as they are low in utility. Perhaps it can be interpreted that we are in the vicinity of global optima, if we see after several iterations still $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is less than $10^-6$.
 
-```{r utilitycurve, echo=FALSE,fig.retina=2, fig.align='center', fig.cap="Maximum utility at each iteration, after running L-BFGS-B to find the u with max utility, $\\alpha_{EI}^*$"}
+```{r utilitycurve, echo=FALSE,fig.retina=2, fig.align='center', fig.cap="Maximum utility at each iteration, after running L-BFGS-B to find $\\mathbf{u_*}$ with max utility, $\\alpha_{EI}^*$"}
 bo_123$scoreSummary %>% 
   filter(acqOptimum == TRUE) %>% 
   ggplot(aes(Epoch, gpUtility)) +
@@ -131,7 +131,7 @@ Nevertheless, the bigger question is whether, given a different initial design, 
 
 <!-- This is common practice in gradient-based optimization, where the algorithm is powerful in local optimization and in order to avoid being stuck in local extreme points, "multi-start" runs are performed to search the global point in the objective function. -->
 
-```{r difinit,fig.retina=2, echo=FALSE,fig.align='center', out.height="90%", out.width="90%", fig.cap="BayesOpt workflow applied to Syntetic 3D model, in three different initialization", message=FALSE, error=FALSE, warning=FALSE}
+```{r difinit,fig.retina=2, echo=FALSE,fig.align='center', out.height="90%", out.width="90%", fig.cap="BO workflow applied to the synthetic 3D model in three different initialization", message=FALSE, error=FALSE, warning=FALSE}
 
 opt_type <- c(rep("LHS Sampling",40),rep("Bayesian Opt",10))
 
@@ -205,7 +205,7 @@ grid.arrange(plot_bo_123, plot_bo_12345, plot_bo_1234, ncol=1)
 
 The left side of Figure \@ref(fig:diffu) shows the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition. Where the $\mathbf{u}^{best}$ is a vector of 8 dimensions, each value shows the optimum injection rate for the ten-year life cycle of the field, in $m^3/D$. We want to note that the y axis was plotted from the range of 5 to 100. This range is consistent with the constrain of the optimization problem, where the injection rate for each well can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking in the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetitions at each well, does not differ significantly. With a small exception of (injection \#2), it seems all the final solutions converge to the same solution. This feature that can be loosely said as "robustness" of optimization workflow to initial design is beneficial. We do not need to restart the optimization with different initialization since they all will converge to a similar solution. From this perspective, authors can hint that BO workflow can be considered a "global" optimization method. It shows that the workflow avoids being stuck in local extreme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows the mean injection rate (mean of three repetitions) and error bar at each injection wells. The bottom of the error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition. Also, the plots recommend that repeating the optimization more than three times (like 10 or 100) can lead to lower variation in the final solution.
 
-```{r diffu, echo=FALSE, fig.retina=2, fig.align='center', out.width="90%", fig.cap="Left: final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells"}
+```{r diffu, echo=FALSE, fig.retina=2, fig.align='center', out.width="90%", fig.cap="Left: Final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells."}
 
 ##############
 library(ParBayesianOptimization)
