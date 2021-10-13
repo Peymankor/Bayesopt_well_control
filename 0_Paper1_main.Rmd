@@ -39,6 +39,7 @@ output:
     keep_md: true
 number_sections: true
 fig_caption: yes
+urlcolor: blue
 #   rticles::elsevier_article: default
 #   word_document: default
 # output:
