@@ -3,20 +3,20 @@ title: "Draft Title: Bayesian Optimization: A New Sample Efficient Workflow for 
 author:
   - name: "Peyman Kor"
 #    email: "peyman.kor@uis.no"
-    affiliation: a
-    footnote: 1
-  - name: Aojie Hong
+#    affiliation: a
+#    footnote: 1
+#  - name: Aojie Hong
 #    email: "aojie.hong@uis.no"
-    affiliation: a
-  - name: Reidar Brumer Bratvold
+#    affiliation: a
+#  - name: Reidar Brumer Bratvold
 #    email: "reidar.bratvold.uis.no"
-    affiliation: a
-address:
-  - code: a
-    address: Energy Resources Department, University of Stavanger, Stavanger, Norway
-footnote:
-  - code: 1
-    text: "Corresponding Author, peyman.kor@uis.no"
+#    affiliation: a
+#address:
+#  - code: a
+#    address: Energy Resources Department, University of Stavanger, Stavanger, Norway
+#footnote:
+#  - code: 1
+#    text: "Corresponding Author, peyman.kor@uis.no"
 #  - code: 2
 #    text: "Equal contribution"
 abstract: | 
@@ -25,8 +25,8 @@ journal: "Journal of Petroleum Science And Engineering"
 geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
-date: "2021-10-13"
-bibliography: [references.bib]
+date: "2022-07-05"
+#bibliography: [references.bib]
 linenumbers: true
 numbersections: true
 keywords: "Optimization, Gaussian Process, Probabilistic Modeling, Bayesian"
@@ -321,22 +321,7 @@ The GP is defined as distribution over any finite number of M point, completely 
 
 For $i=1,\cdots,M$. Where $\mathcal{N}_M$ denotes a Multivariate Normal Distribution (MVN), with dimension of $M$. As discussed in [@shahriari2016], there are many choices for the covariance function; $\kappa(\mathbf{u_i},\mathbf{u_j})$, the most commonly used ones in the literature have been depicted in Table \@ref(tab:cov-tab).
 
-\begin{table}[H]
 
-\caption{(\#tab:cov-tab) Several types of covariance function for the GP process}
-\centering
-\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X}
-\toprule
-Covariance Kernels & assumeing $h=||u-u'||$\\
-\midrule
-Gaussain & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2 exp(-\frac{h^2}{2\ell^2})$\\
-Matern $\nu=\frac{5}{2}$ & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2(1 + \frac{\sqrt{5}|h|}{\ell}\frac{5h^2}{3\ell^2})exp(-\frac{ -\sqrt{5}|h|}{\ell})$\\
-Matern $\nu=\frac{3}{2}$ & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2(1 + \frac{\sqrt{3}|h|}{\ell})exp(-\frac{-\sqrt{3}|h|}{\ell})$\\
-Exponetial & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2 exp(-\frac{|h|}{\ell})$\\
-Power-Exponetial & $\Large \kappa (\mathbf{u},\mathbf{u'}) =\sigma_f^2 exp(-(\frac{|h|}{\ell})^p)$\\
-\bottomrule
-\end{tabu}
-\end{table}
 
 Where in the Table \@ref(tab:cov-tab), $\ell$ is length-scale, and $h$ is eludian distance of $\mathbf{u_i}$, $\mathbf{u_j}$. ( Note that $|h|^2=(\mathbf{u_i}-\mathbf{u_j})^\intercal(\mathbf{u_i}-\mathbf{u_j})$). In this work, the Matern covariance function with $\nu=\frac{5}{2}$ was employed.  However, depending on any choice of covariance function, the covariance function parameters need to be estimated. These parameters can be denoted as $\theta$ as:
 
@@ -590,14 +575,7 @@ Since the analytical expression of function is available through Equation \@ref(
 
 
 
-\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/onedplot-1} 
-
-}
-
-\caption{Plot of the 1-D equation, with blue dash line representing the global optimum}(\#fig:onedplot)
-\end{figure}
 
 However, it is worth mentioning that the exact analytical expression of the objective function, the right side of Equation \@ref(fig:onedplot),  in many real-world problems is not available (black-box optimization). What is available is a *samples* of $\mathbf{u}$ and $\mathbf{J(u)}$, represented as $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. Therefore, in the 1-D example, in order to mimic the real-world case, we sample a few points to form our $\mathcal{D}$. We know the analytical expression of the objective function and global optimum of the objective function in hindsight^[This is not the case in real-world cases, we never know the global optimum of objective function before optimization.], just in the case we want to compare the performance of BO workflow.
 
@@ -605,14 +583,7 @@ To form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$ as Equation \@ref(eq:init-data)
 
 $$\mathcal{D}=[\mathbf{U},\mathbf{J_U}]=[[0.05,0.2,0.5,0.6,0.95];[0.38, 0.36, 0.77,0.44, 0.16]]$$ 
 
-\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/initial-d-1} 
-
-}
-
-\caption{Plot of initial samples $\mathcal{D}$}(\#fig:initial-d)
-\end{figure}
 
 We depicted the $\mathcal{D}$ in Figure \@ref(fig:initial-d) with green points in a diamond shape. Then, we can find the can estimate hyper parameter of covariance function, $\theta^*$ through performing optimizing in Equation \@ref(eq:log-like-opt) (as it only needs $\mathcal{D})$. Having $\theta^*, \mathbf{U},\mathbf{J_U}$ ^[we normalize the data to 0 to 1 scale and set the prior function to constant $m(.)=0$], we can find PDF of the $p(\mathbf{J_{u_*}}|\mathbf{J_{U}},\theta^\ast)$ at each new $\mathbf{u_*}$, through the mean and variance defined in Equation \@ref(eq:post-mean-cov-single). These mean values ($\mathbf{\mu_{u_\ast}}$) for each $\mathbf{u^*}$ have been depicted with a red line in Figure \@ref(fig:exampleshow). The blue lines in Figure \@ref(fig:exampleshow) represent 100 samples of $\mathbf{J_{u_*}}$ from the defined PDF. The grey area represents the 95% confidence interval. At this stage, we completed step 1 of the BO workflow.
 
@@ -633,21 +604,11 @@ Looking again to the lower plot at Figure \@ref(fig:exampleshow), the utility ha
 
 
 
-\begin{figure}
 
-\includegraphics[width=1\linewidth,height=0.75\textheight]{0_Paper1_main_files/figure-latex/exampleshow-1} \hfill{}
-
-\caption{Ite1 - Top: mean, CI, and 100 realizations at each $\mathbf{u_*}$ values; Lower: Utility function over the $\mathbf{u_*}$ values}(\#fig:exampleshow)
-\end{figure}
 
 If we call Figure \@ref(fig:exampleshow) as iteration \# 1, now we can go back to step 1 of BO workflow and start iteration \# 2 with new $\mathcal{D}$. In Figure \@ref(fig:allinone) another two iterations have been provided. In each row, the plot on the left represents the plot of posterior written in Equation \@ref(eq:post-mean-cov-single), the right shows the utility function provided at Equation \@ref(eq:utiint). Note that in Figure \@ref(fig:allinone) all axis labels , and legend were removed, to have better visibility. (more info about each plot can be found in Figure \@ref(fig:exampleshow)). Interesting to see that in this example case, at iteration \#2, the workflow query the point $\mathbf{u}^{next}=0.385$ which presents the best point so far found through BO workflow. Therefore, after just two iterations, we are around $\frac{x_{best}}{x_{M}}=\frac{0.385}{0.390}=98.7\%$ of the global optima. Although this is the case for the 1-D problem, it clearly shows the workflow's strength to approach the global optima in as few iterations as possible. In this case, after iteration\#2, the total number of times, the true objective function has been evaluated is $\text{size}(\mathcal{D}) + \text{size}(\text{total iteration}) = 5 + 2=7$.
 
-\begin{figure}
 
-\includegraphics[width=0.9\linewidth,height=0.9\textheight]{0_Paper1_main_files/figure-latex/allinone-1} \hfill{}
-
-\caption{Left: mean, CI, and 100 realizations at each $\mathbf{u_*}$ -  Right: Utility function at each $\mathbf{u_*}$. From the top, iterations #1,2,3}(\#fig:allinone)
-\end{figure}
 
 Before applying the same workflow at the field scale, the 1-D example presented here offers another valuable feature of the BO workflow. Looking at the third iteration (plot) at Figure \@ref(fig:allinone), we can see that the maximum of the utility function is in order of $10^{-6}$ . That shows that even the best point to be evaluated with an expensive function has very little utility. So we can safely stop the process since the querying point from the expensive function has a negligible potential to improve our search in optimization.
 
@@ -661,23 +622,9 @@ This section applies the BO workflow to a synthetic 3D reservoir model to optimi
 
 Relative permeabilities and the associated fractional flow curve of the reservoir model are shown on the right side of Figure \@ref(fig:combine). All the wells are vertical and completed in all seven layers. The reservoir rock is assumed to be incompressible. The production from the reservoir has a life-cycle of 10 years, as suggested in [@jansen2014]. Here, the injection rate to be maintained over the reservoir's life cycle will be optimized. Given the objective function and uncertainty in the geological model, the optimization problem can be defined: whats is the optimum water injection rate for eight injector wells for the whole ten-year period of reservoir production. However, the optimization is not unbounded, and water injection per well can be adjusted from 5 to 100 m3/day, imposing a box-constrain on the optimization problem. The injectors are operated with no pressure constraint, and the producers are under a minimal BHP of 395 bars without rate constraint.
 
-\begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{img/combine} 
 
-}
 
-\caption{Left: Three geological realizations of the 3D model; Right: Rel perm and fractional flow curve, Hong et al., 2017, Jansen et al., 2014}(\#fig:combine)
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=300px]{img/egg_base} 
-
-}
-
-\caption{Well locations in the  Egg model, blue ones are injection, the red producers. Jansen et al., 2014}(\#fig:eggbase)
-\end{figure}
 ## Well-Control Optimization
 
 Revisiting the equations raised in section \@ref(problem-statement), we assume that the geological uncertainty ($\mathbf{G}$) can be represented by sampling its pdf to obtain an ensemble of $N_e$ realizations, $\mathbf{G}_i$, $i=1,2,\cdots,n_e$. Then, approximating the expectation of $\mathbf{J}$ with respect to $\mathbf{G}$ can be shown as:
@@ -706,57 +653,21 @@ The calculation procedure for $\mathbf{\overline{J}(u)}$ is as follows: first, w
 
 
 
-\begin{table}[H]
 
-\caption{(\#tab:npvparam)Required Parameters needed for calculation of Expected NPV}
-\centering
-\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
-\hline
-Item & Price & Items & Value\\
-\hline
-P\_o & 315 & b & 8\%\\
-\hline
-P\_wp & 47.5 & D & 365\\
-\hline
-P\_wi & 12.5 & n\_e & 10\\
-\hline
-\end{tabu}
-\end{table}
 
 ## BO Workflow
 
 As discussed, the BO workflow's starting point is to randomly sample a finite number of $\mathbf{u_i}$ from the space of the control variable. These random samples with their correspondent function values form $\mathcal{D}=[\mathbf{U},\mathbf{J(U)}]$. This $\mathcal{D}$ is used to build the probabilistic model (GPR model) of the response surface ($\mathbf{J(U)}$) to the input variables($\mathbf{U}$). In this work, forty samples from the Latin Hyper Cube Sampling (LHS) method were drawn. Note that we draw forty samples $\mathbf{u}_i$, $i=1:40$ while each $\mathbf{u}_i$ is a 1-d vector of dimension eight and each of these eight values can only take a value between 5 to 100 (constraints). The LHS is preferred in this work to Monte Carlo since it provides the stratification of the CDF of each variable, leading to better coverage of the input variable space. The Figure \@ref(fig:lhssampling) shows the results of $\mathbf{\overline{J}(u_i)}$ for each sample from LHS. Also, The maximum $\mathbf{\overline{J}(u_i)}$ found from random sampling has been shown with a blue line. Setting the specific seed number (since LHS is a random process), we get the maximum expected $NPV$ achieved here is $35.65 \$MM$. Looking at Figure \@ref(fig:lhssampling) it is worth mentioning that random sampling like the LHS is not helpful to consistently approach the global optimum point, as the solution does not improve with additional sampling. There is a need for an efficient workflow to find the optimum point while using a few as possible evaluations of objective function given in \@ref(eq:npvoptrep).
 
-\begin{figure}
 
-{\centering \includegraphics[width=468px]{0_Paper1_main_files/figure-latex/lhssampling-1} 
-
-}
-
-\caption{Expected NPV as result of forty sampling from LHS}(\#fig:lhssampling)
-\end{figure}
 
 Having the initial data ($\mathcal{D}$) found through LHS, we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section, we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, because the input space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) (in 1-D Toy Problem section) to get the idea of the plot of the probabilistic model conditioned to the $\mathcal{D}$. For the mathematical expression of the posterior model, it can be referred to Equation \@ref(eq:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. This process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$. Then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential iteration resulted from the BO workflow. Readers are referred to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty ("We learn") which is helpful for further iteration. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running ten geological realizations using flow simulation) we reach the new record expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
 
-\begin{figure}
 
-{\centering \includegraphics[width=468px]{0_Paper1_main_files/figure-latex/lhsbayesop-1} 
-
-}
-
-\caption{Blue points represent the sample from LHS; red points represent the samples from the BO workflow.}(\#fig:lhsbayesop)
-\end{figure}
 
 As we explained in 1-D Toy Problem, the plot of the utility of the next point $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ at each iteration could provide some useful information about the optimization process. The Figure \@ref(fig:utilitycurve) plots the $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$, Equation \@ref(eq:exp-easy) along the ten iterations in this work. In fact, the notation $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ means the optimum of the $\alpha_{EI}(\mathbf{u_*};\mathcal{D},\theta^*)$ after running multi-start (1000)- L-BFGS-B. Now, we can see that in the Figure, $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is decreasing going toward zero. It can be inferred from this trend that, we are going out of the *good* $\mathbf{u}^{next}$ values to be fed into the expensive function, as they are low in utility. Perhaps it can be interpreted that we are in the vicinity of global optima, if we see after several iterations still $\alpha_{EI}(\mathbf{u}^{next};\theta^*, \mathcal{D})$ is less than $10^-6$.
 
-\begin{figure}
 
-{\centering \includegraphics[width=468px]{0_Paper1_main_files/figure-latex/utilitycurve-1} 
-
-}
-
-\caption{Maximum utility at each iteration, after running L-BFGS-B to find $\mathbf{u_*}$ with max utility, $\alpha_{EI}^*$}(\#fig:utilitycurve)
-\end{figure}
 
 Given that the BO has stochastic nature (meaning that having different initialization in LHS sampling will affect the final solution), BO is repeated with three different initializations. Ideally, these repetitions need to be conducted 100 or 1000 times to understand the algorithm's stability to different initialization. However, because of the computational burden, in this work, only three repetitions were performed. Figure \@ref(fig:difinit) shows results of three repetitions (top, middle, bottom), where each blue points in the plot has its own specific seed number for random generation at LHS process. Then, given that initialization $\mathcal{D}$, the sequential finding of $\mathbf{u}^{next}$ is performed, shown in the red points. Like the previous case, in each repetition, forty samples are drawn from LHS, the ten were taken through iterations in BO, leaving $\mathcal{D}$ with fifty pairs of $\mathbf{u},\mathbf{J(u)}$ . At each row of Figure \@ref(fig:difinit), two horizontal lines show the maximum point $\mathbf{\overline{J}(u)}$ in both random sampling phase (LHS) and (BO) phase. As it can be noted from Figure \@ref(fig:difinit), at each repetition, the BO will improve the solution with a small sample evaluation of the $\mathbf{\overline{J}(u)}$. Therefore, improvement following the BO phase is independent of the initial design, and reasonably we can conclude that randomness in initialization will not degrade the performance of workflow.
 
@@ -764,25 +675,11 @@ Nevertheless, the bigger question is whether, given a different initial design, 
 
 <!-- This is common practice in gradient-based optimization, where the algorithm is powerful in local optimization and in order to avoid being stuck in local extreme points, "multi-start" runs are performed to search the global point in the objective function. -->
 
-\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth,height=0.9\textheight]{0_Paper1_main_files/figure-latex/difinit-1} 
-
-}
-
-\caption{BO workflow applied to the synthetic 3D model in three different initialization}(\#fig:difinit)
-\end{figure}
 
 The left side of Figure \@ref(fig:diffu) shows the effect of initialization on the final solution, $\mathbf{u}^{best}$ value for each repetition. Where the $\mathbf{u}^{best}$ is a vector of 8 dimensions, each value shows the optimum injection rate for the ten-year life cycle of the field, in $m^3/D$. We want to note that the y axis was plotted from the range of 5 to 100. This range is consistent with the constrain of the optimization problem, where the injection rate for each well can take any number between $5\:m^3/D$ to $100\:m^3/D$. Visually, looking in the left plot at Figure \@ref(fig:diffu), we can see that the final solution of three repetitions at each well, does not differ significantly. With a small exception of (injection \#2), it seems all the final solutions converge to the same solution. This feature that can be loosely said as "robustness" of optimization workflow to initial design is beneficial. We do not need to restart the optimization with different initialization since they all will converge to a similar solution. From this perspective, authors can hint that BO workflow can be considered a "global" optimization method. It shows that the workflow avoids being stuck in local extreme points or saddle regions. The plot on the right side of Figure \@ref(fig:diffu) shows the mean injection rate (mean of three repetitions) and error bar at each injection wells. The bottom of the error bar in this plot shows the $mean-sd$ and top of bar is $mean + sd$ . As we can see that we do not see significant variation in the final solution in each repetition. Also, the plots recommend that repeating the optimization more than three times (like 10 or 100) can lead to lower variation in the final solution.
 
-\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{0_Paper1_main_files/figure-latex/diffu-1} 
-
-}
-
-\caption{Left: Final solution of optimization algorithm in three different initialization, Right: Mean and error bar of each injection rate at each injection wells.}(\#fig:diffu)
-\end{figure}
 
 \newpage
 
