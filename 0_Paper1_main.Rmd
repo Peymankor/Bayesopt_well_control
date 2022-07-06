@@ -3,20 +3,20 @@ title: "Draft Title: Bayesian Optimization: A New Sample Efficient Workflow for 
 author:
   - name: "Peyman Kor"
 #    email: "peyman.kor@uis.no"
-    affiliation: a
-    footnote: 1
-  - name: Aojie Hong
+#    affiliation: a
+#    footnote: 1
+#  - name: Aojie Hong
 #    email: "aojie.hong@uis.no"
-    affiliation: a
-  - name: Reidar Brumer Bratvold
+#    affiliation: a
+#  - name: Reidar Brumer Bratvold
 #    email: "reidar.bratvold.uis.no"
-    affiliation: a
-address:
-  - code: a
-    address: Energy Resources Department, University of Stavanger, Stavanger, Norway
-footnote:
-  - code: 1
-    text: "Corresponding Author, peyman.kor@uis.no"
+#    affiliation: a
+#address:
+#  - code: a
+#    address: Energy Resources Department, University of Stavanger, Stavanger, Norway
+#footnote:
+#  - code: 1
+#    text: "Corresponding Author, peyman.kor@uis.no"
 #  - code: 2
 #    text: "Equal contribution"
 abstract: | 
@@ -26,7 +26,7 @@ geometry: margin=1in
 header-includes:
   - \usepackage{setspace}
 date: "`r Sys.Date()`"
-bibliography: [references.bib]
+#bibliography: [references.bib]
 linenumbers: true
 numbersections: true
 keywords: "Optimization, Gaussian Process, Probabilistic Modeling, Bayesian"
@@ -67,25 +67,25 @@ knitr::opts_chunk$set(warning = F, message = F, echo = FALSE)
 
 \newpage
 
-```{r child = '2_problem_statement.Rmd'}
+```{r, include=FALSE, child = '2_problem_statement.Rmd'}
 
 ```
 
 \newpage
 
-```{r child = 'CopyOf3_Bayesian_Optimization_Workflow_test.Rmd'}
+```{r, include=FALSE, child = 'CopyOf3_Bayesian_Optimization_Workflow_test.Rmd'}
 
 ```
 
 \newpage
 
-```{r child = '4_Example_Cases.Rmd'}
+```{r, include=FALSE, child = '4_Example_Cases.Rmd'}
 
 ```
 
 \newpage
 
-```{r child = '5_Field_Scale.Rmd'}
+```{r, include=FALSE,child = '5_Field_Scale.Rmd'}
 
 ```
 
