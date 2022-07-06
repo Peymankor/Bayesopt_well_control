@@ -84,7 +84,7 @@ bo_123$scoreSummary[1:40,] %>%
   geom_hline(aes(yintercept = max(bo_123$scoreSummary[1:40,]$Score))) +
   geom_text(aes(5, max(bo_123$scoreSummary[1:40,]$Score), 
                 label = "Maximum Point in LHS", vjust = - 1, fontface="italic"), fontface="italic", size=4, data = data.frame()) +
-  labs(x = TeX("Number of Samples, $# \\bar{J}(u)$"))
+  labs(x = TeX("Number of Samples, #$\\bar{J}(u)$"))
 ```
 
 Having the initial data ($\mathcal{D}$) found through LHS, we can build the probabilistic model, representing our understanding of objective function surface. Unfortunately, in this section, we can not plot the posterior of the probabilistic model, conditioned on the above forty LHS samples, because the input space is eight-dimensional and hard to visualize. We can refer to the Figure \@ref(fig:exampleshow) (in 1-D Toy Problem section) to get the idea of the plot of the probabilistic model conditioned to the $\mathcal{D}$. For the mathematical expression of the posterior model, it can be referred to Equation \@ref(eq:post-mean-cov-single). Then, after we have the posterior model, we need to perform optimization in Equation \@ref(eq:exp-easy) to find the next $\mathbf{u^{next}}$. This process continues sequentially, where first we have initial samples $\mathcal{D}$, then we find new pair $\mathbf{u}^{next},\mathbf{J(u^{next})}$. Then this new pair is added back to the initial $\mathcal{D}$ and new iteration starts with new $\mathcal{D}=\mathcal{D}\: \cup[\mathbf{u}^{next},\mathbf{J(u^{next})}]$. Figure \@ref(fig:lhsbayesop) shows the expected NPV found after ten sequential iteration resulted from the BO workflow. Readers are referred to this point that, not all red points are increasing in the figure and some points are lower than previous points. The reason for this behavior is the nature of the BO algorithm. We can suggest that in the points with lower expected NPV than the previous, we may reach the lower point, but those points helped us to decrease the uncertainty ("We learn") which is helpful for further iteration. We can see that after just ten evaluations of the expensive function (here it means finding the expected NPV from running ten geological realizations using flow simulation) we reach the new record expected NPV of $max \overline{J}(u)=36.85$$\$MM$.
@@ -96,7 +96,7 @@ bo_123$scoreSummary[1:50,] %>%
   add_column(Sampling_Scheme = opt_type) %>% 
   ggplot(aes(Iteration, Score, colour = Sampling_Scheme)) +
   geom_point(size = 3)+
-  labs(x = TeX("Number of Samples, $# \\bar{J}(u)$")) +
+  labs(x = TeX("Number of Samples, #$ \\bar{J}(u)$")) +
   ylab("Expected NPV (in $MM)") +
   scale_x_continuous(limits = c(1, 50),breaks = seq(0,50,5))+
   scale_y_continuous(limits = c(28, 37),breaks = seq(28,37)) +
@@ -139,7 +139,7 @@ plot_bo_123 <- bo_123$scoreSummary[1:50,] %>%
   add_column(Sampling_Scheme = opt_type) %>% 
   ggplot(aes(Iteration, Score, colour = Sampling_Scheme)) +
   geom_point(size = 2)+
-  labs(x = TeX("Number of Samples, $# \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
+  labs(x = TeX("Number of Samples, #$ \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
   scale_x_continuous(limits = c(1, 50),breaks = seq(0,50,5))+
   scale_y_continuous(limits = c(28, 38),breaks = seq(28,38)) +
   scale_color_manual(values = c("red", "blue")) +
@@ -160,7 +160,7 @@ plot_bo_1234 <- bo_1234$scoreSummary[1:50,] %>%
   add_column(Sampling_Scheme = opt_type) %>% 
   ggplot(aes(Iteration, Score, colour = Sampling_Scheme)) +
   geom_point(size = 2)+
-  labs(x = TeX("Number of Samples, $# \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
+  labs(x = TeX("Number of Samples, #$ \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
   scale_x_continuous(limits = c(1, 50),breaks = seq(0,50,5))+
   scale_y_continuous(limits = c(28, 38),breaks = seq(28,38)) +
   scale_color_manual(values = c("red", "blue")) +
@@ -182,7 +182,7 @@ plot_bo_12345 <- bo_12345$scoreSummary[1:50,] %>%
   add_column(Sampling_Scheme = opt_type) %>% 
   ggplot(aes(Iteration, Score, colour = Sampling_Scheme)) +
   geom_point(size = 2)+
-  labs(x = TeX("Number of Samples, $# \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
+  labs(x = TeX("Number of Samples, #$ \\bar{J}(u)$")) + ylab("Expected NPV (in $MM)") +
   scale_x_continuous(limits = c(1, 50),breaks = seq(0,50,5))+
   scale_y_continuous(limits = c(28, 38),breaks = seq(28,38)) +
   scale_color_manual(values = c("red", "blue")) +
